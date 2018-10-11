@@ -1,0 +1,70 @@
+plugins {
+    id 'kotlin-multiplatform' version '1.3.0-rc-80'
+}
+repositories {
+    maven {     url 'http://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
+}
+kotlin {
+    targets {
+        fromPreset(presets.jvm, 'jvm')
+        fromPreset(presets.js, 'js')
+        // For ARM, preset should be changed to presets.iosArm32 or presets.iosArm64
+        // For Linux, preset should be changed to e.g. presets.linuxX64
+        // For MacOS, preset should be changed to e.g. presets.macosX64
+        /*fromPreset(presets.iosX64, 'ios'){
+            compilations.each {
+                it.outputKinds('EXECUTABLE')
+            }
+        }*/
+        fromPreset(presets.macosX64, 'macos')
+
+        configure([macos]) {
+            compilations.main.outputKinds('EXECUTABLE')
+            compilations.main.entryPoint = 'sample.main'
+        }
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+            }
+        }
+        commonTest {
+            dependencies {
+        		implementation 'org.jetbrains.kotlin:kotlin-test-common'
+        		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test'
+                implementation 'org.jetbrains.kotlin:kotlin-test-junit'
+            }
+        }
+        jsMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
+            }
+        }
+        jsTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test-js'
+            }
+        }
+        /*iosMain {
+        }
+        iosTest {
+        }*/
+        macosMain {
+            /*dependencies {
+                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-native:0.30.1-eap13'
+            }*/
+        }
+    }
+}
