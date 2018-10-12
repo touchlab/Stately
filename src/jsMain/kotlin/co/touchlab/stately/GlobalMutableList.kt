@@ -1,6 +1,6 @@
 package co.touchlab.stately
 
-actual fun <E> sharedList(): MutableList<E> = mutableListOf()
+actual fun <E> sharedList(): GlobalMutableList<E> = mutableListOf()
 actual fun <E> MutableList<E>.close() {}
 actual fun <E> MutableList<E>.iterator(proc: (MutableIterator<E>) -> Unit) {
     proc(this.iterator())

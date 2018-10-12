@@ -18,7 +18,9 @@ interface GlobalMutableList<E>{
     fun removeAt(index: Int): E
     fun retainAll(elements: Collection<E>): Boolean
     fun set(index: Int, element: E): E
+    fun safeClose()
+    fun safeCopy():List<E>
+    fun safeSublist(firstIndex:Int, lastIndex:Int):List<E>
 }
 
-expect fun <E> GlobalMutableList<E>.safeCopy():List<E>
-expect fun <E> GlobalMutableList<E>.safeSublist(firstIndex:Int, lastIndex:Int):List<E>
+expect fun <E> sharedList(locked:Boolean = false):GlobalMutableList<E>
