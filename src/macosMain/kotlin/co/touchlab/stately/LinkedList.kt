@@ -120,35 +120,13 @@ class DoublyLinkedList<T> {
      * {@inheritDoc}
      */
     fun remove(value: T): Boolean {
-        // Find the node
-        var node = head.value
-        while (node != null && node.nodeValue != value) {
-            node = node.next.value
+        val node = findFirst(value)
+        return if(node == null){
+            false
+        }else{
+            node.remove()
+            true
         }
-        if (node == null)
-            return false
-
-        // Update the tail, if needed
-        if (node == tail.value)
-            tail.value = node.prev.value
-
-        val prev = node.prev.value
-        val next = node.next.value
-        if (prev != null && next != null) {
-            prev.next.value = next
-            next.prev.value = prev
-        } else if (prev != null && next == null) {
-            prev.next.value = null
-        } else if (prev == null && next != null) {
-            // Node is the head
-            next.prev.value = null
-            head.value = next
-        } else {
-            // prev==null && next==null
-            head.value = null
-        }
-        size.decrement()
-        return true
     }
 
     fun toList():List<T> {
@@ -173,14 +151,18 @@ class DoublyLinkedList<T> {
     /**
      * {@inheritDoc}
      */
-    fun contains(value: T): Boolean {
+    fun contains(value: T): Boolean = findFirst(value) != null
+
+    private fun findFirst(value: T): Node<T>?{
         var node = head.value
         while (node != null) {
-            if (node.nodeValue == value)
-                return true
+            if(node.nodeValue == value){
+                return node
+            }
             node = node.next.value
         }
-        return false
+
+        return null
     }
 
     /**
@@ -192,8 +174,11 @@ class DoublyLinkedList<T> {
 
     fun debugPrint():String{
         val sb = StringBuilder()
-        toList().forEach {
-            sb.append("$it\n")
+        var node = head.value
+
+        while (node != null){
+            sb.append("val: ${node.nodeValue}, pref: ${node.prev.value}, next: ${node.next.value}\n")
+            node = node.next.value
         }
 
         return sb.toString()

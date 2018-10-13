@@ -99,6 +99,12 @@ class LinkedListTest{
                 throw IllegalStateException("Something went wrong. Give up.")
             }
         }
+
+        ll.add(ListData("Asdf 0"))
+
+        ll.nodeAt(0).add(ListData("Asdf -1"))
+
+        println(ll.debugPrint())
     }
 
 //    @Test
