@@ -15,13 +15,92 @@ import kotlin.native.concurrent.freeze
 ](https://en.wikipedia.org/wiki/Linked_list) */
 class DoublyLinkedList<T> {
 
-    class Node<T>(val list:DoublyLinkedList<T>, val nodeValue: T) {
+    val size: Int
+        get() = sizeCount.value
+
+    fun add(element: T): Boolean = withLock {
+        return internalAdd(Node(this, element))
+    }
+
+    fun add(index: Int, element: T) = withLock {
+        if (index == sizeCount.value) {
+            return internalAdd(Node(this, element))
+        } else {
+            internalNodeAt(index).add(element)
+        }
+    }
+
+    fun addAll(index: Int, elements: Collection<T>): Boolean = withLock {
+        if (index == size)
+            return internalAddAll(elements)
+        else if (index > size)
+            throw IndexOutOfBoundsException("Index $index > $size")
+        else {
+            var node = internalNodeAt(index)
+            elements.forEach {
+                node.add(it)
+            }
+            return true
+        }
+    }
+
+    fun addAll(elements: Collection<T>): Boolean = withLock { internalAddAll(elements) }
+
+    fun clear() = withLock {
+        head.value = null
+        tail.value = null
+        sizeCount.value = 0
+    }
+
+    fun contains(element: T): Boolean = withLock { internalFindFirst(element) != null }
+
+    fun containsAll(elements: Collection<T>): Boolean = withLock { elements.all { internalFindFirst(it) != null } }
+
+    fun get(index: Int) = withLock { internalNodeAt(index).nodeValue }
+
+    fun indexOf(element: T): Int = withLock { internalFindFirstIndex(element).index }
+
+    fun isEmpty() = sizeCount.value == 0
+
+    fun remove(value: T): Boolean = withLock { internalRemove(value) }
+
+    fun removeAll(elements: Collection<T>): Boolean = withLock { elements.all { internalRemove(it) } }
+
+    fun removeAt(index: Int):T = withLock {
+        val node = internalNodeAt(index)
+        node.remove()
+        node.nodeValue
+    }
+
+    fun set(index: Int, element: T): T = withLock {
+        val node = internalNodeAt(index)
+        val old = node.nodeValue
+        node.set(element)
+
+        return old
+    }
+
+    class Node<T>(val list: DoublyLinkedList<T>, val nodeValue: T) {
 
         val prev = AtomicReference<Node<T>?>(null)
         val next = AtomicReference<Node<T>?>(null)
 
-        fun add(t:T):Boolean{
-            val ins = Node<T>(list, t)
+        fun set(t: T) {
+            val ins = Node(list, t)
+
+            ins.freeze()
+
+            ins.prev.value = prev.value
+            ins.next.value = next.value
+
+            if (ins.prev.value == null)
+                list.head.value = ins
+            if (ins.next.value == null)
+                list.tail.value = ins
+        }
+
+        fun add(t: T): Boolean {
+            val ins = Node(list, t)
 
             ins.freeze()
 
@@ -31,60 +110,56 @@ class DoublyLinkedList<T> {
             prev.value = ins
 
             //If replacing 0
-            if(ins.prev.value == null)
+            if (ins.prev.value == null)
                 list.head.value = ins
 
-            list.size.increment()
+            list.sizeCount.increment()
 
             return true
         }
 
-        fun remove(){
+        fun remove() {
             val prevNode = prev.value
             val nextNode = next.value
-            if(prevNode == null)
-            {
+            if (prevNode == null) {
                 list.head.value = nextNode
-            }
-            else
-            {
+            } else {
                 prevNode.next.value = nextNode
             }
 
-            if(nextNode == null)
-            {
+            if (nextNode == null) {
                 list.tail.value = prevNode
-            }
-            else
-            {
+            } else {
                 nextNode.prev.value = prevNode
             }
 
-            list.size.decrement()
+            list.sizeCount.decrement()
         }
     }
 
     private val lock = NSLock()
-    private val size = AtomicInt(0)
+    private val sizeCount = AtomicInt(0)
     private val head = AtomicReference<Node<T>?>(null)
     private val tail = AtomicReference<Node<T>?>(null)
 
-    /**
-     * {@inheritDoc}
-     */
-    fun add(value: T): Boolean {
-        return add(Node(this, value))
+    internal fun internalAddAll(elements: Collection<T>): Boolean {
+        elements.forEach {
+            internalAdd(Node(this, it))
+        }
+
+        return true
     }
 
-    fun nodeAt(i:Int):Node<T>{
-        if(i>=size.value)
-            throw IllegalArgumentException("index $i ge ${size.value}")
+    internal fun internalNodeAt(i: Int): Node<T> {
+        if (i >= sizeCount.value)
+            throw IllegalArgumentException("index $i ge ${sizeCount.value}")
 
         var node = head.value
         var nodeCount = 0
         while (node != null) {
-            if(i == nodeCount++)
+            if (i == nodeCount++) {
                 return node
+            }
             node = node.next.value
         }
 
@@ -97,9 +172,9 @@ class DoublyLinkedList<T> {
      * @param node
      * to add to list.
      */
-    private fun add(node: Node<T>): Boolean {
+    internal fun internalAdd(node: Node<T>): Boolean {
         node.freeze()
-        if (isEmpty) {
+        if (isEmpty()) {
             head.value = node
             tail.value = node
         } else {
@@ -108,29 +183,12 @@ class DoublyLinkedList<T> {
             node.prev.value = prev
             tail.value = node
         }
-        size.increment()
+        sizeCount.increment()
         return true
     }
 
-    private val isEmpty:Boolean
-    get() = head.value == null
-
-
-    /**
-     * {@inheritDoc}
-     */
-    fun remove(value: T): Boolean {
-        val node = findFirst(value)
-        return if(node == null){
-            false
-        }else{
-            node.remove()
-            true
-        }
-    }
-
-    fun toList():List<T> {
-        val outlist = ArrayList<T>(size.value)
+    fun toList(): List<T> {
+        val outlist = ArrayList<T>(sizeCount.value)
         var node = head.value
         while (node != null) {
             outlist.add(node.nodeValue)
@@ -140,43 +198,39 @@ class DoublyLinkedList<T> {
         return outlist
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    fun clear() {
-        head.value = null
-        size.value = 0
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    fun contains(value: T): Boolean = findFirst(value) != null
-
-    private fun findFirst(value: T): Node<T>?{
+    internal fun internalFindFirstIndex(value: T): NodeResult<T> {
         var node = head.value
+        var nodeCount = 0
         while (node != null) {
-            if(node.nodeValue == value){
-                return node
+            if (node.nodeValue == value) {
+                return NodeResult(nodeCount, node)
             }
             node = node.next.value
+            nodeCount++
         }
 
-        return null
+        return NodeResult(-1, null)
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    fun size(): Int {
-        return size.value
+    internal fun internalFindFirst(value: T): Node<T>? = internalFindFirstIndex(value).node
+
+    internal fun internalRemove(value: T): Boolean {
+        val node = internalFindFirst(value)
+        return if (node == null) {
+            false
+        } else {
+            node.remove()
+            true
+        }
     }
 
-    fun debugPrint():String{
+    data class NodeResult<T>(val index: Int, val node: Node<T>?)
+
+    fun debugPrint(): String {
         val sb = StringBuilder()
         var node = head.value
 
-        while (node != null){
+        while (node != null) {
             sb.append("val: ${node.nodeValue}, pref: ${node.prev.value}, next: ${node.next.value}\n")
             node = node.next.value
         }
@@ -184,50 +238,14 @@ class DoublyLinkedList<T> {
         return sb.toString()
     }
 
-    /*private inline fun <T> withLock(proc:() -> T):T{
+
+    private inline fun <T> withLock(proc: () -> T): T {
         lock.lock()
         try {
             return proc.invoke()
         } finally {
             lock.unlock()
         }
-    }*/
-
-    /**
-     * {@inheritDoc}
-     */
-   /* fun validate(): Boolean {
-        val keys = java.util.HashSet()
-        val node = head
-        if (node != null) {
-            keys.add(node.value)
-            if (node.prev != null)
-                return false
-            var child = node.next
-            while (child != null) {
-                if (!validate(child, keys))
-                    return false
-                child = child.next
-            }
-        }
-        return keys.size == size
-    }*/
-
-    /*private fun validate(node: Node<T>, keys: MutableSet<T>): Boolean {
-        if (node.value == null)
-            return false
-
-        keys.add(node.value)
-
-        val child = node.next
-        if (child != null) {
-            if (child.prev != node)
-                return false
-        } else {
-            if (node != tail)
-                return false
-        }
-        return true
-    }*/
+    }
 }
 

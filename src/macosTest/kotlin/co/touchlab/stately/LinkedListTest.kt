@@ -4,11 +4,143 @@ import kotlin.native.concurrent.*
 import kotlin.test.*
 
 class LinkedListTest{
+
+    private fun checkList(ll: DoublyLinkedList<ListData>, vararg strings: String): Boolean {
+        for(i in 0 until strings.size){
+            if(ll.get(i).s != strings[i])
+                return false
+        }
+
+        return true
+    }
+
     @Test
     fun add(){
         val ll = makeTen()
 
-        assertEquals(10, ll.size())
+        assertEquals(10, ll.size)
+    }
+
+    @Test
+    fun addIndex(){
+        val ll = DoublyLinkedList<ListData>()
+
+        try {
+            ll.add(1, ListData("Item 1"))
+            fail("Should've failed")
+        } catch (e: Exception) {
+        }
+
+        assertEquals(0, ll.size)
+
+        ll.add(0, ListData("Item 0"))
+        assertEquals(1, ll.size)
+
+        for(i in 1 until 4){
+            ll.add(i, ListData("Item $i"))
+        }
+
+        assertEquals(4, ll.size)
+
+        checkList(ll, "Item 0", "Item 1", "Item 2", "Item 3")
+
+        ll.add(0, ListData("Before"))
+
+        checkList(ll, "Before", "Item 0", "Item 1", "Item 2", "Item 3")
+
+        ll.add(2, ListData("Middle"))
+
+        checkList(ll, "Before", "Item 0", "Middle", "Item 1", "Item 2", "Item 3")
+
+        ll.clear()
+
+        checkList(ll)
+
+        ll.add(0, ListData("Asdf"))
+
+        checkList(ll, "Asdf")
+    }
+
+    @Test
+    fun addAllIndex(){
+        val ll = DoublyLinkedList<ListData>()
+        val elements = listOf(ListData("Item 0"), ListData("Item 1"))
+        try {
+            ll.addAll(1, elements)
+            fail("Bad index")
+        } catch (e: Exception) {
+        }
+
+        ll.addAll(0, elements)
+
+        checkList(ll, "Item 0", "Item 1")
+
+        ll.addAll(1, listOf(ListData("Item a"), ListData("Item b")))
+
+        checkList(ll, "Item 0", "Item a", "Item b", "Item 1")
+    }
+
+    @Test
+    fun addAll(){
+        val ll = DoublyLinkedList<ListData>()
+        val elements = listOf(ListData("Item 0"), ListData("Item 1"))
+        ll.addAll(elements)
+
+        checkList(ll, "Item 0", "Item 1")
+
+        ll.addAll(listOf(ListData("Item a"), ListData("Item b")))
+
+        checkList(ll, "Item 0", "Item 1", "Item a", "Item b")
+    }
+
+    @Test
+    fun clear()
+    {
+        val ll = makeTen()
+        assertEquals(10, ll.size)
+        ll.clear()
+        assertEquals(0, ll.size)
+    }
+
+    @Test
+    fun contains(){
+        val ll = makeTen()
+
+        assertTrue(ll.contains(ListData("Item 2")))
+        assertTrue(ll.contains(ListData("Item 7")))
+        assertFalse(ll.contains(ListData("Item 10")))
+    }
+
+    @Test
+    fun containsAll(){
+        val ll = makeTen()
+
+        assertTrue(ll.containsAll(listOf(ListData("Item 2"), ListData("Item 5"), ListData("Item 0"), ListData("Item 9"))))
+        assertFalse(ll.containsAll(listOf(ListData("Item 2"), ListData("Item 5"), ListData("Item 0"), ListData("Item 10"))))
+    }
+
+    @Test
+    fun get(){
+        val ll = makeTen()
+        assertEquals(ListData("Item 2"), ll.get(2))
+    }
+
+    @Test
+    fun indexOf(){
+        val ll = makeTen()
+        assertEquals(3, ll.indexOf(ListData("Item 3")))
+        assertEquals(0, ll.indexOf(ListData("Item 0")))
+        assertEquals(-1, ll.indexOf(ListData("Item 10")))
+        ll.clear()
+        assertEquals(-1, ll.indexOf(ListData("Item 3")))
+    }
+
+    @Test
+    fun isEmpty(){
+        val ll = makeTen()
+        assertFalse(ll.isEmpty())
+        ll.clear()
+        assertTrue(ll.isEmpty())
     }
 
     @Test
@@ -20,22 +152,62 @@ class LinkedListTest{
         assertFalse(ll.remove(ListData("Item 8")))
         assertFalse(ll.remove(ListData("Item 88")))
 
-        assertEquals(8, ll.size())
+        assertEquals(8, ll.size)
+
+        checkList(ll, "Item 0", "Item 1", "Item 2", "Item 3", "Item 5", "Item 6", "Item 7", "Item 9")
     }
 
     @Test
-    fun nodeAt(){
+    fun removeAll(){
         val ll = makeTen()
 
-        assertEquals(ll.nodeAt(5).nodeValue.s, "Item 5")
+        assertTrue(ll.removeAll(listOf(ListData("Item 4"), ListData("Item 8"))))
+        assertFalse(ll.removeAll(listOf(ListData("Item 4"), ListData("Item 8"))))
+        assertFalse(ll.removeAll(listOf(ListData("Item 5"), ListData("Item 10"))))
+
+        assertEquals(7, ll.size)
+
+        checkList(ll, "Item 0", "Item 1", "Item 2", "Item 3", "Item 6", "Item 7", "Item 9")
+    }
+
+    @Test
+    fun removeAt(){
+        val ll = makeTen()
+
+        assertEquals(ll.removeAt(8), ListData("Item 8"))
+        assertEquals(9, ll.size)
+        assertEquals(ll.removeAt(4), ListData("Item 4"))
+        assertEquals(8, ll.size)
+        assertEquals(ll.removeAt(4), ListData("Item 5"))
+        assertEquals(7, ll.size)
+
+        checkList(ll, "Item 0", "Item 1", "Item 2", "Item 3", "Item 6", "Item 7", "Item 9")
+    }
+
+    @Test
+    fun size(){
+        val ll = makeTen()
+
+        assertEquals(10, ll.size)
+        for(i in 0 until 10){
+            ll.removeAt(0)
+            assertEquals(9 - i, ll.size)
+        }
+    }
+
+    @Test
+    fun internalNodeAt(){
+        val ll = makeTen()
+
+        assertEquals(ll.internalNodeAt(5).nodeValue.s, "Item 5")
         try {
-            ll.nodeAt(10)
+            ll.internalNodeAt(10)
             fail("Should've been IllegalArgumentException")
         }catch (e:IllegalArgumentException){}
 
         val empty = DoublyLinkedList<ListData>()
         try {
-            empty.nodeAt(0)
+            empty.internalNodeAt(0)
             fail("Should've been IllegalArgumentException")
         } catch (e: IllegalArgumentException) {}
     }
@@ -44,57 +216,54 @@ class LinkedListTest{
     fun nodeAdd(){
         val ll = makeTen()
 
-        ll.nodeAt(2).add(ListData("asdf"))
-        assertEquals(ll.size(), 11)
-        assertEquals(ll.nodeAt(2).nodeValue.s, "asdf")
-        assertEquals(ll.nodeAt(3).nodeValue.s, "Item 2")
+        ll.internalNodeAt(2).add(ListData("asdf"))
+        assertEquals(ll.size, 11)
+        assertEquals(ll.internalNodeAt(2).nodeValue.s, "asdf")
+        assertEquals(ll.internalNodeAt(3).nodeValue.s, "Item 2")
 
-        ll.nodeAt(0).add(ListData("a"))
-        ll.nodeAt(0).add(ListData("b"))
+        ll.internalNodeAt(0).add(ListData("a"))
+        ll.internalNodeAt(0).add(ListData("b"))
 
-        assertEquals(ll.size(), 13)
-        assertEquals(ll.nodeAt(0).nodeValue.s, "b")
-        assertEquals(ll.nodeAt(1).nodeValue.s, "a")
+        assertEquals(ll.size, 13)
+        assertEquals(ll.internalNodeAt(0).nodeValue.s, "b")
+        assertEquals(ll.internalNodeAt(1).nodeValue.s, "a")
 
-        ll.nodeAt(12).add(ListData("c"))
-        ll.nodeAt(13).add(ListData("d"))
+        ll.internalNodeAt(12).add(ListData("c"))
+        ll.internalNodeAt(13).add(ListData("d"))
 
-        println(ll.debugPrint())
-
-        assertEquals(ll.size(), 15)
-        assertEquals(ll.nodeAt(12).nodeValue.s, "c")
-        assertEquals(ll.nodeAt(13).nodeValue.s, "d")
+        assertEquals(ll.size, 15)
+        assertEquals(ll.internalNodeAt(12).nodeValue.s, "c")
+        assertEquals(ll.internalNodeAt(13).nodeValue.s, "d")
     }
 
     @Test
     fun nodeRemove(){
         val ll = makeTen()
 
-        ll.nodeAt(5).remove()
-        assertEquals(9, ll.size())
+        ll.internalNodeAt(5).remove()
+        assertEquals(9, ll.size)
 
-        ll.nodeAt(0).remove()
-        assertEquals(8, ll.size())
+        ll.internalNodeAt(0).remove()
+        assertEquals(8, ll.size)
 
         try {
-            ll.nodeAt(8).remove()
+            ll.internalNodeAt(8).remove()
             fail("Shouldn't have this many values")
         } catch (e: Exception) {
 
         }
 
-        val node = ll.nodeAt(7)
+        val node = ll.internalNodeAt(7)
         assertEquals("Item 9", node.nodeValue.s)
 
         node.remove()
-        assertEquals(7, ll.size())
+        assertEquals(7, ll.size)
 
-        assertEquals("Item 8", ll.nodeAt(6).nodeValue.s)
+        assertEquals("Item 8", ll.internalNodeAt(6).nodeValue.s)
 
         var loopCount = 20
-        while(ll.size() > 0){
-            println(ll.debugPrint())
-            ll.nodeAt(0).remove()
+        while(ll.size > 0){
+            ll.internalNodeAt(0).remove()
             if(loopCount-- == 0){
                 throw IllegalStateException("Something went wrong. Give up.")
             }
@@ -102,12 +271,10 @@ class LinkedListTest{
 
         ll.add(ListData("Asdf 0"))
 
-        ll.nodeAt(0).add(ListData("Asdf -1"))
-
-        println(ll.debugPrint())
+        ll.internalNodeAt(0).add(ListData("Asdf -1"))
     }
 
-//    @Test
+    @Test
     fun multipleThreads(){
         val ll = DoublyLinkedList<ListData>().freeze()
         val workers = Array(5){Worker.start()}
@@ -116,7 +283,7 @@ class LinkedListTest{
             worker.execute(TransferMode.SAFE, {Pair(it, ll)}){
                 it.second.add(ListData("${it.first} 1"))
                 it.second.add(ListData("${it.first} 2"))
-                it.second.add(ListData("${it.first} 1"))
+                it.second.add(ListData("${it.first} 3"))
             }
         }
 
@@ -135,11 +302,7 @@ class LinkedListTest{
             it.requestTermination().result
         }
 
-        ll.toList().forEach {
-            println(it)
-        }
-
-        assertEquals(5*2, ll.size())
+        assertEquals(5*3, ll.size)
     }
 
     private fun makeTen(): DoublyLinkedList<ListData> {
