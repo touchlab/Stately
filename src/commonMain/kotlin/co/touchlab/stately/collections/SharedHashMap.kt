@@ -2,6 +2,8 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.AtomicReference
+import co.touchlab.stately.concurrency.Lock
+import co.touchlab.stately.concurrency.QuickLock
 
 class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.toFloat()):MutableMap<K, V>{
 
@@ -17,9 +19,19 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         }
     }
 
+    private var lock: Lock = QuickLock()
     var threshold:AtomicInt
     val atomSize = AtomicInt(0)
     val buckets:AtomicReference<Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>>
+
+    internal inline fun <T> withLock(proc: () -> T): T {
+        lock.lock()
+        try {
+            return proc.invoke()
+        } finally {
+            lock.unlock()
+        }
+    }
 
     init {
         var capacity = 1
@@ -45,27 +57,27 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
     }
 
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
-        get() {
+        get() = withLock {
             val resultSet = HashSet<MutableMap.MutableEntry<K, V>>(atomSize.value)
             iterInternal { resultSet.add(it) }
             return resultSet
         }
 
     override val keys: MutableSet<K>
-        get() {
+        get() = withLock {
             val keySet = HashSet<K>(atomSize.value)
             iterInternal { keySet.add(it.key) }
             return keySet
         }
 
     override val values: MutableCollection<V>
-        get() {
-            var result = ArrayList<V>(atomSize.value)
+        get() = withLock {
+            val result = ArrayList<V>(atomSize.value)
             iterInternal { result.add(it.value) }
             return result
         }
 
-    override fun clear() {
+    override fun clear() = withLock {
         buckets.value.forEach {
             it.value.clear()
         }
@@ -75,7 +87,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
 
     override fun containsKey(key: K): Boolean = get(key) != null
 
-    override fun containsValue(value: V): Boolean {
+    override fun containsValue(value: V): Boolean = withLock {
         iterInternal {
             if(it.value == value)
                 return@containsValue true
@@ -83,7 +95,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         return false
     }
 
-    override fun get(key: K): V? {
+    override fun get(key: K): V? = withLock {
         val entryList = findEntryList(buckets.value, key)
         entryList.forEach {
             if(it.key == key)
@@ -93,39 +105,17 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         return null
     }
 
-    private fun findEntryList(bucketArray: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, key: K): SharedLinkedList<Entry<K, V>> {
-        val hash = rehash(key.hashCode())
-        val entryList = bucketArray.get(indexFor(hash, bucketArray.size)).value
-        return entryList
-    }
-
     override fun isEmpty(): Boolean = atomSize.value == 0
 
-    override fun put(key: K, value: V): V? {
-        val entryList = findEntryList(buckets.value, key)
-        var result : V? = null
-        entryList.nodeIterator().forEach {
-            if(it.nodeValue.key == key){
-                result = it.nodeValue.value
-                it.remove()
-                atomSize.decrement()
-                return@forEach
-            }
-        }
-
-        entryList.add(Entry(key, value).mpfreeze())
-        atomSize.increment()
-        if(atomSize.value > threshold.value)
-            resize(2 * buckets.value.size)
-
-        return result
+    override fun put(key: K, value: V): V? = withLock {
+        internalPut(key, value)
     }
 
-    override fun putAll(from: Map<out K, V>) {
-        from.entries.forEach { put(it.key, it.value) }
+    override fun putAll(from: Map<out K, V>) = withLock {
+        from.entries.forEach { internalPut(it.key, it.value) }
     }
 
-    override fun remove(key: K): V? {
+    override fun remove(key: K): V? = withLock {
         val entryList = findEntryList(buckets.value, key)
         var result : V? = null
         entryList.nodeIterator().forEach {
@@ -142,6 +132,26 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
 
     override val size: Int
         get() = atomSize.value
+
+    private fun internalPut(key: K, value: V): V? {
+        val entryList = findEntryList(buckets.value, key)
+        var result: V? = null
+        entryList.nodeIterator().forEach {
+            if (it.nodeValue.key == key) {
+                result = it.nodeValue.value
+                it.remove()
+                atomSize.decrement()
+                return@forEach
+            }
+        }
+
+        entryList.add(Entry(key, value).mpfreeze())
+        atomSize.increment()
+        if (atomSize.value > threshold.value)
+            resize(2 * buckets.value.size)
+
+        return result
+    }
 
     fun resize(newCapacity:Int){
         val oldTable = buckets.value
@@ -177,4 +187,11 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         h = h xor (h.ushr(20) xor h.ushr(12))
         return h xor h.ushr(7) xor h.ushr(4)
     }
+
+    private fun findEntryList(bucketArray: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, key: K): SharedLinkedList<Entry<K, V>> {
+        val hash = rehash(key.hashCode())
+        val entryList = bucketArray.get(indexFor(hash, bucketArray.size)).value
+        return entryList
+    }
+
 }
