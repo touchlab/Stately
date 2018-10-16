@@ -26,6 +26,8 @@ class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
 
     override fun iterator(): MutableIterator<T> = LLIterator(this)
 
+    fun nodeIterator():MutableIterator<Node<T>> = NodeIterator<T>(this)
+
     class LLIterator<T>(ll: SharedLinkedList<T>) : MutableIterator<T> {
         override fun remove() {
             throw UnsupportedOperationException()
@@ -37,6 +39,23 @@ class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
         override fun next(): T {
             val retval: T
             retval = currentNode?.nodeValue!!
+            currentNode = currentNode?.next?.value
+            return retval
+        }
+
+
+    }
+
+    class NodeIterator<T>(ll: SharedLinkedList<T>) : MutableIterator<Node<T>> {
+        override fun remove() {
+            throw UnsupportedOperationException()
+        }
+
+        var currentNode = ll.head.value
+        override fun hasNext(): Boolean = currentNode != null
+
+        override fun next(): Node<T> {
+            val retval: Node<T> = currentNode!!
             currentNode = currentNode?.next?.value
             return retval
         }
