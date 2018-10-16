@@ -7,7 +7,6 @@ import co.touchlab.stately.concurrency.QuickLock
 
 class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.toFloat()):MutableMap<K, V>{
 
-
     data class Entry<K, V>(private val k:K, private val v:V):MutableMap.MutableEntry<K, V> {
         override val key: K
             get() = k
@@ -60,22 +59,59 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         get() = withLock {
             val resultSet = HashSet<MutableMap.MutableEntry<K, V>>(atomSize.value)
             iterInternal { resultSet.add(it) }
-            return resultSet
+            return NotReallyMutableSet(resultSet)
         }
 
     override val keys: MutableSet<K>
         get() = withLock {
             val keySet = HashSet<K>(atomSize.value)
             iterInternal { keySet.add(it.key) }
-            return keySet
+            return NotReallyMutableSet(keySet)
         }
 
     override val values: MutableCollection<V>
         get() = withLock {
             val result = ArrayList<V>(atomSize.value)
             iterInternal { result.add(it.value) }
-            return result
+            return NotReallyMutableSet(result)
         }
+
+    class NotReallyMutableSet<T>(private val delegate:MutableCollection<T>):MutableSet<T>{
+        override fun add(element: T): Boolean {
+            throw UnsupportedOperationException()
+        }
+
+        override fun addAll(elements: Collection<T>): Boolean {
+            throw UnsupportedOperationException()
+        }
+
+        override fun clear() {
+            throw UnsupportedOperationException()
+        }
+
+        override fun iterator(): MutableIterator<T> = delegate.iterator()
+
+        override fun remove(element: T): Boolean {
+            throw UnsupportedOperationException()
+        }
+
+        override fun removeAll(elements: Collection<T>): Boolean {
+            throw UnsupportedOperationException()
+        }
+
+        override fun retainAll(elements: Collection<T>): Boolean {
+            throw UnsupportedOperationException()
+        }
+
+        override val size: Int
+            get() = delegate.size
+
+        override fun contains(element: T): Boolean = delegate.contains(element)
+
+        override fun containsAll(elements: Collection<T>): Boolean = delegate.containsAll(elements)
+
+        override fun isEmpty(): Boolean = delegate.isEmpty()
+    }
 
     override fun clear() = withLock {
         buckets.value.forEach {
@@ -165,7 +201,6 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
     }
 
     fun transfer(newTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, oldTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>) {
-        val newCapacity = newTable.size
         oldTable.forEach {
             it.value.iterator().forEach {
                 findEntryList(newTable, it.key).add(it)

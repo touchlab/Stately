@@ -118,6 +118,40 @@ class SharedHashMapTest{
         }
     }
 
+    @Test
+    fun testNotMutableSets(){
+        val m = SharedHashMap<String, MapData>()
+        for(i in 0 until 15){
+            val thediv = i / 3
+            m.put("Key: $i", MapData("Value: $thediv"))
+        }
+
+        checkImmutableSet(m.keys, 15, 15, "Asdf")
+        checkImmutableSet(m.values, 15, 5, MapData("Qwert"))
+        checkImmutableSet(m.entries, 15, 15, SharedHashMap.Entry("Foo", MapData("Bar")))
+    }
+
+    private fun <T> checkImmutableSet(c:MutableCollection<T>, total:Int, uniques:Int, sample:T){
+        assertEquals(c.size, total)
+        val checkSet = HashSet<T>()
+        c.forEach { checkSet.add(it) }
+        assertEquals(checkSet.size, uniques)
+        unfail { c.add(sample) }
+        unfail { c.addAll(listOf(sample)) }
+        unfail { c.clear() }
+        unfail { c.remove(sample) }
+        unfail { c.removeAll(listOf(sample)) }
+        unfail { c.retainAll(listOf(sample)) }
+    }
+
+    private fun unfail(proc:()->Unit){
+        try {
+            proc()
+            fail("Call should have failed")
+        } catch (e: Exception) {
+        }
+    }
+
     private fun <T> checkCollection(c:Collection<T>, vararg checks:T):Boolean{
         for (check in checks) {
             if(!c.contains(check))
