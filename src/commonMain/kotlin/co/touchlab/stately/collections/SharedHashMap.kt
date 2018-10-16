@@ -3,7 +3,7 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.AtomicReference
 
-class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFloat()):MutableMap<K, V>{
+class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.toFloat()):MutableMap<K, V>{
 
 
     data class Entry<K, V>(private val k:K, private val v:V):MutableMap.MutableEntry<K, V> {
@@ -17,7 +17,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
         }
     }
 
-    val threshold:AtomicInt
+    var threshold:AtomicInt
     val atomSize = AtomicInt(0)
     val buckets:AtomicReference<Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>>
 
@@ -27,9 +27,13 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
             capacity = capacity shl 1
 
         threshold = AtomicInt((capacity.toFloat() * loadFactor).toInt())
-        buckets = AtomicReference((Array(capacity) {
+        buckets = AtomicReference(makeBuckets(capacity))
+    }
+
+    private fun makeBuckets(capacity: Int): Array<AtomicReference<SharedLinkedList<Entry<K, V>>>> {
+        return (Array(capacity) {
             AtomicReference(SharedLinkedList<Entry<K, V>>().mpfreeze())
-        }).mpfreeze())
+        }).mpfreeze()
     }
 
     private inline fun iterInternal(proc:(Entry<K, V>)->Unit){
@@ -80,7 +84,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
     }
 
     override fun get(key: K): V? {
-        val entryList = findEntryList(key)
+        val entryList = findEntryList(buckets.value, key)
         entryList.forEach {
             if(it.key == key)
                 return@get it.value
@@ -89,9 +93,8 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
         return null
     }
 
-    private fun findEntryList(key: K): SharedLinkedList<Entry<K, V>> {
+    private fun findEntryList(bucketArray: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, key: K): SharedLinkedList<Entry<K, V>> {
         val hash = rehash(key.hashCode())
-        val bucketArray = buckets.value
         val entryList = bucketArray.get(indexFor(hash, bucketArray.size)).value
         return entryList
     }
@@ -99,7 +102,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
     override fun isEmpty(): Boolean = atomSize.value == 0
 
     override fun put(key: K, value: V): V? {
-        val entryList = findEntryList(key)
+        val entryList = findEntryList(buckets.value, key)
         var result : V? = null
         entryList.nodeIterator().forEach {
             if(it.nodeValue.key == key){
@@ -112,6 +115,8 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
 
         entryList.add(Entry(key, value).mpfreeze())
         atomSize.increment()
+        if(atomSize.value > threshold.value)
+            resize(2 * buckets.value.size)
 
         return result
     }
@@ -121,7 +126,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
     }
 
     override fun remove(key: K): V? {
-        val entryList = findEntryList(key)
+        val entryList = findEntryList(buckets.value, key)
         var result : V? = null
         entryList.nodeIterator().forEach {
             if(it.nodeValue.key == key){
@@ -137,6 +142,28 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFl
 
     override val size: Int
         get() = atomSize.value
+
+    fun resize(newCapacity:Int){
+        val oldTable = buckets.value
+        val newTable = makeBuckets(newCapacity)
+        transfer(newTable, oldTable)
+        buckets.value = newTable
+        threshold.value = (newCapacity.toFloat() * loadFactor).toInt()
+
+        println("New capacity: ${newCapacity}")
+        println("New threshold: ${threshold.value}")
+    }
+
+    fun transfer(newTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, oldTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>) {
+        val newCapacity = newTable.size
+        oldTable.forEach {
+            it.value.iterator().forEach {
+                findEntryList(newTable, it.key).add(it)
+            }
+        }
+    }
+
+    internal fun currentBucketSize():Int = buckets.value.size
 
     private fun indexFor(h: Int, length: Int): Int {
         return h and length - 1

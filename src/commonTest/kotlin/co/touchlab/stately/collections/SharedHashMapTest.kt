@@ -98,6 +98,26 @@ class SharedHashMapTest{
             SharedHashMap.Entry("Key: 2", MapData("Value: 2"))))
     }
 
+    @Test
+    fun testResize(){
+        val m = makeCount(10) as SharedHashMap<String, MapData>
+        assertEquals(m.currentBucketSize(), 16)
+        addCount(m, 14)
+        assertEquals(m.currentBucketSize(), 32)
+        addCount(m, 28)
+        assertEquals(m.currentBucketSize(), 64)
+        addCount(m, 60)
+        assertEquals(m.currentBucketSize(), 128)
+        addCount(m, 118)
+        assertEquals(m.currentBucketSize(), 256)
+        addCount(m, 230)
+        assertEquals(m.currentBucketSize(), 512)
+
+        for(i in 0 until 230){
+            assertEquals(m.get("Key: $i"), MapData("Value: $i"))
+        }
+    }
+
     private fun <T> checkCollection(c:Collection<T>, vararg checks:T):Boolean{
         for (check in checks) {
             if(!c.contains(check))
