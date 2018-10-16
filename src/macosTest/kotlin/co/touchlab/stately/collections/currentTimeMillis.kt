@@ -1,4 +1,4 @@
-package co.touchlab.stately
+package co.touchlab.stately.collections
 
 import kotlin.system.getTimeMillis
 
