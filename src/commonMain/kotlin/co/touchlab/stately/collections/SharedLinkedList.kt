@@ -159,6 +159,12 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         }
     }
 
+    fun addNode(element:T): Node<T> = withLock {
+        val node = Node(this, element)
+        internalAdd(node)
+        return node
+    }
+
     override fun addAll(index: Int, elements: Collection<T>): Boolean = withLock {
         return when {
             index == sizeCount.value -> internalAddAll(elements)
@@ -266,6 +272,16 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             }
 
             return true
+        }
+
+        /**
+         * Add same node to end of list.
+         */
+        fun readd(){
+            remove()
+            prev.value = null
+            next.value = null
+            list.internalAdd(this)
         }
 
         /**
