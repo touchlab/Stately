@@ -1,8 +1,9 @@
 plugins {
-    id 'kotlin-multiplatform' version '1.3.0-rc-80'
+    id 'kotlin-multiplatform' version '1.3.20-dev-863'
 }
 repositories {
     maven {     url 'http://dl.bintray.com/kotlin/kotlin-eap' }
+    maven {     url 'https://dl.bintray.com/kotlin/kotlin-dev' }
     mavenCentral()
 }
 kotlin {

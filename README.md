@@ -44,7 +44,7 @@ next will give you what was next in the list. If a node in front of you gets rem
 when calling next. Iterators do not lock the list on access. As a result, full iterations are fast, but while iterating,
 the state of the list may change.
 
-### CopyOnWriteLinkedList
+### CopyOnIterateLinkedList
 
 Iterators are stable, in the sense that whatever the state of the list when you create the iterator, that state remains
 throughout the iteration, regardless of mutations to the linked list. This is accomplished by locking the list when
@@ -55,6 +55,21 @@ In theory this is better than the other copy on write implementation as the 'cop
 but if there are large lists, when an iterator is requested, it'll lock out other access while the copy is made.
 
 The implementation is relatively simple and might have some improvement potential.
+
+### Hash Map
+
+A standard hash map architected as a simple Java-like implementation. Optionally pass in initial capacity and load factor.
+Will grow as needed. This also aggressively locks on operations, so from a performance perspective I would expect it 
+to fall pretty far behind the standard implementation, but from an order of operations perspective, it should be similar.
+
+One note. In Java 8 (not sure about kotlin native), in buckets, after length 8, a tree is used instead of a linked list.
+Worst case performance then flattens out to lgN (ish). Java 7, and our implementation, do not, so expect worst case to
+be N, but it's a hash map. That's how things go.
+
+### LRU Cache
+
+Hash map and linked list combined into an LRU cache implementation. Read the details on how outside code is notified 
+of removals.
 
 ## The Name?
 

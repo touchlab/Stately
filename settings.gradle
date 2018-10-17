@@ -9,6 +9,9 @@ pluginManagement {
 
     repositories {
         maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-dev'
+        }
+        maven {
             url 'http://dl.bintray.com/kotlin/kotlin-eap'
         }
 
