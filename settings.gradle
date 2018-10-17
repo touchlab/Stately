@@ -24,3 +24,4 @@ pluginManagement {
 }
 rootProject.name = 'Stately'
 
+enableFeaturePreview('GRADLE_METADATA')
