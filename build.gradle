@@ -19,10 +19,10 @@ kotlin {
         }*/
         fromPreset(presets.macosX64, 'macos')
 
-        configure([macos]) {
+        /*configure([macos]) {
             compilations.main.outputKinds('EXECUTABLE')
             compilations.main.entryPoint = 'sample.main'
-        }
+        }*/
     }
     sourceSets {
         commonMain {

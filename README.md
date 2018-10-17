@@ -55,3 +55,8 @@ In theory this is better than the other copy on write implementation as the 'cop
 but if there are large lists, when an iterator is requested, it'll lock out other access while the copy is made.
 
 The implementation is relatively simple and might have some improvement potential.
+
+## The Name?
+
+Kind of popped in my head, but then I remembered it was a [MST23k thing](http://www.youtube.com/watch?v=ZKO6M8heGU0&t=9m8s)
+that must have been lurking in my subconscious. Final name TBD.
