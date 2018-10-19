@@ -11,6 +11,8 @@ to support global mutable state.
 
 ## Status
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/fcda190b-7ec8-43b7-8216-6fc1be836332/branches/master/badge)](https://appcenter.ms)
+
 Super early. Still adding and testing structures.
 
 ## Collections

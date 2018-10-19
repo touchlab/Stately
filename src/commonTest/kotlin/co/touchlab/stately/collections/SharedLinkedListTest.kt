@@ -292,6 +292,26 @@ class LinkedListTest{
     }
 
     @Test
+    fun mtNodeRemove(){
+        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
+        for (i in 0 until 1000) {
+            nodeList.add(ll.addNode(ListData("a $i")))
+        }
+
+        nodeList.mpfreeze()
+
+        val ops = ThreadOps<ListData>()
+        for(i in 0 until 1000){
+            ops.exe { nodeList.get(i).remove() }
+        }
+
+        ops.run(8, ll)
+
+        assertEquals(1, ll.size)
+    }
+
+    @Test
     fun multipleThreads(){
         val ll = SharedLinkedList<ListData>().mpfreeze()
         val workers = Array(5){ createWorker()}
@@ -320,7 +340,7 @@ class LinkedListTest{
         assertEquals(5*3, ll.size)
     }
 
-//    @Test
+    @Test
     fun testBasicThreads(){
         val workers = Array(12) { createWorker() }
         val ll = SharedLinkedList<TestData>().mpfreeze()
@@ -418,106 +438,6 @@ class LinkedListTest{
 //        listA.forEach { println(it) }
 //        println("Debug Out")
     }
-
-    @Test
-    fun multipleThreadTimes() {
-        val runs = 10000
-
-        val ll = SharedLinkedList<TestData>().mpfreeze()
-
-        for (i in 0 until runs) {
-            ll.add(TestData("My run is $i"))
-        }
-
-        val workers = Array(12) { createWorker() }
-
-        val start = currentTimeMillis()
-
-        val futures = Array(workers.size) {
-            val worker = workers[it]
-            worker.runBackground {
-                for (i in 1..50) {
-                    ll.forEach {
-                        if (it.s.length == 0)
-                            throw IllegalStateException()
-                    }
-                }
-            }
-        }
-
-        val futureSet = futures.toSet()
-        var consumed = 0
-        while (consumed < futureSet.size) {
-            futureSet.forEach {
-                it.consume()
-                consumed++
-            }
-        }
-
-        workers.forEach {
-            it.requestTermination()
-        }
-
-        val time = currentTimeMillis() - start
-        println("Threaded timer: ${time}")
-    }
-/*
-    @Test
-    fun times(){
-        println("TIME OUTPUT")
-
-        println("Time for linked-100 ${runShared(SharedLinkedList<TestData>(), 100)}")
-        println("Time for linked-1000 ${runShared(SharedLinkedList<TestData>(), 1000)}")
-        println("Time for linked-10000 ${runShared(SharedLinkedList<TestData>(), 10000)}")
-        println("Time for linked-100000 ${runShared(SharedLinkedList<TestData>(), 100000)}")
-    }*/
-
-    fun runShared(l:SharedLinkedList<TestData>, runs:Int):Results{
-
-        var start = currentTimeMillis()
-
-        for(i in 0 until runs){
-            l.add(TestData("My run is $i"))
-        }
-
-        val create = currentTimeMillis() - start
-
-        start = currentTimeMillis()
-
-        l.iterator().forEach {
-            if(it.s.length == 0)
-                throw IllegalStateException()
-        }
-        /*for(i in 0 until l.size){
-            if(l.get(i).s.length == 0)
-                throw IllegalStateException()
-        }*/
-
-        val loop = currentTimeMillis() - start
-        start = currentTimeMillis()
-
-        for(i in 1..100) {
-            l.iterator().forEach {
-                if(it.s.length == 0)
-                    throw IllegalStateException()
-            }
-            /*for (i in 0 until l.size) {
-                if (l.get(i).s.length == 0)
-                    throw IllegalStateException()
-            }*/
-        }
-
-        val loopLots = currentTimeMillis() - start
-
-        /*
-        while(l.size > 0){
-            l.removeAt(0)
-        }*/
-
-        return Results(create, loop, loopLots)
-    }
-
-    data class Results(val create:Long, val loop:Long, val loopLots:Long)
 
     private fun makeTen(): SharedLinkedList<ListData> {
         val ll = SharedLinkedList<ListData>()
