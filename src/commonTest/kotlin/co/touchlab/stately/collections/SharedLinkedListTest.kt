@@ -293,22 +293,45 @@ class LinkedListTest{
 
     @Test
     fun mtNodeRemove(){
+        val LOOPS = 100_000
         val ll = SharedLinkedList<ListData>().mpfreeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
-        for (i in 0 until 1000) {
+        for (i in 0 until LOOPS) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
         nodeList.mpfreeze()
 
         val ops = ThreadOps<ListData>()
-        for(i in 0 until 1000){
+        for(i in 0 until LOOPS){
             ops.exe { nodeList.get(i).remove() }
         }
 
         ops.run(8, ll)
 
-        assertEquals(1, ll.size)
+        assertEquals(0, ll.size)
+    }
+
+    @Test
+    fun mtNodeSet(){
+        val LOOPS = 1_000
+        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
+        for (i in 0 until LOOPS) {
+            nodeList.add(ll.addNode(ListData("a $i")))
+        }
+
+        nodeList.mpfreeze()
+
+        val ops = ThreadOps<ListData>()
+        for(i in 0 until LOOPS){
+            ops.exe { nodeList.get(i).set(ListData("b $i")) }
+            ops.test { assertEquals(ll.get(i), ListData("b $i")) }
+        }
+
+        ops.run(8, ll)
+
+        assertEquals(LOOPS, ll.size)
     }
 
     @Test
