@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id 'kotlin-multiplatform' version '1.3.20-dev-863'
+    id 'kotlin-multiplatform' version '1.3.0-rc-146'//'1.3.20-dev-863'
 }
 repositories {
     maven {     url 'http://dl.bintray.com/kotlin/kotlin-eap' }
@@ -36,9 +36,12 @@ kotlin {
                 it.outputKinds('EXECUTABLE')
             }
         }*/
+//        fromPreset(presets.macosX64, 'nativeCommon')
         fromPreset(presets.macosX64, 'macos')
         fromPreset(presets.iosX64, 'iosX64')
         fromPreset(presets.iosArm64, 'iosArm64')
+//        fromPreset(presets.androidNativeArm32, 'androidNativeArm32')
+//        fromPreset(presets.androidNativeArm64, 'androidNativeArm64')
 
         /*configure([macos]) {
             compilations.main.outputKinds('EXECUTABLE')
@@ -78,22 +81,40 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-test-js'
             }
         }*/
-        /*iosMain {
-        }
-        iosTest {
-        }*/
+
         nativeCommonMain { }
         nativeCommonTest { }
 
-        configure([iosX64Main, iosArm64Main, macosMain]) {
+        appleMain {
             dependsOn nativeCommonMain
         }
 
-        configure([iosX64Test, iosArm64Test, macosTest]) {
+        appleTest {
             dependsOn nativeCommonTest
         }
-        /*macosMain {
 
+        configure([iosX64Main, iosArm64Main, macosMain]) {
+            dependsOn appleMain
+        }
+
+        configure([iosX64Test, iosArm64Test, macosTest]) {
+            dependsOn appleTest
+        }
+
+        /*otherNativeMain {
+            dependsOn nativeCommonMain
+        }
+
+        otherNativeTest {
+            dependsOn nativeCommonTest
+        }
+
+        configure([androidNativeArm32, androidNativeArm64]) {
+            dependsOn otherNativeMain
+        }
+
+        configure([androidNativeArm32, androidNativeArm64]) {
+            dependsOn otherNativeTest
         }*/
     }
 }

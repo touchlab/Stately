@@ -10,3 +10,5 @@ actual fun <T> createCopyOnWriteList(collection: Collection<T>?): MutableList<T>
 }
 
 actual fun <T> T.mpfreeze(): T= this
+actual val isNative: Boolean = false
+actual fun <T> T.isFrozen(): Boolean = false

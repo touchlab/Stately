@@ -1,6 +1,5 @@
 package co.touchlab.stately.concurrency
 
-/*
 import platform.Foundation.NSLock
 
 actual class QuickLock actual constructor() : Lock {
@@ -13,4 +12,4 @@ actual class QuickLock actual constructor() : Lock {
     actual override fun unlock() {
         lock.unlock()
     }
-}*/
+}
