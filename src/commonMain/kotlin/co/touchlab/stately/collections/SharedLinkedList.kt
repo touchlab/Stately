@@ -299,6 +299,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         /**
          * For iterators, make sure 'next' is always updated last so we don't need to lock nav.
          */
+        //TODO: need to internally indicate that we're removed and do something about it on later calls
         fun remove() = list.withLock {
             internalRemove()
         }

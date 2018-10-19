@@ -29,11 +29,7 @@ class LinkedListTest{
     fun addIndex(){
         val ll = SharedLinkedList<ListData>()
 
-        try {
-            ll.add(1, ListData("Item 1"))
-            fail("Should've failed")
-        } catch (e: Exception) {
-        }
+        assertFails { ll.add(1, ListData("Item 1")) }
 
         assertEquals(0, ll.size)
 
@@ -67,26 +63,15 @@ class LinkedListTest{
 
     @Test
     fun addAllIndex(){
-        println("trace a")
         val ll = SharedLinkedList<ListData>()
-        println("trace b")
         val elements = listOf(ListData("Item 0"), ListData("Item 1"))
-        println("trace c")
-        try {
-            ll.addAll(1, elements)
-            fail("Bad index")
-        } catch (e: Exception) {
-        }
-        println("trace d")
+
+        assertFails { ll.addAll(1, elements) }
 
         ll.addAll(0, elements)
-        println("trace e")
         checkList(ll, "Item 0", "Item 1")
-        println("trace f")
         ll.addAll(1, listOf(ListData("Item a"), ListData("Item b")))
-        println("trace g")
         checkList(ll, "Item 0", "Item a", "Item b", "Item 1")
-        println("trace h")
     }
 
     @Test
@@ -217,16 +202,16 @@ class LinkedListTest{
         val ll = makeTen()
 
         assertEquals(ll.internalNodeAt(5).nodeValue.s, "Item 5")
-        try {
+
+        assertFails {
             ll.internalNodeAt(10)
-            fail("Should've been IllegalArgumentException")
-        }catch (e:IllegalArgumentException){}
+        }
 
         val empty = SharedLinkedList<ListData>()
-        try {
+
+        assertFails {
             empty.internalNodeAt(0)
-            fail("Should've been IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {}
+        }
     }
 
     @Test
@@ -263,11 +248,8 @@ class LinkedListTest{
         ll.internalNodeAt(0).remove()
         assertEquals(8, ll.size)
 
-        try {
+        assertFails {
             ll.internalNodeAt(8).remove()
-            fail("Shouldn't have this many values")
-        } catch (e: Exception) {
-
         }
 
         val node = ll.internalNodeAt(7)
@@ -289,6 +271,46 @@ class LinkedListTest{
         ll.add(ListData("Asdf 0"))
 
         ll.internalNodeAt(0).add(ListData("Asdf -1"))
+    }
+
+    @Test
+    fun mtNodeAdd(){
+        val LOOPS = 1_000
+        val DOOPS = 100
+        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
+        for (i in 0 until LOOPS) {
+            nodeList.add(ll.addNode(ListData("a $i")))
+        }
+
+        nodeList.mpfreeze()
+
+        val ops = ThreadOps<ListData>()
+        for(i in 0 until LOOPS){
+            ops.exe {
+                val node = nodeList.get(i)
+                for(j in 0 until DOOPS){
+                    node.add(ListData("a $i sub $j"))
+                }
+                node.remove()
+            }
+        }
+
+        ops.run(8, ll)
+
+        assertEquals(DOOPS * LOOPS, ll.size)
+
+        var loopCount = 0
+        var doopCount = 0
+        ll.iterator().forEach {
+            assertEquals(ListData("a $loopCount sub $doopCount"), it)
+
+            doopCount++
+            if(doopCount == DOOPS){
+                doopCount = 0
+                loopCount++
+            }
+        }
     }
 
     @Test
@@ -382,7 +404,6 @@ class LinkedListTest{
                     countDown--
                     if(countDown >= 0 && countDown % 10 == 0)
                     {
-                        println("Removing: worker: $valCount, countDown: $countDown")
                         it.remove()
                     }
                 }
