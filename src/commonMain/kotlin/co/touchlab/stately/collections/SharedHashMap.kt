@@ -5,9 +5,12 @@ import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.QuickLock
 
+/**
+ *
+ */
 class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.toFloat()):MutableMap<K, V>{
 
-    data class Entry<K, V>(private val k:K, private val v:V):MutableMap.MutableEntry<K, V> {
+    internal data class Entry<K, V>(private val k:K, private val v:V):MutableMap.MutableEntry<K, V> {
         override val key: K
             get() = k
         override val value: V
@@ -19,9 +22,9 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
     }
 
     private var lock: Lock = QuickLock()
-    var threshold:AtomicInt
-    val atomSize = AtomicInt(0)
-    val buckets:AtomicReference<Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>>
+    private var threshold:AtomicInt
+    private val atomSize = AtomicInt(0)
+    private val buckets:AtomicReference<Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>>
 
     internal inline fun <T> withLock(proc: () -> T): T {
         lock.lock()
@@ -76,7 +79,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
             return NotReallyMutableSet(result)
         }
 
-    class NotReallyMutableSet<T>(private val delegate:MutableCollection<T>):MutableSet<T>{
+    private class NotReallyMutableSet<T>(private val delegate:MutableCollection<T>):MutableSet<T>{
         override fun add(element: T): Boolean {
             throw UnsupportedOperationException()
         }
@@ -189,18 +192,15 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         return result
     }
 
-    fun resize(newCapacity:Int){
+    private fun resize(newCapacity:Int){
         val oldTable = buckets.value
         val newTable = makeBuckets(newCapacity)
         transfer(newTable, oldTable)
         buckets.value = newTable
         threshold.value = (newCapacity.toFloat() * loadFactor).toInt()
-
-        println("New capacity: ${newCapacity}")
-        println("New threshold: ${threshold.value}")
     }
 
-    fun transfer(newTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, oldTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>) {
+    private fun transfer(newTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, oldTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>) {
         oldTable.forEach {
             it.value.iterator().forEach {
                 findEntryList(newTable, it.key).add(it)
@@ -214,7 +214,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         return h and length - 1
     }
 
-    fun rehash(initHash: Int): Int {
+    internal fun rehash(initHash: Int): Int {
         var h = initHash
         // This function ensures that hashCodes that differ only by
         // constant multiples at each bit position have a bounded

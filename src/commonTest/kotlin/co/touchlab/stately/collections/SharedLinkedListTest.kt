@@ -320,6 +320,105 @@ class LinkedListTest{
         assertEquals(5*3, ll.size)
     }
 
+//    @Test
+    fun testBasicThreads(){
+        val workers = Array(12) { createWorker() }
+        val ll = SharedLinkedList<TestData>().mpfreeze()
+
+        var count = 0
+
+        workers.forEach {
+            val valCount = count++
+            it.runBackground {
+                for(i in 0 until 1000){
+                    ll.add(TestData("c: $valCount, i: $i"))
+                }
+
+                var countDown = 100
+                ll.nodeIterator().forEach {
+                    countDown--
+                    if(countDown >= 0 && countDown % 10 == 0)
+                    {
+                        println("Removing: worker: $valCount, countDown: $countDown")
+                        it.remove()
+                    }
+                }
+            }
+        }
+
+        workers.forEach { it.requestTermination() }
+
+        assertEquals(11880, ll.size)
+    }
+
+    @Test
+    fun testDualList(){
+        val operations = ArrayList<(Int, SharedLinkedList<MapData>)->Unit>()
+        for(i in 0 until 1000){
+            operations.add { workerId, list -> list.add(MapData("Worker: $workerId, Index: $i"))}
+        }
+
+        operations.mpfreeze()
+
+        val listA = SharedLinkedList<MapData>().mpfreeze()
+        val listB = SharedLinkedList<MapData>().mpfreeze()
+
+        val workers = Array(8){
+            MPWorker()
+        }
+
+        var count = 0
+        val insertFutures = ArrayList<MPFuture<Unit>>()
+
+        workers.forEach {
+            val workerCount = count++
+            insertFutures.add(it.runBackground {
+                operations.forEach {
+                    it(workerCount, listA)
+                }
+            })
+        }
+
+        count = 0
+        workers.forEach {
+            val workerCount = count++
+            insertFutures.add(it.runBackground {
+                operations.forEach {
+                    it(workerCount, listB)
+                }
+            })
+        }
+
+        insertFutures.forEach { it.consume() }
+
+        assertEquals(listA.size, listB.size)
+
+        val removeFutures = ArrayList<MPFuture<Unit>>()
+        count = 0
+        workers.forEach {
+            val workerCount = count++
+            removeFutures.add(it.runBackground {
+                listA.nodeIterator().forEach {
+                    if(it.nodeValue.s.startsWith("Worker: $workerCount"))
+                        it.remove()
+                }
+                listB.nodeIterator().forEach {
+                    if(it.nodeValue.s.startsWith("Worker: $workerCount"))
+                        it.remove()
+                }
+            })
+        }
+
+        removeFutures.forEach { it.consume() }
+        workers.forEach { it.requestTermination() }
+
+        assertEquals(listA.size, 0)
+        assertEquals(listB.size, 0)
+//        println("Debug Out")
+//        listA.forEach { println(it) }
+//        println("Debug Out")
+    }
+
     @Test
     fun multipleThreadTimes() {
         val runs = 10000

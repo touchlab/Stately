@@ -15,7 +15,7 @@ actual class MPWorker actual constructor(){
     }
 
     actual fun requestTermination() {
-        worker.requestTermination()
+        worker.requestTermination().result
     }
 }
 

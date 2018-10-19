@@ -37,6 +37,8 @@ kotlin {
             }
         }*/
         fromPreset(presets.macosX64, 'macos')
+        fromPreset(presets.iosX64, 'iosX64')
+        fromPreset(presets.iosArm64, 'iosArm64')
 
         /*configure([macos]) {
             compilations.main.outputKinds('EXECUTABLE')
@@ -80,11 +82,19 @@ kotlin {
         }
         iosTest {
         }*/
-        macosMain {
-            /*dependencies {
-                implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-native:0.30.1-eap13'
-            }*/
+        nativeCommonMain { }
+        nativeCommonTest { }
+
+        configure([iosX64Main, iosArm64Main, macosMain]) {
+            dependsOn nativeCommonMain
         }
+
+        configure([iosX64Test, iosArm64Test, macosTest]) {
+            dependsOn nativeCommonTest
+        }
+        /*macosMain {
+
+        }*/
     }
 }
 

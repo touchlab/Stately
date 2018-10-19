@@ -154,7 +154,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             if (index == sizeCount.value) {
                 internalAdd(Node(this, element))
             } else {
-                internalNodeAt(index).add(element)
+                internalNodeAt(index).internalAdd(element)
             }
         }
     }
@@ -172,7 +172,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             else -> {
                 val node = internalNodeAt(index)
                 elements.forEach {
-                    node.add(it)
+                    node.internalAdd(it)
                 }
                 true
             }
@@ -207,14 +207,14 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
 
     override fun removeAt(index: Int): T = withLock {
         val node = internalNodeAt(index)
-        node.remove()
+        node.internalRemove()
         node.nodeValue
     }
 
     override fun set(index: Int, element: T): T = withLock {
         val node = internalNodeAt(index)
         val old = node.nodeValue
-        node.set(element)
+        node.internalSet(element)
 
         return old
     }
@@ -224,7 +224,11 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         val prev = AtomicReference<Node<T>?>(null)
         val next = AtomicReference<Node<T>?>(null)
 
-        fun set(t: T) {
+        fun set(t: T) = list.withLock {
+            internalSet(t)
+        }
+
+        internal fun internalSet(t: T){
             val ins = Node(list, t)
 
             ins.mpfreeze()
@@ -251,7 +255,11 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         /**
          * For iterators, make sure 'next' is always updated last so we don't need to lock nav.
          */
-        fun add(t: T): Boolean {
+        fun add(t: T): Boolean = list.withLock {
+            internalAdd(t)
+        }
+
+        internal fun internalAdd(t: T): Boolean {
             val ins = Node(list, t)
 
             ins.mpfreeze()
@@ -277,8 +285,12 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         /**
          * Add same node to end of list.
          */
-        fun readd(){
-            remove()
+        fun readd() = list.withLock{
+            internalReadd()
+        }
+
+        internal fun internalReadd(){
+            internalRemove()
             prev.value = null
             next.value = null
             list.internalAdd(this)
@@ -287,7 +299,11 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         /**
          * For iterators, make sure 'next' is always updated last so we don't need to lock nav.
          */
-        fun remove() {
+        fun remove() = list.withLock {
+            internalRemove()
+        }
+
+        internal fun internalRemove(){
             val prevNode = prev.value
             val nextNode = next.value
 
@@ -378,7 +394,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         return if (node == null) {
             false
         } else {
-            node.remove()
+            node.internalRemove()
             true
         }
     }

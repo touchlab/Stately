@@ -2,6 +2,7 @@ package co.touchlab.stately.collections
 
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 
 actual class MPWorker actual constructor(){
     private val executor = Executors.newSingleThreadExecutor()
@@ -11,6 +12,7 @@ actual class MPWorker actual constructor(){
 
     actual fun requestTermination() {
         executor.shutdown()
+        executor.awaitTermination(30, TimeUnit.SECONDS)
     }
 }
 

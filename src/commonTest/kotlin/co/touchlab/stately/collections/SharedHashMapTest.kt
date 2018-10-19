@@ -1,5 +1,7 @@
 package co.touchlab.stately.collections
 
+import co.touchlab.stately.Random
+import co.touchlab.stately.concurrency.AtomicInt
 import kotlin.test.*
 
 class SharedHashMapTest{
@@ -99,6 +101,63 @@ class SharedHashMapTest{
     }
 
     @Test
+    fun rehash(){
+        val m = SharedHashMap<String, MapData>()
+
+        val random: Random = Random()
+        for(i in 0 until 100_000) {
+            val rand = random.nextInt()
+            assertEquals(m.rehash(rand), m.rehash(rand))
+        }
+    }
+
+    @Test
+    fun testBasicThreads(){
+        val WORKERS = 10
+        val LOOP_INSERT = 200
+        val LOOP_REMOVE = 15
+
+        val workers = Array(WORKERS){
+            MPWorker()
+        }
+
+        val m = SharedHashMap<String, MapData>().mpfreeze()
+
+        val count = AtomicInt(0).mpfreeze()
+
+        val start = currentTimeMillis()
+
+        workers.forEach {
+            val mycount = count.value
+
+            it.runBackground {
+                for(i in 0 until LOOP_INSERT)
+                {
+                    val key = "W:${mycount} I:$i"
+                    m.put(key, MapData("W2:${mycount} I2:$i"))
+                }
+                for(i in 0 until LOOP_REMOVE)
+                {
+                    m.remove("W:${mycount} I:${i*10}")
+                }
+            }
+
+            count.increment()
+        }
+        workers.forEach { it.requestTermination() }
+
+        println("basic threads time: ${currentTimeMillis() - start}")
+        val size = (LOOP_INSERT - LOOP_REMOVE) * WORKERS
+        assertEquals(m.size, size)
+        assertEquals(m.entries.size, size)
+        assertEquals(m.keys.size, size)
+        m.clear()
+        assertEquals(m.size, 0)
+        assertEquals(m.entries.size, 0)
+        assertEquals(m.keys.size, 0)
+    }
+
+    @Test
     fun testResize(){
         val m = makeCount(10) as SharedHashMap<String, MapData>
         assertEquals(m.currentBucketSize(), 16)
@@ -129,6 +188,36 @@ class SharedHashMapTest{
         checkImmutableSet(m.keys, 15, 15, "Asdf")
         checkImmutableSet(m.values, 15, 5, MapData("Qwert"))
         checkImmutableSet(m.entries, 15, 15, SharedHashMap.Entry("Foo", MapData("Bar")))
+    }
+
+    @Test
+    fun testBasicTimes(){
+        val start = currentTimeMillis()
+        val size = 150_000
+        val l = Array(size){ i->
+                Pair("Key: $i", MapData("Value: $i")).mpfreeze()
+        }
+
+        val keys = Array(size){"Key: $it".mpfreeze()}
+
+        println("TIMETRACE Time setup: ${currentTimeMillis() - start}")
+
+        println("TIMETRACE Time shared: "+ runMutableMapTimes(l, SharedHashMap(keys.size), keys))
+        println("TIMETRACE Time reg: "+ runMutableMapTimes(l, HashMap(keys.size), keys))
+    }
+
+    fun runMutableMapTimes(l:Array<Pair<String, MapData>>, m:MutableMap<String, MapData>, keys:Array<String>):Long{
+        val start = currentTimeMillis()
+
+        l.forEach {
+            m.put(it.first, it.second)
+        }
+
+        keys.forEach {
+            m.get(it)
+        }
+
+        return currentTimeMillis() - start
     }
 
     private fun <T> checkImmutableSet(c:MutableCollection<T>, total:Int, uniques:Int, sample:T){
