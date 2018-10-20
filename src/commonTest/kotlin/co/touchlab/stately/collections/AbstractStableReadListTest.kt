@@ -3,17 +3,22 @@ package co.touchlab.stately.collections
 import kotlin.test.*
 
 class CopyOnWriteListTest<T>():AbstractStableReadListTest<T>(){
+    override val supportsSublist: Boolean = true
+
     override fun <T> createList(collection: Collection<T>?): MutableList<T> = createCopyOnWriteList()
 }
 
 class CopyOnWriteLinkedListTest<T>():AbstractStableReadListTest<T>(){
+    override val supportsSublist: Boolean = false
+
     override fun <T> createList(collection: Collection<T>?): MutableList<T> = CopyOnWriteLinkedList()
 }
 
 abstract class AbstractStableReadListTest<T> {
 
     abstract fun <T> createList(collection:Collection<T>? = null):MutableList<T>
-    
+    abstract val supportsSublist:Boolean
+
     @Test
     fun testStableReads() {
         val list = createList<ListData>()
@@ -360,15 +365,20 @@ abstract class AbstractStableReadListTest<T> {
             list.add(ListData("a $i"))
         }
 
-        val sub = list.subList(10, 20)
+        if(supportsSublist) {
+            val sub = list.subList(10, 20)
 
-        val checkit:(MutableList<ListData>)->Unit = {list ->
-            for(i in 10 until 20){
-                assertEquals(ListData("a $i"), list.get(i - 10))
+            val checkit: (MutableList<ListData>) -> Unit = { list ->
+                for (i in 10 until 20) {
+                    assertEquals(ListData("a $i"), list.get(i - 10))
+                }
             }
+
+            checkit(sub)
+        }else{
+            assertFails { list.subList(10, 20) }
         }
 
-        checkit(sub)
         //This will throw ConcurrentModificationException on Java, but not so in Kotlin. Hmm. Doesn't feel like a huge deal.
 //        list.set(12, ListData("b 12"))
 //        checkit(sub)

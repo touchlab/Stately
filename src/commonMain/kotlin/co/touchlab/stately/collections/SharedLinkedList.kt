@@ -55,11 +55,11 @@ class CopyOnWriteLinkedList<T>():AbstractSharedLinkedList<T>(){
         updated.value = 1
     }
 
-    override fun iterator(): MutableIterator<T> = withLock { checkUpdate() }.iterator()
+    override fun iterator(): MutableIterator<T> = LocalIterator(withLock { checkUpdate() }.iterator())
 
-    override fun listIterator(): MutableListIterator<T> = withLock { checkUpdate() }.listIterator()
+    override fun listIterator(): MutableListIterator<T> = LocalListIterator(withLock { checkUpdate() }.listIterator())
 
-    override fun listIterator(index: Int): MutableListIterator<T>  = withLock { checkUpdate() }.listIterator(index)
+    override fun listIterator(index: Int): MutableListIterator<T>  = LocalListIterator(withLock { checkUpdate() }.listIterator(index))
 
     private fun checkUpdate():MutableList<T>{
         if(updated.value != 0)
@@ -82,6 +82,42 @@ class CopyOnWriteLinkedList<T>():AbstractSharedLinkedList<T>(){
     private val updated = AtomicInt(0)
     private val lastList = AtomicReference(mutableListOf<T>().mpfreeze())
 
+}
+
+private open class LocalIterator<T>(private val delegate:MutableIterator<T>):MutableIterator<T>{
+    override fun hasNext(): Boolean = delegate.hasNext()
+
+    override fun next(): T = delegate.next()
+
+    override fun remove() {
+        throw UnsupportedOperationException("Can't mutate list from iterator")
+    }
+}
+
+private class LocalListIterator<T>(private val delegate:MutableListIterator<T>):MutableListIterator<T> {
+    override fun hasNext(): Boolean = delegate.hasNext()
+
+    override fun next(): T = delegate.next()
+
+    override fun remove() {
+        throw UnsupportedOperationException("Can't mutate list from iterator")
+    }
+
+    override fun hasPrevious(): Boolean = delegate.hasPrevious()
+
+    override fun nextIndex(): Int = delegate.nextIndex()
+
+    override fun previous(): T = delegate.previous()
+
+    override fun previousIndex(): Int = delegate.previousIndex()
+
+    override fun add(element: T) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun set(element: T) {
+        throw UnsupportedOperationException()
+    }
 }
 
 abstract class AbstractSharedLinkedList<T>():MutableList<T> {
