@@ -13,37 +13,42 @@ fun createWorker():MPWorker = MPWorker()
 
 expect fun sleep(time:Long)
 
-class ThreadOps<T>(){
-    private val exes = mutableListOf<(MutableList<T>)->Unit>()
-    private val tests = mutableListOf<(MutableList<T>)->Unit>()
+class ThreadOps<C>(val producer:()->C){
+    private val exes = mutableListOf<(C)->Unit>()
+    private val tests = mutableListOf<(C)->Unit>()
     var lastRunTime = 0L
 
-    fun exe(proc:(MutableList<T>)->Unit){
+    fun exe(proc:(C)->Unit){
         exes.add(proc)
     }
 
-    fun test(proc:(MutableList<T>)->Unit){
+    fun test(proc:(C)->Unit){
         tests.add(proc)
     }
+    
+    fun run(threads:Int, collection:C = producer(), randomize:Boolean = false):C{
+        
+        if(randomize){
+            exes.shuffle()
+            tests.shuffle()
+        }
 
-    fun run(threads:Int, list:MutableList<T> = createCopyOnWriteList<T>().mpfreeze()):MutableList<T>{
         exes.mpfreeze()
 
         val start = currentTimeMillis()
 
         val workers= Array(threads){MPWorker()}
         for(i in 0 until exes.size){
-            val ex = exes[i](list)
+            val ex = exes[i](collection)
             workers[i % workers.size]
                 .runBackground { ex }
         }
         workers.forEach { it.requestTermination() }
 
-        tests.forEach { it(list) }
-
+        tests.forEach { it(collection) }
 
         lastRunTime = currentTimeMillis() - start
 
-        return list
+        return collection
     }
 }

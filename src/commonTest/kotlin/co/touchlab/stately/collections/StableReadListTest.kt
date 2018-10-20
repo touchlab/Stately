@@ -2,6 +2,14 @@ package co.touchlab.stately.collections
 
 import kotlin.test.*
 
+/*
+This is a test for both forms of the "stable read" list: CopyOnWriteList and CopyOnIterateLinkedList.
+The primary use of either is to have stable iterators. After iterate is called, changes to the underlying list
+do not affect the iterator.
+
+These implementations should function identically except for 'subList'. See test below.
+ */
+
 class CopyOnWriteListTest<T>():AbstractStableReadListTest<T>(){
     override val supportsSublist: Boolean = true
 
@@ -11,7 +19,7 @@ class CopyOnWriteListTest<T>():AbstractStableReadListTest<T>(){
 class CopyOnWriteLinkedListTest<T>():AbstractStableReadListTest<T>(){
     override val supportsSublist: Boolean = false
 
-    override fun <T> createList(collection: Collection<T>?): MutableList<T> = CopyOnWriteLinkedList()
+    override fun <T> createList(collection: Collection<T>?): MutableList<T> = CopyOnIterateLinkedList()
 }
 
 abstract class AbstractStableReadListTest<T> {
@@ -135,12 +143,14 @@ abstract class AbstractStableReadListTest<T> {
         assertEquals(-1, list.lastIndexOf(ListData("a 21")))
     }
 
+    fun createThreadOps() = ThreadOps {mutableListOf<ListData>()}
+
     @Test
     fun mtAdd() {
 
         val LOOPS = 500
 
-        val tops = ThreadOps<ListData>()
+        val tops = createThreadOps()
 
         for (i in 0 until LOOPS) {
             val key = "Add: $i"
@@ -158,7 +168,7 @@ abstract class AbstractStableReadListTest<T> {
     fun mtAddAt(){
         val LOOPS = 100
 
-        val tops = ThreadOps<ListData>()
+        val tops = createThreadOps()
 
         for (i in 0 until LOOPS) {
             val key = "Add: $i"
@@ -182,7 +192,7 @@ abstract class AbstractStableReadListTest<T> {
     fun mtAddAll(){
         val LOOPS = 100
 
-        val tops = ThreadOps<ListData>()
+        val tops = createThreadOps()
 
         for (i in 0 until LOOPS) {
             val key = "Add: $i"
@@ -202,7 +212,7 @@ abstract class AbstractStableReadListTest<T> {
     fun mtAddAllAt(){
         val LOOPS = 100
 
-        val tops = ThreadOps<ListData>()
+        val tops = createThreadOps()
 
         for (i in 0 until LOOPS) {
             val key = "Add: $i"
@@ -251,7 +261,7 @@ abstract class AbstractStableReadListTest<T> {
 
         val iter = list.iterator()
 
-        val tops = ThreadOps<ListData>()
+        val tops = createThreadOps()
 
         for (i in 0 until LOOPS) {
             val key = "Add: $i"
@@ -339,7 +349,7 @@ abstract class AbstractStableReadListTest<T> {
             list.add(ListData("a $i"))
         }
 
-        val ops = ThreadOps<ListData>()
+        val ops = createThreadOps()
         for(i in 0 until 100){
             ops.exe { it.set(i, ListData("b $i")) }
             ops.test { assertEquals(it.get(i), ListData("b $i")) }

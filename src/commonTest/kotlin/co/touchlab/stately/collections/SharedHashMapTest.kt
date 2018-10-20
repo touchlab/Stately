@@ -104,11 +104,64 @@ class SharedHashMapTest{
     fun rehash(){
         val m = SharedHashMap<String, MapData>()
 
-        val random: Random = Random()
+        val random = Random()
         for(i in 0 until 100_000) {
             val rand = random.nextInt()
             assertEquals(m.rehash(rand), m.rehash(rand))
         }
+    }
+
+    @Test
+    fun initFrozen(){
+        assertTrue(SharedHashMap<String, MapData>().isNativeFrozen())
+    }
+
+    @Test
+    fun mtAddRemove(){
+        val LOOPS = 10_000
+        val ops = ThreadOps {SharedHashMap<String, MapData>()}
+        val removeOps = ThreadOps {SharedHashMap<String, MapData>()}
+        val m = SharedHashMap<String, MapData>()
+        for(i in 0 until LOOPS){
+            val key = "key $i"
+            val value = "val $i"
+            ops.exe { m.put(key, MapData(value)) }
+            ops.test { assertTrue { m.containsKey(key) } }
+            removeOps.exe { m.remove(key) }
+            removeOps.test { assertFalse { m.containsKey(key) } }
+        }
+
+        ops.run(threads = 8, randomize = true, collection = m)
+        removeOps.run(threads = 8, randomize = true, collection = m)
+        assertEquals(0, m.size)
+    }
+
+    /**
+     * Verify that bad hash generally works. Will be bad performance, but should function.
+     */
+    @Test
+    fun badHash(){
+        val ops = ThreadOps {SharedHashMap<BadHashKey, MapData>()}
+        val removeOps = ThreadOps {SharedHashMap<BadHashKey, MapData>()}
+
+        val LOOPS = 2_000
+        for(i in 0 until LOOPS){
+            val key = "key $i"
+            ops.exe { it.put(BadHashKey(key), MapData("val $i")) }
+            ops.test { assertTrue { it.containsKey(BadHashKey(key)) } }
+            removeOps.exe { it.remove(BadHashKey(key)) }
+            removeOps.test { assertFalse { it.containsKey(BadHashKey(key)) } }
+        }
+
+        val map = ops.run(threads = 8, randomize = true)
+        assertEquals(LOOPS, map.size)
+        removeOps.run(threads = 8, randomize = true, collection = map)
+        assertEquals(0, map.size)
+    }
+
+    class BadHashKey(private val s:String){
+        override fun hashCode(): Int = 2
+        override fun equals(other: Any?): Boolean = other != null && other is BadHashKey && other.s == s
     }
 
     @Test
@@ -191,6 +244,33 @@ class SharedHashMapTest{
     }
 
     @Test
+    fun testStableSets(){
+        val m = SharedHashMap<String, MapData>()
+        for(i in 0 until 15){
+            val thediv = i / 3
+            m.put("Key: $i", MapData("Value: $thediv"))
+        }
+
+        val keys = m.keys
+        val values = m.values
+        val entries = m.entries
+
+        assertEquals(15, keys.size)
+        assertEquals(15, values.size)
+        assertEquals(15, entries.size)
+
+        for(i in 15 until 20){
+            val thediv = i / 3
+            m.put("Key: $i", MapData("Value: $thediv"))
+        }
+
+        assertEquals(15, keys.size)
+        assertEquals(15, values.size)
+        assertEquals(15, entries.size)
+        assertEquals(20, m.size)
+    }
+
+    @Test
     fun testBasicTimes(){
         val start = currentTimeMillis()
         val size = 150_000
@@ -225,20 +305,12 @@ class SharedHashMapTest{
         val checkSet = HashSet<T>()
         c.forEach { checkSet.add(it) }
         assertEquals(checkSet.size, uniques)
-        unfail { c.add(sample) }
-        unfail { c.addAll(listOf(sample)) }
-        unfail { c.clear() }
-        unfail { c.remove(sample) }
-        unfail { c.removeAll(listOf(sample)) }
-        unfail { c.retainAll(listOf(sample)) }
-    }
-
-    private fun unfail(proc:()->Unit){
-        try {
-            proc()
-            fail("Call should have failed")
-        } catch (e: Exception) {
-        }
+        assertFails { c.add(sample) }
+        assertFails { c.addAll(listOf(sample)) }
+        assertFails { c.clear() }
+        assertFails { c.remove(sample) }
+        assertFails { c.removeAll(listOf(sample)) }
+        assertFails { c.retainAll(listOf(sample)) }
     }
 
     private fun <T> checkCollection(c:Collection<T>, vararg checks:T):Boolean{

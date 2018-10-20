@@ -50,7 +50,7 @@ class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
  * this is better than the simpler CopyOnWriteList, because EVERY update will lock and save, but something
  * to keep in mind. If updating the list while you're iterating isn't a huge problem, use SharedLinkedList
  */
-class CopyOnWriteLinkedList<T>():AbstractSharedLinkedList<T>(){
+class CopyOnIterateLinkedList<T>():AbstractSharedLinkedList<T>(){
     override fun updated() {
         updated.value = 1
     }
@@ -250,12 +250,14 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
 
         val prev = AtomicReference<Node<T>?>(null)
         val next = AtomicReference<Node<T>?>(null)
+        private val removed = AtomicInt(0)
 
         fun set(t: T) = list.withLock {
             internalSet(t)
         }
 
         internal fun internalSet(t: T){
+            checkNotRemoved()
             val ins = Node(list, t)
 
             ins.mpfreeze()
@@ -277,6 +279,8 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             } else {
                 prevNode.next.value = ins
             }
+
+            removed.value = 1
         }
 
         /**
@@ -287,6 +291,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         }
 
         internal fun internalAdd(t: T): Boolean {
+            checkNotRemoved()
             val ins = Node(list, t)
 
             ins.mpfreeze()
@@ -309,6 +314,11 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             return true
         }
 
+        internal fun checkNotRemoved() {
+            if (removed.value != 0)
+                throw IllegalStateException("Node is removed $this")
+        }
+
         /**
          * Add same node to end of list.
          */
@@ -317,7 +327,8 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         }
 
         internal fun internalReadd(){
-            internalRemove()
+            checkNotRemoved()
+            internalRemove(false)
             prev.value = null
             next.value = null
             list.internalAdd(this)
@@ -331,7 +342,15 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             internalRemove()
         }
 
-        internal fun internalRemove(){
+        val isRemoved:Boolean
+            get() = removed.value != 0
+
+        internal fun internalRemove(permanent:Boolean = true){
+            checkNotRemoved()
+
+            if(permanent)
+                removed.value = 1
+
             val prevNode = prev.value
             val nextNode = next.value
 
@@ -387,6 +406,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
      * to add to list.
      */
     internal fun internalAdd(node: Node<T>): Boolean {
+        node.checkNotRemoved()
         node.mpfreeze()
         if (sizeCount.value == 0) {
             head.value = node

@@ -195,6 +195,50 @@ class SharedLruCacheTest{
         checkExists(sc)
     }
 
+    /*@Test
+    fun initFrozen(){
+        val sc = SharedLruCache<String, MapData>(4)
+        assertTrue(sc.isNativeFrozen())
+    }*/
+
+    @Test
+    fun stress(){
+        val MAX_CACHE_SIZE = 4
+        val sc = SharedLruCache<String, MapData>(MAX_CACHE_SIZE).mpfreeze()
+
+        sc.put("key 1", MapData("a"))
+        sc.put("key 2", MapData("a"))
+        sc.put("key 3", MapData("a"))
+        sc.put("key 4", MapData("a"))
+
+        val stopTime = currentTimeMillis() + (15*1000)
+
+        val worker = MPWorker()
+        worker.runBackground {
+            var count = 5
+            while (currentTimeMillis() < stopTime){
+                sc.put("key $count", MapData("val $count"))
+                count++
+            }
+        }
+
+        worker.runBackground {
+            var count = 500_000
+            while (currentTimeMillis() < stopTime){
+                sc.put("key $count", MapData("val $count"))
+                count++
+            }
+        }
+
+        while (currentTimeMillis() < stopTime){
+            if(sc.size != 4)
+            {
+                sc.printDebug()
+            }
+            assertEquals(4, sc.size)
+        }
+    }
+
     private fun checkExists(lru:LruCache<String, MapData>, vararg keys:String){
         keys.forEach { assertTrue { lru.exists(it) } }
         assertEquals(lru.size, keys.size)

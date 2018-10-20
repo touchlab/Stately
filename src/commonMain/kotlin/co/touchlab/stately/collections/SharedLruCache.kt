@@ -25,6 +25,10 @@ import co.touchlab.stately.concurrency.QuickLock
  */
 class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(LruEntry<K, V>) -> Unit = {}):LruCache<K, V>{
 
+    init {
+//        mpfreeze()
+    }
+
     /**
      * Stores value at key.
      *
@@ -39,7 +43,7 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
      */
     override fun put(key: K, value: V): V? {
         var resultValue:V? = null
-        val removeCollection: MutableList<LruEntry<K, V>> = ArrayList<LruEntry<K, V>>()
+        val removeCollection: MutableList<LruEntry<K, V>> = ArrayList()
 
         withLock {
             val cacheEntry = cacheMap.get(key)
@@ -149,10 +153,10 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
     /**
      * Well...
      */
-    override fun exists(key: K): Boolean = cacheMap.get(key) != null
+    override fun exists(key: K): Boolean = withLock { cacheMap.get(key) != null }
 
     override val size: Int
-        get() = cacheMap.size
+        get() = withLock { cacheMap.size }
 
     data class CacheEntry<K, V>(val v:V, val node:AbstractSharedLinkedList.Node<K>)
 
@@ -180,6 +184,17 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
             return proc()
         } finally {
             lock.unlock()
+        }
+    }
+
+    internal fun printDebug(){
+        println("CACHELIST")
+        cacheList.forEach {
+            println(it)
+        }
+        println("CACHEMAP")
+        cacheMap.entries.forEach {
+            println(it)
         }
     }
 }

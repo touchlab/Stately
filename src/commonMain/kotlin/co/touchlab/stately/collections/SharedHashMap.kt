@@ -42,6 +42,8 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
 
         threshold = AtomicInt((capacity.toFloat() * loadFactor).toInt())
         buckets = AtomicReference(makeBuckets(capacity))
+
+        mpfreeze()
     }
 
     private fun makeBuckets(capacity: Int): Array<AtomicReference<SharedLinkedList<Entry<K, V>>>> {
