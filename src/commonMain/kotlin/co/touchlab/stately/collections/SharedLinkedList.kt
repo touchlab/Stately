@@ -28,24 +28,6 @@ class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
 
     fun nodeIterator():MutableIterator<Node<T>> = NodeIterator<T>(this)
 
-    class LLIterator<T>(ll: SharedLinkedList<T>) : MutableIterator<T> {
-        override fun remove() {
-            throw UnsupportedOperationException()
-        }
-
-        var currentNode = ll.head.value
-        override fun hasNext(): Boolean = currentNode?.nodeValue != null
-
-        override fun next(): T {
-            val retval: T
-            retval = currentNode?.nodeValue!!
-            currentNode = currentNode?.next?.value
-            return retval
-        }
-
-
-    }
-
     class NodeIterator<T>(ll: SharedLinkedList<T>) : MutableIterator<Node<T>> {
         override fun remove() {
             throw UnsupportedOperationException()
@@ -73,22 +55,13 @@ class CopyOnWriteLinkedList<T>():AbstractSharedLinkedList<T>(){
         updated.value = 1
     }
 
-    override fun iterator(): MutableIterator<T> = withLock{
-        checkUpdate()
-        lastList.value.iterator()
-    }
+    override fun iterator(): MutableIterator<T> = withLock { checkUpdate() }.iterator()
 
-    override fun listIterator(): MutableListIterator<T> = withLock{
-        checkUpdate()
-        lastList.value.listIterator()
-    }
+    override fun listIterator(): MutableListIterator<T> = withLock { checkUpdate() }.listIterator()
 
-    override fun listIterator(index: Int): MutableListIterator<T> = withLock{
-        checkUpdate()
-        lastList.value.listIterator(index)
-    }
+    override fun listIterator(index: Int): MutableListIterator<T>  = withLock { checkUpdate() }.listIterator(index)
 
-    private fun checkUpdate(){
+    private fun checkUpdate():MutableList<T>{
         if(updated.value != 0)
         {
             val newList = ArrayList<T>(sizeCount.value)
@@ -100,20 +73,38 @@ class CopyOnWriteLinkedList<T>():AbstractSharedLinkedList<T>(){
                 nodeCount++
             }
 
+            updated.value = 0
             lastList.value = newList.mpfreeze()
         }
+        return lastList.value
     }
 
     private val updated = AtomicInt(0)
-    private val lastList = AtomicReference<MutableList<T>>(mutableListOf())
+    private val lastList = AtomicReference(mutableListOf<T>().mpfreeze())
 
 }
 
 abstract class AbstractSharedLinkedList<T>():MutableList<T> {
+    class LLIterator<T>(ll: AbstractSharedLinkedList<T>) : MutableIterator<T> {
+        override fun remove() {
+            throw UnsupportedOperationException()
+        }
+
+        var currentNode = ll.head.value
+        override fun hasNext(): Boolean = currentNode?.nodeValue != null
+
+        override fun next(): T {
+            val retval: T
+            retval = currentNode?.nodeValue!!
+            currentNode = currentNode?.next?.value
+            return retval
+        }
+    }
+
     override fun lastIndexOf(element: T): Int = withLock {
         var lastIndex = -1
         var indexCounter = 0
-        iterator().forEach {
+        LLIterator(this).forEach {
             if(it == element)
                 lastIndex = indexCounter
 
@@ -125,7 +116,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
 
     override fun retainAll(elements: Collection<T>): Boolean = withLock {
         val result:ArrayList<T> = ArrayList<T>(sizeCount.value)
-        iterator().forEach {
+        LLIterator(this).forEach {
             if(elements.contains(it))
                 result.add(it)
         }
