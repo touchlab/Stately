@@ -2,6 +2,8 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.Random
 import co.touchlab.stately.concurrency.AtomicInt
+import co.touchlab.stately.freeze
+import co.touchlab.stately.isNativeFrozen
 import kotlin.test.*
 
 class SharedHashMapTest{
@@ -174,9 +176,9 @@ class SharedHashMapTest{
             MPWorker()
         }
 
-        val m = SharedHashMap<String, MapData>().mpfreeze()
+        val m = SharedHashMap<String, MapData>().freeze()
 
-        val count = AtomicInt(0).mpfreeze()
+        val count = AtomicInt(0).freeze()
 
         val start = currentTimeMillis()
 
@@ -275,10 +277,10 @@ class SharedHashMapTest{
         val start = currentTimeMillis()
         val size = 150_000
         val l = Array(size){ i->
-                Pair("Key: $i", MapData("Value: $i")).mpfreeze()
+                Pair("Key: $i", MapData("Value: $i")).freeze()
         }
 
-        val keys = Array(size){"Key: $it".mpfreeze()}
+        val keys = Array(size){"Key: $it".freeze()}
 
         println("TIMETRACE Time setup: ${currentTimeMillis() - start}")
 

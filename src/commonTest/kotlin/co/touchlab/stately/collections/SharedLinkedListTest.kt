@@ -1,6 +1,7 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.AtomicInt
+import co.touchlab.stately.freeze
 import kotlin.test.*
 
 class LinkedListTest{
@@ -278,13 +279,13 @@ class LinkedListTest{
     fun mtNodeAdd(){
         val LOOPS = 1_000
         val DOOPS = 100
-        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
         for (i in 0 until LOOPS) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
-        nodeList.mpfreeze()
+        nodeList.freeze()
 
         val ops = ThreadOps {mutableListOf<ListData>()}
         for(i in 0 until LOOPS){
@@ -317,13 +318,13 @@ class LinkedListTest{
     @Test
     fun mtNodeRemove(){
         val LOOPS = 100_000
-        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
         for (i in 0 until LOOPS) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
-        nodeList.mpfreeze()
+        nodeList.freeze()
 
         val ops = ThreadOps {mutableListOf<ListData>()}
         for(i in 0 until LOOPS){
@@ -338,13 +339,13 @@ class LinkedListTest{
     @Test
     fun mtNodeSet(){
         val LOOPS = 1_000
-        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
         for (i in 0 until LOOPS) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
-        nodeList.mpfreeze()
+        nodeList.freeze()
 
         val ops = ThreadOps {mutableListOf<ListData>()}
         for(i in 0 until LOOPS){
@@ -359,7 +360,7 @@ class LinkedListTest{
 
     @Test
     fun multipleThreads(){
-        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val ll = SharedLinkedList<ListData>().freeze()
         val workers = Array(5){ createWorker()}
         val futures = Array(workers.size){wcount ->
             val worker = workers[wcount]
@@ -389,7 +390,7 @@ class LinkedListTest{
     @Test
     fun testBasicThreads(){
         val workers = Array(8) { createWorker() }
-        val ll = SharedLinkedList<TestData>().mpfreeze()
+        val ll = SharedLinkedList<TestData>().freeze()
 
         var count = 0
 
@@ -435,10 +436,10 @@ class LinkedListTest{
             operations.add { workerId, list -> list.add(MapData("Worker: $workerId, Index: $i"))}
         }
 
-        operations.mpfreeze()
+        operations.freeze()
 
-        val listA = SharedLinkedList<MapData>().mpfreeze()
-        val listB = SharedLinkedList<MapData>().mpfreeze()
+        val listA = SharedLinkedList<MapData>().freeze()
+        val listB = SharedLinkedList<MapData>().freeze()
 
         val workers = Array(8){
             MPWorker()
@@ -498,7 +499,7 @@ class LinkedListTest{
 
     @Test
     fun testRemovedNode(){
-        val ll = SharedLinkedList<ListData>().mpfreeze()
+        val ll = SharedLinkedList<ListData>().freeze()
         val node = ll.addNode(ListData("hey 22"))
 
         node.remove()

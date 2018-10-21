@@ -4,6 +4,7 @@ import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.QuickLock
+import co.touchlab.stately.freeze
 
 /**
  *
@@ -43,13 +44,13 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         threshold = AtomicInt((capacity.toFloat() * loadFactor).toInt())
         buckets = AtomicReference(makeBuckets(capacity))
 
-        mpfreeze()
+        freeze()
     }
 
     private fun makeBuckets(capacity: Int): Array<AtomicReference<SharedLinkedList<Entry<K, V>>>> {
         return (Array(capacity) {
-            AtomicReference(SharedLinkedList<Entry<K, V>>().mpfreeze())
-        }).mpfreeze()
+            AtomicReference(SharedLinkedList<Entry<K, V>>().freeze())
+        }).freeze()
     }
 
     private inline fun iterInternal(proc:(Entry<K, V>)->Unit){
@@ -186,7 +187,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
             }
         }
 
-        entryList.add(Entry(key, value).mpfreeze())
+        entryList.add(Entry(key, value).freeze())
         atomSize.increment()
         if (atomSize.value > threshold.value)
             resize(2 * buckets.value.size)

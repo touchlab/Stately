@@ -4,6 +4,7 @@ import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.QuickLock
+import co.touchlab.stately.freeze
 
 /**
  * Thread safe linked list implementation for Kotlin Multiplatform. This is intended for situations where there may
@@ -74,13 +75,13 @@ class CopyOnIterateLinkedList<T>():AbstractSharedLinkedList<T>(){
             }
 
             updated.value = 0
-            lastList.value = newList.mpfreeze()
+            lastList.value = newList.freeze()
         }
         return lastList.value
     }
 
     private val updated = AtomicInt(0)
-    private val lastList = AtomicReference(mutableListOf<T>().mpfreeze())
+    private val lastList = AtomicReference(mutableListOf<T>().freeze())
 
 }
 
@@ -260,7 +261,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             checkNotRemoved()
             val ins = Node(list, t)
 
-            ins.mpfreeze()
+            ins.freeze()
 
             val prevNode = prev.value
             val nextNode = next.value
@@ -294,7 +295,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             checkNotRemoved()
             val ins = Node(list, t)
 
-            ins.mpfreeze()
+            ins.freeze()
 
             val prevNode = prev.value
             ins.prev.value = prevNode
@@ -407,7 +408,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
      */
     internal fun internalAdd(node: Node<T>): Boolean {
         node.checkNotRemoved()
-        node.mpfreeze()
+        node.freeze()
         if (sizeCount.value == 0) {
             head.value = node
             tail.value = node

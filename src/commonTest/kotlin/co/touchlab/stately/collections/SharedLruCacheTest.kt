@@ -1,5 +1,6 @@
 package co.touchlab.stately.collections
 
+import co.touchlab.stately.freeze
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -204,7 +205,7 @@ class SharedLruCacheTest{
     @Test
     fun stress(){
         val MAX_CACHE_SIZE = 4
-        val sc = SharedLruCache<String, MapData>(MAX_CACHE_SIZE).mpfreeze()
+        val sc = SharedLruCache<String, MapData>(MAX_CACHE_SIZE).freeze()
 
         sc.put("key 1", MapData("a"))
         sc.put("key 2", MapData("a"))

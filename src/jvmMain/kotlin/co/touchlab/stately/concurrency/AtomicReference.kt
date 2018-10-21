@@ -9,4 +9,6 @@ actual class AtomicReference<T> actual constructor(value_: T) {
         set(value) {
             atom.set(value)
         }
+
+    actual fun compareAndSet(expected: T, new: T): Boolean = atom.compareAndSet(expected, new)
 }

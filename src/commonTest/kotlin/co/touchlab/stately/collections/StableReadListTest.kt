@@ -1,5 +1,6 @@
 package co.touchlab.stately.collections
 
+import co.touchlab.stately.freeze
 import kotlin.test.*
 
 /*
@@ -63,7 +64,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun contains() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a $i"))
@@ -75,7 +76,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun containsAll() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a $i"))
@@ -91,7 +92,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun get() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a $i"))
@@ -104,7 +105,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun indexOf() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a ${i % 20}"))
@@ -116,7 +117,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun isEmpty() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         assertTrue(list.isEmpty())
 
@@ -133,7 +134,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun lastIndexOf() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a ${i % 20}"))
@@ -238,7 +239,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun clear(){
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
         for(i in 0 until 5){list.add(ListData("a $i"))}
         assertEquals(5, list.size)
         val iterator = list.iterator()
@@ -252,7 +253,7 @@ abstract class AbstractStableReadListTest<T> {
 
         val LOOPS = 500
 
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until LOOPS) {
             val key = "Add: $i"
@@ -276,7 +277,7 @@ abstract class AbstractStableReadListTest<T> {
     @Test
     fun removeAll()
     {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for(i in 0 until 100){
             list.add(ListData("a $i"))
@@ -299,7 +300,7 @@ abstract class AbstractStableReadListTest<T> {
     @Test
     fun removeAt()
     {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for(i in 0 until 100){
             list.add(ListData("a $i"))
@@ -317,7 +318,7 @@ abstract class AbstractStableReadListTest<T> {
     @Test
     fun retainAll()
     {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for(i in 0 until 100){
             list.add(ListData("a $i"))
@@ -343,7 +344,7 @@ abstract class AbstractStableReadListTest<T> {
     @Test
     fun mtSet()
     {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for(i in 0 until 100){
             list.add(ListData("a $i"))
@@ -369,7 +370,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun subList() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a $i"))
@@ -396,7 +397,7 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun listIterator() {
-        val list = createList<ListData>().mpfreeze()
+        val list = createList<ListData>().freeze()
 
         for (i in 0 until 100) {
             list.add(ListData("a $i"))

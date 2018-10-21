@@ -3,77 +3,68 @@
 Stately is a state utility library to support some multithreading features in Kotlin Multiplatform
 
 Kotlin/Native has a fairly different model of concurrency than what JVM developers are used to. This includes very 
-different rules around sharing state. While a lot of these changes will be good, there are some cases where state 
-shared across threads is desired and not well supported out of the box.
+different rules around sharing state. These rules are intended to reduce the likelihood of concurrency related issues.
 
-As architectural models evolve, structures in this library may become less desired, but currently there is some need
-to support global mutable state.
+One of the rules is that shared state is immutable. While generally a good idea, some shared state mutability is also 
+pretty useful. Kotlin/Native provides a set of Atomics to allow for some state to be changed in a safe way. Stately
+provides some utilities on top of the Atomics. Most notably shared collections.
+
+The documentation here is about the structure, or the *what* of the library. A follow on blog post will talk a bit more 
+about the *why*.
 
 ## Status
 
 [![Build status](https://build.appcenter.ms/v0.1/apps/fcda190b-7ec8-43b7-8216-6fc1be836332/branches/master/badge)](https://appcenter.ms)
 
-Super early. Still adding and testing structures.
+This a pretty early version. Expect changes in the near future.
 
 ## Collections
 
-### Copy On Write
+### Copy On Write List
 
-There is a simple "copy on write" list implementation that uses CopyOnWriteArrayList on JVM, and a list backed by
-a frozen ArrayList on native. This is appropriate for situations where you need iterations to be stable, and have small
-list sizes, infrequent writes, or ideally both. All edits to the underlying list trigger a new list and a copy operation.
-Only list references are copied. The underlying data keeps the same object instances. All of these obviously need to be 
-frozen immutables.
+A MutableList that updates a stable copy on each edit. When you get an iterator, that iterator remains stable regardless
+of operations happening on the list. The JVM version is actually [https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/CopyOnWriteArrayList.html](CopyOnWriteArrayList.java). 
+The Native version updates a frozen ArrayList internally by copying and replacing on edits.
 
 ### Shared Linked List
 
 Rather than copying the full list on each edit, this structure uses atomic references in the nodes to allow modification
-that is reasonably performant in situations that may have larger lists and/or frequent updates. This is probably not
-suitable in situations that require extreme performance, but currently the primary goal is correct functionality and 
-not optimization.
+that is reasonably performant relative to the Copy On Write list in situations that may have larger lists and/or frequent updates.
 
-This is *not* a lockless algorithm. There are lockless versions for linked lists, but for the sake of simplicity, the 
-list currently doesn't attempt to use them. Updates lock, but generally don't do much during a change and should finish
-quickly.
+It's important to note, performance is OK *relative* to copying the list on each edit. The list locks aggressively to 
+achieve consistency. There are lockless algorithms for linked lists that may be explored in the future.
 
-There are two iterating versions.
+There are two versions.
 
 ### SharedLinkedList
 
-Iterators aren't stable in the sense that if the list is modified by another thread while you're iterating, the iterator
-will reflect that change. It will function. For example, if you're currently "at" a node that gets removed, calling
-next will give you what was next in the list. If a node in front of you gets removed, you'll get whatever was after it
-when calling next. Iterators do not lock the list on access. As a result, full iterations are fast, but while iterating,
-the state of the list may change.
+Iterators reflect changes to the underlying list. If values are added/removed while iterating, your iterator will
+see them.
 
 ### CopyOnIterateLinkedList
 
-Iterators are stable, in the sense that whatever the state of the list when you create the iterator, that state remains
-throughout the iteration, regardless of mutations to the linked list. This is accomplished by locking the list when
-the iterator is created, and if there have been modifications since the last iterator was created, a new copy of the 
-list is created. Multiple iterators created without modifications in the interim will get the same list copy.
+Iterators are stable. Calling iterator creates an internal copy of the list which the iterator uses. Underlying changes
+to the source list are NOT reflected in the iterator. This will trigger a lock and copy on calling iterator, which 
+may be a performance consideration with large lists.
 
-In theory this is better than the other copy on write implementation as the 'copy' isn't created until you need one, 
-but if there are large lists, when an iterator is requested, it'll lock out other access while the copy is made.
-
-The implementation is relatively simple and might have some improvement potential.
+Similar to CopyOnWriteList, and likely to perform better in general cases. It is a linked list, however, so indexed 
+access requires a scan.
 
 ### Hash Map
 
 A standard hash map architected as a simple Java-like implementation. Optionally pass in initial capacity and load factor.
-Will grow as needed. This also aggressively locks on operations, so from a performance perspective I would expect it 
-to fall pretty far behind the standard implementation, but from an order of operations perspective, it should be similar.
+Will grow as needed. This also locks on most operations, so from a performance perspective I would expect it 
+to fall pretty far behind the standard single threaded implementation, but from an order of operations perspective, it should be similar.
 
 One note. In Java 8 (not sure about kotlin native), in buckets, after length 8, a tree is used instead of a linked list.
 Worst case performance then flattens out to lgN (ish). Java 7, and our implementation, do not, so expect worst case to
-be N, but it's a hash map. That's how things go.
+be N. Try to use good hashes.
 
 ### LRU Cache
 
-Hash map and linked list combined into an LRU cache implementation. Read the details on how outside code is notified 
-of removals.
+Hash map and linked list combined into an LRU cache implementation.
 
-## The Name?
+You can supply a callback to be notified when an entry is removed.
 
-Kind of popped in my head, but then I remembered it was a [MST23k thing](http://www.youtube.com/watch?v=ZKO6M8heGU0&t=9m8s)
-that must have been lurking in my subconscious. Final name TBD.
+## Usage
+

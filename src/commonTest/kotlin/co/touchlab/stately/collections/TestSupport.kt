@@ -1,5 +1,7 @@
 package co.touchlab.stately.collections
 
+import co.touchlab.stately.freeze
+
 expect class MPWorker(){
     fun <T> runBackground(backJob:()->T):MPFuture<T>
     fun requestTermination()
@@ -33,7 +35,7 @@ class ThreadOps<C>(val producer:()->C){
             tests.shuffle()
         }
 
-        exes.mpfreeze()
+        exes.freeze()
 
         val start = currentTimeMillis()
 

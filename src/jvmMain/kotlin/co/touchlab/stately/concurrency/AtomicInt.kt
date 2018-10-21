@@ -16,4 +16,8 @@ actual class AtomicInt actual constructor(value_: Int) {
     actual fun decrement() {
         atom.decrementAndGet()
     }
+
+    actual fun addAndGet(delta: Int): Int = atom.addAndGet(delta)
+
+    actual fun compareAndSet(expected: Int, new: Int): Boolean = atom.compareAndSet(expected, new)
 }
