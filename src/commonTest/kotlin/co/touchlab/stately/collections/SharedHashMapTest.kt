@@ -272,7 +272,7 @@ class SharedHashMapTest{
         assertEquals(20, m.size)
     }
 
-    @Test
+    /*@Test
     fun testBasicTimes(){
         val start = currentTimeMillis()
         val size = 150_000
@@ -300,7 +300,7 @@ class SharedHashMapTest{
         }
 
         return currentTimeMillis() - start
-    }
+    }*/
 
     private fun <T> checkImmutableSet(c:MutableCollection<T>, total:Int, uniques:Int, sample:T){
         assertEquals(c.size, total)
