@@ -1,5 +1,8 @@
 package co.touchlab.stately.concurrency
 
+/**
+ * Multiplatform AtomicBoolean implementation
+ */
 class AtomicBoolean(value_: Boolean) {
     private val atom = AtomicInt(boolToInt(value_))
     var value: Boolean

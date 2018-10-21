@@ -27,6 +27,19 @@ class CopyOnWriteList<T>(elements:Collection<T>):MutableList<T>{
         }
     }
 
+    /*private inline fun <R> modifyListLockless(proc:(MutableList<T>)->R):R{
+        var updated = false
+        var result:R? = null
+        while (!updated){
+            val orig = listData.value
+            val mutableList = ArrayList(orig)
+            result = proc(mutableList)
+            updated = listData.compareAndSet(orig, mutableList.freeze())
+        }
+
+        return result!!
+    }*/
+
     override val size: Int
         get() = listData.value.size
 

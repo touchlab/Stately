@@ -1,13 +1,16 @@
 # Stately
 
-Stately is a state utility library to support some multithreading features in Kotlin Multiplatform
+Stately is a state utility library to facilitate the Native side of Kotlin Multiplatform.
+
+The library consists of some useful expect/actual definitions, as well as a set of multithreaded collection classes that 
+will allow multithreaded mutation in Kotlin/Native.
 
 Kotlin/Native has a fairly different model of concurrency than what JVM developers are used to. This includes very 
 different rules around sharing state. These rules are intended to reduce the likelihood of concurrency related issues.
 
 One of the rules is that shared state is immutable. While generally a good idea, some shared state mutability is also 
-pretty useful. Kotlin/Native provides a set of Atomics to allow for some state to be changed in a safe way. Stately
-provides some utilities on top of the Atomics. Most notably shared collections.
+pretty useful. Kotlin/Native provides a set of Atomics to allow for some state to be changed in a safe way. Stately provides
+a set of collection classes that use Atomics under the hood to function.
 
 The documentation here is about the structure, or the *what* of the library. A follow on blog post will talk a bit more 
 about the *why*.
@@ -17,6 +20,42 @@ about the *why*.
 [![Build status](https://build.appcenter.ms/v0.1/apps/fcda190b-7ec8-43b7-8216-6fc1be836332/branches/master/badge)](https://appcenter.ms)
 
 This a pretty early version. Expect changes in the near future.
+
+## Annotations
+
+Kotlin/Native provides some annotations to support state characteristics. These do not have common kotlin analogs, which makes common
+code somewhat more difficult to define. Stately defines expect/actual parallels which have no impact on JVM or JS.
+
+### ThreadLocal
+
+Place on top level var or object to make it available as thread local. See [https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L51](ThreadLocal)
+
+### SharedImmutable
+
+Top level var will default to main thread only. To share it as an immutable, add this annotation. See [https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L59](SharedImmutable)
+
+## Functions/Extensions
+
+### freeze()
+
+Multiplatform definition for Kotlin/Native 'freeze'.
+
+### isFrozen()
+
+Call on any object to find out if it's frozen.
+
+### isNativeFrozen()
+
+Will return true on non-native platforms. On native, will return if frozen. This makes sense
+in most logical contexts.
+
+### isNative (val)
+
+Simple way to find out if we're in a native context.
+
+### Iterator.toList()
+
+Converts an Iterator to a List. This is an extension function that works on any list.
 
 ## Collections
 

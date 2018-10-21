@@ -1,5 +1,8 @@
 package co.touchlab.stately.concurrency
 
+/**
+ * Multiplatform AtomicInt implementation
+ */
 expect class AtomicInt(value_: Int) {
     var value:Int
     fun increment()

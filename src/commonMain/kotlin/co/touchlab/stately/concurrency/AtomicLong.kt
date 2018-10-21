@@ -1,5 +1,8 @@
 package co.touchlab.stately.concurrency
 
+/**
+ * Multiplatform AtomicLong implementation
+ */
 expect class AtomicLong(value_: Long) {
     var value:Long
     fun increment()

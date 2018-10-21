@@ -8,5 +8,3 @@ actual fun <T> createCopyOnWriteList(collection: Collection<T>?): MutableList<T>
     else
         CopyOnWriteArrayList<T>(collection)
 }
-
-actual val isNative: Boolean = false

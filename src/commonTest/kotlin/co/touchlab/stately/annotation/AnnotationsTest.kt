@@ -1,8 +1,8 @@
 package co.touchlab.stately.annotation
 
-import co.touchlab.stately.collections.isNative
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.isFrozen
+import co.touchlab.stately.isNative
 import co.touchlab.stately.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertFalse

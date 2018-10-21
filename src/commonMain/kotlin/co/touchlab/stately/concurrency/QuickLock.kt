@@ -1,11 +1,8 @@
 package co.touchlab.stately.concurrency
 
 /**
- * On native this will probably be implemented by a spin lock, because of
- * difficulty using pthread_mutex without a destructor. Only suitable
- * for quick operations.
- *
- * JVM will be using standard JVM concurrency primitives.
+ * On JVM this is a java.util.concurrent.Semaphore instance. On anything from apple this is an NSLock. On
+ * all other platforms this will currently be a spin lock, as pthread_mutex requires a destructor.
  */
 expect class QuickLock():Lock{
     override fun lock()

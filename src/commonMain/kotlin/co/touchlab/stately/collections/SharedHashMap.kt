@@ -7,7 +7,9 @@ import co.touchlab.stately.concurrency.QuickLock
 import co.touchlab.stately.freeze
 
 /**
- *
+ * Mutithreaded hashmap which uses atomic structures internally to allow sharing across threads on all variants of Kotlin.
+ * The implementation prefers consistency over performance and will lock its internal mutex on most operations. That
+ * means it works but performance won't be great compared to the single threaded hash map.
  */
 class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.toFloat()):MutableMap<K, V>{
 
@@ -61,6 +63,10 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         }
     }
 
+    /**
+     * Returns a set of all entries. This set is *not* thread safe and may only be used by the caller thread. However,
+     * it is stable and will not change when the source map changes.
+     */
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
         get() = withLock {
             val resultSet = HashSet<MutableMap.MutableEntry<K, V>>(atomSize.value)
@@ -68,6 +74,10 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
             return NotReallyMutableSet(resultSet)
         }
 
+    /**
+     * Returns a set of all keys. This set is *not* thread safe and may only be used by the caller thread. However,
+     * it is stable and will not change when the source map changes.
+     */
     override val keys: MutableSet<K>
         get() = withLock {
             val keySet = HashSet<K>(atomSize.value)
@@ -75,6 +85,10 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
             return NotReallyMutableSet(keySet)
         }
 
+    /**
+     * Returns a collection of all values. This collection is *not* thread safe and may only be used by the caller thread. However,
+     * it is stable and will not change when the source map changes.
+     */
     override val values: MutableCollection<V>
         get() = withLock {
             val result = ArrayList<V>(atomSize.value)
@@ -119,6 +133,9 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         override fun isEmpty(): Boolean = delegate.isEmpty()
     }
 
+    /**
+     * Removes all values
+     */
     override fun clear() = withLock {
         buckets.value.forEach {
             it.value.clear()
