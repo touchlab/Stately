@@ -353,7 +353,7 @@ class LinkedListTest{
             ops.test { assertEquals(ll.get(i), ListData("b $i")) }
         }
 
-        ops.run(8, ll)
+        ops.run(8, ll, true)
 
         assertEquals(LOOPS, ll.size)
     }

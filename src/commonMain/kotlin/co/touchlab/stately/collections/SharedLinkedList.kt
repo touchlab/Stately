@@ -1,9 +1,6 @@
 package co.touchlab.stately.collections
 
-import co.touchlab.stately.concurrency.AtomicInt
-import co.touchlab.stately.concurrency.AtomicReference
-import co.touchlab.stately.concurrency.Lock
-import co.touchlab.stately.concurrency.QuickLock
+import co.touchlab.stately.concurrency.*
 import co.touchlab.stately.freeze
 
 /**
@@ -12,7 +9,7 @@ import co.touchlab.stately.freeze
  * while iterating, you won't have concurrent modification exceptions, but obviously the state of the list from
  * when you started iterating is not guaranteed.
  */
-class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
+class SharedLinkedList<T>() : AbstractSharedLinkedList<T>() {
     override fun updated() {
         //Meh
     }
@@ -27,7 +24,7 @@ class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
 
     override fun iterator(): MutableIterator<T> = LLIterator(this)
 
-    fun nodeIterator():MutableIterator<Node<T>> = NodeIterator<T>(this)
+    fun nodeIterator(): MutableIterator<Node<T>> = NodeIterator<T>(this)
 
     class NodeIterator<T>(ll: SharedLinkedList<T>) : MutableIterator<Node<T>> {
         override fun remove() {
@@ -51,7 +48,7 @@ class SharedLinkedList<T>():AbstractSharedLinkedList<T>(){
  * this is better than the simpler CopyOnWriteList, because EVERY update will lock and save, but something
  * to keep in mind. If updating the list while you're iterating isn't a huge problem, use SharedLinkedList
  */
-class CopyOnIterateLinkedList<T>():AbstractSharedLinkedList<T>(){
+class CopyOnIterateLinkedList<T>() : AbstractSharedLinkedList<T>() {
     override fun updated() {
         updated.value = 1
     }
@@ -60,11 +57,11 @@ class CopyOnIterateLinkedList<T>():AbstractSharedLinkedList<T>(){
 
     override fun listIterator(): MutableListIterator<T> = LocalListIterator(withLock { checkUpdate() }.listIterator())
 
-    override fun listIterator(index: Int): MutableListIterator<T>  = LocalListIterator(withLock { checkUpdate() }.listIterator(index))
+    override fun listIterator(index: Int): MutableListIterator<T> =
+        LocalListIterator(withLock { checkUpdate() }.listIterator(index))
 
-    private fun checkUpdate():MutableList<T>{
-        if(updated.value != 0)
-        {
+    private fun checkUpdate(): MutableList<T> {
+        if (updated.value != 0) {
             val newList = ArrayList<T>(sizeCount.value)
             var node = head.value
             var nodeCount = 0
@@ -85,7 +82,7 @@ class CopyOnIterateLinkedList<T>():AbstractSharedLinkedList<T>(){
 
 }
 
-private open class LocalIterator<T>(private val delegate:MutableIterator<T>):MutableIterator<T>{
+private open class LocalIterator<T>(private val delegate: MutableIterator<T>) : MutableIterator<T> {
     override fun hasNext(): Boolean = delegate.hasNext()
 
     override fun next(): T = delegate.next()
@@ -95,7 +92,7 @@ private open class LocalIterator<T>(private val delegate:MutableIterator<T>):Mut
     }
 }
 
-private class LocalListIterator<T>(private val delegate:MutableListIterator<T>):MutableListIterator<T> {
+private class LocalListIterator<T>(private val delegate: MutableListIterator<T>) : MutableListIterator<T> {
     override fun hasNext(): Boolean = delegate.hasNext()
 
     override fun next(): T = delegate.next()
@@ -121,7 +118,7 @@ private class LocalListIterator<T>(private val delegate:MutableListIterator<T>):
     }
 }
 
-abstract class AbstractSharedLinkedList<T>():MutableList<T> {
+abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
     class LLIterator<T>(ll: AbstractSharedLinkedList<T>) : MutableIterator<T> {
         override fun remove() {
             throw UnsupportedOperationException()
@@ -142,7 +139,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         var lastIndex = -1
         var indexCounter = 0
         LLIterator(this).forEach {
-            if(it == element)
+            if (it == element)
                 lastIndex = indexCounter
 
             indexCounter++
@@ -152,9 +149,9 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
     }
 
     override fun retainAll(elements: Collection<T>): Boolean = withLock {
-        val result:ArrayList<T> = ArrayList<T>(sizeCount.value)
+        val result: ArrayList<T> = ArrayList<T>(sizeCount.value)
         LLIterator(this).forEach {
-            if(elements.contains(it))
+            if (elements.contains(it))
                 result.add(it)
         }
 
@@ -187,7 +184,7 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         }
     }
 
-    fun addNode(element:T): Node<T> = withLock {
+    fun addNode(element: T): Node<T> = withLock {
         val node = Node(this, element)
         internalAdd(node)
         return node
@@ -221,7 +218,8 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
 
     override fun contains(element: T): Boolean = withLock { internalFindFirst(element) != null }
 
-    override fun containsAll(elements: Collection<T>): Boolean = withLock { elements.all { internalFindFirst(it) != null } }
+    override fun containsAll(elements: Collection<T>): Boolean =
+        withLock { elements.all { internalFindFirst(it) != null } }
 
     override fun get(index: Int) = withLock { internalNodeAt(index).nodeValue }
 
@@ -247,41 +245,27 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         return old
     }
 
-    class Node<T>(val list: AbstractSharedLinkedList<T>, val nodeValue: T) {
+    class Node<T>(val list: AbstractSharedLinkedList<T>, nodeValue: T) {
 
+        private val atomicValue = AtomicReference(nodeValue.freeze())
+        val nodeValue: T
+            get() = atomicValue.value
         val prev = AtomicReference<Node<T>?>(null)
         val next = AtomicReference<Node<T>?>(null)
-        private val removed = AtomicInt(0)
+        private val removed = AtomicBoolean(false)
 
         fun set(t: T) = list.withLock {
             internalSet(t)
         }
 
-        internal fun internalSet(t: T){
+        /**
+         * Set value
+         *
+         * Mutates list
+         */
+        internal fun internalSet(t: T) {
             checkNotRemoved()
-            val ins = Node(list, t)
-
-            ins.freeze()
-
-            val prevNode = prev.value
-            val nextNode = next.value
-
-            ins.prev.value = prevNode
-            ins.next.value = nextNode
-
-            if (nextNode == null) {
-                list.tail.value = ins
-            } else {
-                nextNode.prev.value = ins
-            }
-
-            if (prevNode == null) {
-                list.head.value = ins
-            } else {
-                prevNode.next.value = ins
-            }
-
-            removed.value = 1
+            atomicValue.value = t.freeze()
         }
 
         /**
@@ -291,6 +275,11 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             internalAdd(t)
         }
 
+        /**
+         * Adds new value before me.
+         *
+         * Mutates list
+         */
         internal fun internalAdd(t: T): Boolean {
             checkNotRemoved()
             val ins = Node(list, t)
@@ -304,10 +293,9 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
             list.sizeCount.increment()
 
             //If replacing 0
-            if (prevNode == null){
+            if (prevNode == null) {
                 list.head.value = ins
-            }
-            else{
+            } else {
                 prevNode.next.value = ins
                 prev.value = ins
             }
@@ -316,18 +304,23 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         }
 
         internal fun checkNotRemoved() {
-            if (removed.value != 0)
+            if (removed.value)
                 throw IllegalStateException("Node is removed $this")
         }
 
         /**
          * Add same node to end of list.
          */
-        fun readd() = list.withLock{
+        fun readd() = list.withLock {
             internalReadd()
         }
 
-        internal fun internalReadd(){
+        /**
+         * Re-add myself back to list.
+         *
+         * Mutates list
+         */
+        internal fun internalReadd() {
             checkNotRemoved()
             internalRemove(false)
             prev.value = null
@@ -338,19 +331,23 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         /**
          * For iterators, make sure 'next' is always updated last so we don't need to lock nav.
          */
-        //TODO: need to internally indicate that we're removed and do something about it on later calls
         fun remove() = list.withLock {
             internalRemove()
         }
 
-        val isRemoved:Boolean
-            get() = removed.value != 0
+        val isRemoved: Boolean
+            get() = removed.value
 
-        internal fun internalRemove(permanent:Boolean = true){
+        /**
+         * Removes self from list.
+         *
+         * Mutates list
+         */
+        internal fun internalRemove(permanent: Boolean = true) {
             checkNotRemoved()
 
-            if(permanent)
-                removed.value = 1
+            if (permanent)
+                removed.value = true
 
             val prevNode = prev.value
             val nextNode = next.value
@@ -402,6 +399,8 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
 
     /**
      * Add node to list.
+     *
+     * Mutates list
      *
      * @param node
      * to add to list.
@@ -462,22 +461,22 @@ abstract class AbstractSharedLinkedList<T>():MutableList<T> {
         return sb.toString()
     }
 
-    internal fun lock(){
+    internal fun lock() {
         lock.lock()
     }
 
-    internal fun unlock(){
+    internal fun unlock() {
         lock.unlock()
     }
 
     internal abstract fun updated()
 
-    internal inline fun <T> withLock(updated:Boolean = true, proc: () -> T): T {
+    internal inline fun <T> withLock(updated: Boolean = true, proc: () -> T): T {
         lock()
         try {
             return proc.invoke()
         } finally {
-            if(updated)
+            if (updated)
                 updated()
             unlock()
         }
