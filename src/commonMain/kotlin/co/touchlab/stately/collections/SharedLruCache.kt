@@ -23,7 +23,7 @@ import co.touchlab.stately.concurrency.QuickLock
  * case the onRemove logic intends to call back into the cache. This may have unintended consequences if you're expecting
  * the mutation to be fully atomic in nature.
  */
-class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(LruEntry<K, V>) -> Unit = {}):LruCache<K, V>{
+class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(MutableMap.MutableEntry<K, V>) -> Unit = {}):LruCache<K, V>{
 
     init {
 //        mpfreeze()
@@ -43,7 +43,7 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
      */
     override fun put(key: K, value: V): V? {
         var resultValue:V? = null
-        val removeCollection: MutableList<LruEntry<K, V>> = ArrayList()
+        val removeCollection: MutableList<MutableMap.MutableEntry<K, V>> = ArrayList()
 
         withLock {
             val cacheEntry = cacheMap.get(key)
@@ -67,7 +67,7 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
                 val key = cacheList.removeAt(0)
                 val entry = cacheMap.remove(key)
                 if(entry != null)
-                    removeCollection.add(OutEntry(key, entry.v))
+                    removeCollection.add(LruEntry(key, entry.v))
             }
 
             resultValue = result
@@ -82,12 +82,12 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
      * Removes value at key (if it exists). If a value is found, it is passed to onRemove.
      */
     override fun remove(key: K) {
-        var removeEntry:OutEntry<K, V>? = null
+        var removeEntry: LruEntry<K, V>? = null
         withLock {
             val entry = cacheMap.remove(key)
             if (entry != null) {
                 entry.node.remove()
-                removeEntry = OutEntry(key, entry.v)
+                removeEntry = LruEntry(key, entry.v)
             }
         }
         if(removeEntry != null)
@@ -102,12 +102,11 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
             return internalAll()
         }
 
-
     /**
      * Clears the cache. If skipCallback is set to true, onRemove is not called. Defaults to false.
      */
     override fun removeAll(skipCallback:Boolean) {
-        var removeCollection: Collection<LruEntry<K, V>>? = null
+        var removeCollection: Collection<MutableMap.MutableEntry<K, V>>? = null
 
         withLock {
             if (!skipCallback) {
@@ -160,9 +159,14 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
 
     data class CacheEntry<K, V>(val v:V, val node:AbstractSharedLinkedList.Node<K>)
 
-    class OutEntry<K, V>(override val key: K, override val value: V):MutableMap.MutableEntry<K, V> {
+    class LruEntry<K, V>(override val key: K, override val value: V):MutableMap.MutableEntry<K, V> {
+
         override fun setValue(newValue: V): V {
             throw UnsupportedOperationException()
+        }
+
+        override fun toString(): String {
+            return "LruEntry(key=$key, value=$value)"
         }
     }
 
@@ -170,10 +174,10 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(L
     val cacheMap = SharedHashMap<K, CacheEntry<K, V>>(initialCapacity = maxCacheSize)
     val cacheList = SharedLinkedList<K>()
 
-    private fun internalAll(): HashSet<LruEntry<K, V>> {
-        val set = HashSet<LruEntry<K, V>>(cacheList.size)
+    private fun internalAll(): HashSet<MutableMap.MutableEntry<K, V>> {
+        val set = HashSet<MutableMap.MutableEntry<K, V>>(cacheList.size)
         cacheList.iterator().forEach {
-            set.add(OutEntry(it, cacheMap.get(it)!!.v))
+            set.add(LruEntry(it, cacheMap.get(it)!!.v))
         }
         return set
     }
