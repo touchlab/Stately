@@ -138,4 +138,4 @@ be frozen.
 
 ## Usage
 
-See the [Sample/](Sample App) for usage.
+See the [Sample App](Sample/) for usage.

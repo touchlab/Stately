@@ -26,7 +26,7 @@ For Android, create an Android run config and run.
 
 ### Setup
 
-The dependency for Stately is added in the [app/build.gradle](shared build.gradle) file
+The dependency for Stately is added in the [shared build.gradle](app/build.gradle) file
 
 
 ```
@@ -51,7 +51,7 @@ That is required to resolve dependencies.
 
 ### Code
 
-The sample code is in [app/src/commonMain/kotlin/sample/State.kt](sample/State.kt). This is a top level
+The sample code is in [sample/State.kt](app/src/commonMain/kotlin/sample/State.kt). This is a top level
 object, which means with regards to Kotlin/Native, it will be immutable once created.
 
 A set of collections is created for this object, as well as some threaded workers.
