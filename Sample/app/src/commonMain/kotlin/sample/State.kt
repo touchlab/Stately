@@ -1,13 +1,19 @@
 package sample
 
 import co.touchlab.stately.collections.*
+import co.touchlab.stately.concurrency.AtomicInt
 
 object State{
-    val cowList = createCopyOnWriteList<SampleData>()
-    val sharedList = SharedLinkedList<SampleData>()
-    val coiSharedList = CopyOnIterateLinkedList<SampleData>()
-    val sharedMap = SharedHashMap<String, SampleData>()
-    val lruCache = SharedLruCache<String, SampleData>(5)
+    val cowList = frozenCopyOnWriteList<SampleData>()
+    val sharedList = frozenLinkedList<SampleData>()
+    val coiSharedList = frozenLinkedList<SampleData>(stableIterator = true)
+    val sharedMap = frozenHashMap<String, SampleData>()
+
+    val lruRemovedCount = AtomicInt(0)
+    val lruCache = frozenLruCache<String, SampleData>(5) {
+        lruRemovedCount.increment()
+    }
+
     val workers = Array(4){createWorker()}
 
     fun putSample(s: String){
@@ -38,6 +44,7 @@ object State{
         println("--- sharedMap ---")
         sharedMap.entries.iterator().forEach { println(it) }
         println("--- lruCache ---")
+        println("Removed count: ${lruRemovedCount.value}")
         lruCache.entries.iterator().forEach { println(it) }
     }
 }

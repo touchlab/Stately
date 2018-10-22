@@ -48,7 +48,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
-                implementation 'co.touchlab.stately:Stately:0.3-kn1.0rc-a3'
+                implementation 'co.touchlab.stately:Stately:0.3.1-kn1.0rc-a1'
             }
         }
         commonTest {

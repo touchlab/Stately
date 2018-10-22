@@ -10,7 +10,8 @@ different rules around sharing state. These rules are intended to reduce the lik
 
 One of the rules is that shared state is immutable. While generally a good idea, some shared state mutability is also 
 pretty useful. Kotlin/Native provides a set of Atomics to allow for some state to be changed in a safe way. Stately provides
-a set of collection classes that use Atomics under the hood to function.
+a set of collection classes that use Atomics under the hood to function, as well as some multiplatform definitions to 
+make using Atomics and Kotlin/Native related state management simpler.
 
 The documentation here is about the structure, or the *what* of the library. A follow on blog post will talk a bit more 
 about the *why*.
@@ -23,8 +24,9 @@ This a pretty early version. Expect changes in the near future.
 
 ## Annotations
 
-Kotlin/Native provides some annotations to support state characteristics. These do not have common kotlin analogs, which makes common
-code somewhat more difficult to define. Stately defines expect/actual parallels which have no impact on JVM or JS.
+Kotlin/Native provides some annotations to support state characteristics. These do not have common kotlin analogs, which 
+makes multiplatform code somewhat more difficult to define. Stately defines expect/actual parallels which have no impact 
+on JVM or JS.
 
 ### ThreadLocal
 
@@ -46,8 +48,9 @@ Call on any object to find out if it's frozen.
 
 ### isNativeFrozen()
 
-Will return true on non-native platforms. On native, will return if frozen. This makes sense
-in most logical contexts.
+Will return true on non-native platforms. On native, will return true if frozen. Usually you're trying to figure out if
+an instance can be shared among threads. Because the rules are different, the answer is always "true" on JVM and JS. This
+method makes that logic simpler.
 
 ### isNative (val)
 
@@ -55,7 +58,7 @@ Simple way to find out if we're in a native context.
 
 ### Iterator.toList()
 
-Converts an Iterator to a List. This is an extension function that works on any list.
+Converts an Iterator to a List. This is an extension function that works on any Iterator. Mostly useful for testing.
 
 ## Collections
 
@@ -64,6 +67,10 @@ Converts an Iterator to a List. This is an extension function that works on any 
 A MutableList that updates a stable copy on each edit. When you get an iterator, that iterator remains stable regardless
 of operations happening on the list. The JVM version is actually [https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/CopyOnWriteArrayList.html](CopyOnWriteArrayList.java). 
 The Native version updates a frozen ArrayList internally by copying and replacing on edits.
+
+```kotlin
+val list:MutableList<SampleData> = frozenCopyOnWriteList<SampleData>()
+```
 
 ### Shared Linked List
 
@@ -80,6 +87,11 @@ There are two versions.
 Iterators reflect changes to the underlying list. If values are added/removed while iterating, your iterator will
 see them.
 
+```kotlin
+val list:MutableList<SampleData> = frozenLinkedList<SampleData>()
+
+```
+
 ### CopyOnIterateLinkedList
 
 Iterators are stable. Calling iterator creates an internal copy of the list which the iterator uses. Underlying changes
@@ -88,6 +100,11 @@ may be a performance consideration with large lists.
 
 Similar to CopyOnWriteList, and likely to perform better in general cases. It is a linked list, however, so indexed 
 access requires a scan.
+
+```kotlin
+val list:MutableList<SampleData> = frozenLinkedList<SampleData>(stableIterator = true)
+
+```
 
 ### Hash Map
 
@@ -99,11 +116,26 @@ One note. In Java 8 (not sure about kotlin native), in buckets, after length 8, 
 Worst case performance then flattens out to lgN (ish). Java 7, and our implementation, do not, so expect worst case to
 be N. Try to use good hashes.
 
+```kotlin
+val sharedMap:MutableMap<String, SampleData> = frozenHashMap<String, SampleData>()
+```
+
 ### LRU Cache
 
 Hash map and linked list combined into an LRU cache implementation.
 
 You can supply a callback to be notified when an entry is removed.
 
+```kotlin
+val lruRemovedCount = AtomicInt(0)
+val lruCache = frozenLruCache<String, SampleData>(5) {
+    lruRemovedCount.increment()
+}
+```
+
+Note that the lambda for onRemove is optional. However, since it is multithreaded, be aware that anything in there will
+be frozen.
+
 ## Usage
 
+See the [Sample/](Sample App) for usage.

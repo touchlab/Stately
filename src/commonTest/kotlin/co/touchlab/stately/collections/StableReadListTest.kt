@@ -15,13 +15,13 @@ These implementations should function identically except for 'subList'. See test
 class CopyOnWriteListTest<T>():AbstractStableReadListTest<T>(){
     override val supportsSublist: Boolean = true
 
-    override fun <T> createList(collection: Collection<T>?): MutableList<T> = createCopyOnWriteList()
+    override fun <T> createList(collection: Collection<T>?): MutableList<T> = frozenCopyOnWriteList()
 }
 
 class CopyOnWriteLinkedListTest<T>():AbstractStableReadListTest<T>(){
     override val supportsSublist: Boolean = false
 
-    override fun <T> createList(collection: Collection<T>?): MutableList<T> = CopyOnIterateLinkedList()
+    override fun <T> createList(collection: Collection<T>?): MutableList<T> = frozenLinkedList(stableIterator = true)
 }
 
 abstract class AbstractStableReadListTest<T> {
