@@ -1,6 +1,7 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.freeze
+import co.touchlab.stately.isNativeFrozen
 import kotlin.test.*
 
 class LinkedListTest{
@@ -12,6 +13,11 @@ class LinkedListTest{
         }
 
         return true
+    }
+
+    @Test
+    fun testInitFrozen(){
+        assertTrue(SharedLinkedList<ListData>().isNativeFrozen())
     }
 
     @Test

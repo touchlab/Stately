@@ -7,11 +7,15 @@ import kotlin.native.concurrent.freeze
 
 class CopyOnWriteList<T>(elements:Collection<T>):MutableList<T>{
 
-    constructor():this(ArrayList<T>(0))
-    constructor(initialCapacity: Int = 0):this(ArrayList<T>(initialCapacity))
-
     private val listData = AtomicReference<List<T>>(ArrayList(elements).freeze())
     private val instanceLock = QuickLock()
+
+    init {
+        freeze()
+    }
+
+    constructor():this(ArrayList<T>(0))
+    constructor(initialCapacity: Int = 0):this(ArrayList<T>(initialCapacity))
 
     private inline fun <R> modifyList(proc:(MutableList<T>)->R):R{
         instanceLock.lock()

@@ -10,6 +10,11 @@ import co.touchlab.stately.freeze
  * when you started iterating is not guaranteed.
  */
 class SharedLinkedList<T>() : AbstractSharedLinkedList<T>() {
+
+    init {
+        freeze()
+    }
+
     override fun updated() {
         //Meh
     }
@@ -49,6 +54,16 @@ class SharedLinkedList<T>() : AbstractSharedLinkedList<T>() {
  * to keep in mind. If updating the list while you're iterating isn't a huge problem, use SharedLinkedList
  */
 class CopyOnIterateLinkedList<T>() : AbstractSharedLinkedList<T>() {
+
+    private val updated:AtomicInt
+    private val lastList:AtomicReference<MutableList<T>>
+
+    init {
+        updated = AtomicInt(0)
+        lastList = AtomicReference(mutableListOf<T>().freeze())
+        freeze()
+    }
+
     override fun updated() {
         updated.value = 1
     }
@@ -77,8 +92,7 @@ class CopyOnIterateLinkedList<T>() : AbstractSharedLinkedList<T>() {
         return lastList.value
     }
 
-    private val updated = AtomicInt(0)
-    private val lastList = AtomicReference(mutableListOf<T>().freeze())
+
 
 }
 

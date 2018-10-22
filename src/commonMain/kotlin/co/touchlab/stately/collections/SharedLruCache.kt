@@ -2,6 +2,7 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.QuickLock
+import co.touchlab.stately.freeze
 
 /**
  * Implementation of a least recently used cache, multithreading aware for kotlin multiplatform.
@@ -25,8 +26,12 @@ import co.touchlab.stately.concurrency.QuickLock
  */
 class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(MutableMap.MutableEntry<K, V>) -> Unit = {}):LruCache<K, V>{
 
+    private var lock: Lock = QuickLock()
+    private val cacheMap = SharedHashMap<K, CacheEntry<K, V>>(initialCapacity = maxCacheSize)
+    private val cacheList = SharedLinkedList<K>()
+
     init {
-//        mpfreeze()
+        freeze()
     }
 
     /**
@@ -169,10 +174,6 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(M
             return "LruEntry(key=$key, value=$value)"
         }
     }
-
-    private var lock: Lock = QuickLock()
-    val cacheMap = SharedHashMap<K, CacheEntry<K, V>>(initialCapacity = maxCacheSize)
-    val cacheList = SharedLinkedList<K>()
 
     private fun internalAll(): HashSet<MutableMap.MutableEntry<K, V>> {
         val set = HashSet<MutableMap.MutableEntry<K, V>>(cacheList.size)

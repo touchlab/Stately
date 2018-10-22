@@ -114,7 +114,7 @@ class SharedHashMapTest{
     }
 
     @Test
-    fun initFrozen(){
+    fun testInitFrozen(){
         assertTrue(SharedHashMap<String, MapData>().isNativeFrozen())
     }
 
