@@ -27,7 +27,7 @@ repositories {
 kotlin {
     targets {
         fromPreset(presets.jvm, 'jvm')
-//        fromPreset(presets.js, 'js')
+        fromPreset(presets.js, 'js')
         // For ARM, preset should be changed to presets.iosArm32 or presets.iosArm64
         // For Linux, preset should be changed to e.g. presets.linuxX64
         // For MacOS, preset should be changed to e.g. presets.macosX64
@@ -39,7 +39,7 @@ kotlin {
         
         
 //        fromPreset(presets.macosX64, 'nativeCommon')
-        
+
         fromPreset(presets.macosX64, 'macos')
         fromPreset(presets.iosX64, 'iosX64')
         fromPreset(presets.iosArm64, 'iosArm64')
@@ -74,7 +74,7 @@ kotlin {
             }
         }
         
-        /*jsMain {
+        jsMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
             }
@@ -83,7 +83,7 @@ kotlin {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-test-js'
             }
-        }*/
+        }
 
         nativeCommonMain { }
         nativeCommonTest { }
