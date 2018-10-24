@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package prototypes
 
-import java.util.Random
-
-actual class Random actual constructor() {
-    val random = Random()
-    actual fun nextInt() = random.nextInt()
-}
+actual fun makeListSizeOf(size: Int) {}

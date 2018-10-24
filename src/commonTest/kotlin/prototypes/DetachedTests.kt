@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package prototypes
 
-import java.util.Random
+import kotlin.test.Test
 
-actual class Random actual constructor() {
-    val random = Random()
-    actual fun nextInt() = random.nextInt()
+class DetachedTests{
+
+    /**
+     * Uncomment @Test if you want to see some timing tests
+     */
+//    @Test
+    fun arrayListTimeTest(){
+//        for(i in 1..30){
+//            makeListSizeOf(10000 * i)
+//        }
+        makeListSizeOf(10000)
+//        makeListSizeOf(20000)
+//        makeListSizeOf(30000)
+//        makeListSizeOf(40000)
+        makeListSizeOf(50000)
+        makeListSizeOf(100000)
+    }
 }
+
+expect fun makeListSizeOf(size:Int)
