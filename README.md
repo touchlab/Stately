@@ -30,11 +30,11 @@ on JVM or JS.
 
 ### ThreadLocal
 
-Place on top level var or object to make it available as thread local. See [https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L51](ThreadLocal)
+Place on top level var or object to make it available as thread local. See [`ThreadLocal`](https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L51).
 
 ### SharedImmutable
 
-Top level var will default to main thread only. To share it as an immutable, add this annotation. See [https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L59](SharedImmutable)
+Top level var will default to main thread only. To share it as an immutable, add this annotation. See [`SharedImmutable`](https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L59).
 
 ## Functions/Extensions
 
