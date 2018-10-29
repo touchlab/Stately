@@ -38,6 +38,6 @@ pluginManagement {
         }
     }
 }
-rootProject.name = 'Stately'
+rootProject.name = 'stately'
 
 enableFeaturePreview('GRADLE_METADATA')

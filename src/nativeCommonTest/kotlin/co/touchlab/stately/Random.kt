@@ -16,9 +16,8 @@
 
 package co.touchlab.stately
 
-import kotlin.random.NativeRandom
+import platform.posix.arc4random
 
 actual class Random actual constructor() {
-    val random = NativeRandom
-    actual fun nextInt(): Int = random.nextInt()
+    actual fun nextInt(): Int = arc4random().toInt()
 }
