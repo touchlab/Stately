@@ -33,6 +33,11 @@ expect fun <T> T.isFrozen(): Boolean
 expect fun <T> T.isNativeFrozen(): Boolean
 
 /**
+ * Call on an object which should never be frozen. Will help debug when something inadvertently is.
+ */
+expect fun Any.ensureNeverFrozen()
+
+/**
  * Are we in on a native platform?
  */
 expect val isNative:Boolean

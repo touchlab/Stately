@@ -58,6 +58,7 @@ kotlin {
 
         fromPreset(presets.macosX64, 'macos')
         fromPreset(presets.iosX64, 'iosX64')
+        fromPreset(presets.iosArm32, 'iosArm32')
         fromPreset(presets.iosArm64, 'iosArm64')
         
         
@@ -112,11 +113,11 @@ kotlin {
             dependsOn nativeCommonTest
         }
 
-        configure([iosX64Main, iosArm64Main, macosMain]) {
+        configure([iosX64Main, iosArm32Main, iosArm64Main, macosMain]) {
             dependsOn appleMain
         }
 
-        configure([iosX64Test, iosArm64Test, macosTest]) {
+        configure([iosX64Test, iosArm32Test, iosArm64Test, macosTest]) {
             dependsOn appleTest
         }
 
