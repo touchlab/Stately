@@ -23,3 +23,12 @@ interface Lock{
     fun lock()
     fun unlock()
 }
+
+inline fun <T> Lock.withLock(block: () -> T): T {
+    lock()
+    try {
+        return block()
+    } finally {
+        unlock()
+    }
+}
