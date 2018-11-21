@@ -16,6 +16,9 @@
 
 package co.touchlab.stately.annotation
 
+import kotlin.jvm.Throws
+import kotlin.reflect.KClass
+
 /*
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.BINARY)
@@ -32,3 +35,9 @@ annotation class SharedImmutable
 actual
 annotation class ThreadLocal
 
+/*
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
+@Retention(AnnotationRetention.SOURCE)
+actual annotation class Throws actual constructor(actual vararg val exceptionClasses: KClass<out Throwable>)*/
+
+actual typealias Throws = Throws

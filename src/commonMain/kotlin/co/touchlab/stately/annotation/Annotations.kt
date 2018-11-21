@@ -16,6 +16,8 @@
 
 package co.touchlab.stately.annotation
 
+import kotlin.reflect.KClass
+
 /**
  * expect/actual for native annotation. Only impacts native code.
  */
@@ -29,3 +31,7 @@ expect annotation class SharedImmutable()
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
 expect annotation class ThreadLocal()
+
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
+@Retention(AnnotationRetention.SOURCE)
+expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)

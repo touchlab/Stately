@@ -43,8 +43,8 @@ class HelpersTest{
         noFreeze.ensureNeverFrozen()
 
         assertFalse(noFreeze.isFrozen())
-        noFreeze.freeze()
-        assertTrue(noFreeze.isFrozen())
+        assertFails { noFreeze.freeze() }
+        assertFalse(noFreeze.isFrozen())
     }
 
     @Test

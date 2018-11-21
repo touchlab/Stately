@@ -41,3 +41,8 @@ expect fun Any.ensureNeverFrozen()
  * Are we in on a native platform?
  */
 expect val isNative:Boolean
+
+fun justcomp(){
+    val result = Result.success("asdf")
+    println(result)
+}

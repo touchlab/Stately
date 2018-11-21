@@ -32,6 +32,8 @@ fun <T> frozenLinkedList(stableIterator:Boolean = false):MutableList<T> = if(sta
 fun <K, V> frozenHashMap(initialCapacity:Int = 16, loadFactor:Float = 0.75.toFloat()):MutableMap<K, V> =
         SharedHashMap(initialCapacity, loadFactor)
 
+fun <T> frozenHashSet():MutableSet<T> = SharedSet()
+
 fun <K, V> frozenLruCache(maxCacheSize:Int, onRemove:(MutableMap.MutableEntry<K, V>) -> Unit = {}):LruCache<K, V> =
         SharedLruCache(maxCacheSize, onRemove)
 
