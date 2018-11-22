@@ -18,9 +18,21 @@ about the *why*.
 
 ## Status
 
-[![Build status](https://build.appcenter.ms/v0.1/apps/fcda190b-7ec8-43b7-8216-6fc1be836332/branches/master/badge)](https://appcenter.ms)
+[![Build status](https://build.appcenter.ms/v0.1/apps/fcda190b-7ec8-43b7-8216-6fc1be836332/branches/master/badge)](https://appcenter.ms)  [ ![Download](https://api.bintray.com/packages/touchlabpublic/kotlin/Stately/images/download.svg) ](https://bintray.com/touchlabpublic/kotlin/Stately/_latestVersion) 
 
 This a pretty early version. Expect changes in the near future.
+
+## Maven
+
+```groovy
+repositories {
+    maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
+}
+
+dependencies {
+    implementation 'co.touchlab.stately:Stately:$statelyVersion'
+}
+```
 
 ## Annotations
 
