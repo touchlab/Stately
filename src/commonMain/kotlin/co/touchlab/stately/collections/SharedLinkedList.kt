@@ -327,8 +327,9 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
                 list.head.value = ins
             } else {
                 prevNode.next.value = ins
-                prev.value = ins
             }
+
+            prev.value = ins
 
             return true
         }
@@ -361,8 +362,8 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
         /**
          * For iterators, make sure 'next' is always updated last so we don't need to lock nav.
          */
-        fun remove() = list.withLock {
-            internalRemove()
+        fun remove(permanent: Boolean = true) = list.withLock {
+            internalRemove(permanent)
         }
 
         val isRemoved: Boolean

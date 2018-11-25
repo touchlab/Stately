@@ -166,7 +166,7 @@ abstract class AbstractStableReadListTest<T> {
         assertEquals(-1, list.lastIndexOf(ListData("a 21")))
     }
 
-    fun createThreadOps() = ThreadOps {mutableListOf<ListData>()}
+    fun createThreadOps() = ThreadOps {createList<ListData>()}
 
     @Test
     fun mtAdd() {

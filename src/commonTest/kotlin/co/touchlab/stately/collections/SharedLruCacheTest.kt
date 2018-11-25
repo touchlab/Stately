@@ -106,6 +106,22 @@ class SharedLruCacheTest{
     }
 
     @Test
+    fun removeSkip(){
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
+
+        addEntries(4, sc)
+
+        assertEquals(MapData("Value: 2"), sc.remove("Key: 2", skipCallback = true))
+        assertEquals(MapData("Value: 0"), sc.remove("Key: 0", skipCallback = false))
+        assertNull(sc.remove("Key: 5", skipCallback = true))
+
+        assertEquals(1, collect.size)
+    }
+
+    @Test
     fun entries() {
         val collect = SharedLinkedList<MapData>()
         val sc = SharedLruCache<String, MapData>(4) {

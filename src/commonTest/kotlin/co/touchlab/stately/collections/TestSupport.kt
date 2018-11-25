@@ -57,9 +57,9 @@ class ThreadOps<C>(val producer:()->C){
 
         val workers= Array(threads){MPWorker()}
         for(i in 0 until exes.size){
-            val ex = exes[i](collection)
+            val ex = exes[i]
             workers[i % workers.size]
-                .runBackground { ex }
+                .runBackground { ex(collection) }
         }
         workers.forEach { it.requestTermination() }
 
@@ -70,3 +70,5 @@ class ThreadOps<C>(val producer:()->C){
         return collection
     }
 }
+
+expect fun currentTimeMillis(): Long

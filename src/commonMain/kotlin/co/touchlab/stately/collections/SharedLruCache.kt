@@ -102,7 +102,7 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(M
     /**
      * Removes value at key (if it exists). If a value is found, it is passed to onRemove.
      */
-    override fun remove(key: K) {
+    override fun remove(key: K, skipCallback: Boolean):V? {
         var removeEntry: LruEntry<K, V>? = null
         withLock {
             val entry = cacheMap.remove(key)
@@ -111,8 +111,10 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(M
                 removeEntry = LruEntry(key, entry.v)
             }
         }
-        if(removeEntry != null)
+        if(!skipCallback && removeEntry != null)
             onRemove(removeEntry!!)
+
+        return removeEntry?.value
     }
 
     /**
@@ -222,7 +224,7 @@ class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(M
 
 interface LruCache<K, V>{
     fun put(key:K, value:V):V?
-    fun remove(key:K)
+    fun remove(key:K, skipCallback: Boolean = false):V?
     val entries: MutableSet<MutableMap.MutableEntry<K, V>>
     fun removeAll(skipCallback:Boolean = false)
     fun get(key:K):V?

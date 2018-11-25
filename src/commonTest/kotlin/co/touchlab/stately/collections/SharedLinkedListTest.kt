@@ -292,6 +292,20 @@ class LinkedListTest{
     }
 
     @Test
+    fun nodeRemovePermanent(){
+        val ll = makeTen()
+        val node = ll.internalNodeAt(5)
+        node.remove(permanent = false)
+        assertEquals(9, ll.size)
+        assertFalse(node.isRemoved)
+
+        val node2 = ll.internalNodeAt(5)
+        node2.remove(permanent = true)
+        assertEquals(8, ll.size)
+        assertTrue(node2.isRemoved)
+    }
+
+    @Test
     fun mtNodeAdd(){
         val LOOPS = 1_000
         val DOOPS = 100
@@ -320,6 +334,20 @@ class LinkedListTest{
 
         var loopCount = 0
         var doopCount = 0
+
+        /*var debugPrint = 0
+        println("total size ${ll.size}")
+        var handCount = 0
+        ll.forEach { handCount++ }
+
+        println("hand size ${handCount}")
+
+        ll.forEach {
+            if(debugPrint < 2500)
+            println(it)
+            debugPrint++
+        }*/
+
         ll.iterator().forEach {
             assertEquals(ListData("a $loopCount sub $doopCount"), it)
 
@@ -556,8 +584,6 @@ class LinkedListTest{
         return ll
     }
 }
-
-expect fun currentTimeMillis(): Long
 
 data class ListData(val s:String)
 data class TestData(val s:String)

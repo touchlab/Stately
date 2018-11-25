@@ -21,6 +21,7 @@ import kotlin.native.concurrent.Future
 import kotlin.native.concurrent.TransferMode
 import kotlin.native.concurrent.Worker
 import kotlin.native.concurrent.freeze
+import kotlin.system.getTimeMillis
 
 actual class MPWorker actual constructor(){
     val worker = Worker.start()
@@ -42,3 +43,5 @@ actual class MPFuture<T>(private val future:Future<T>) {
 actual fun sleep(time: Long) {
     NSThread.sleepForTimeInterval(time.toDouble()/1000.toDouble())
 }
+
+actual fun currentTimeMillis(): Long = getTimeMillis()
