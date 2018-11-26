@@ -17,19 +17,19 @@
 package co.touchlab.stately.concurrency
 
 /**
- * A simple mutex lock.
+ * On JVM this is a java.util.concurrent.Semaphore instance. On anything from apple this is an NSLock. On
+ * all other platforms this will currently be a spin lock, as pthread_mutex requires a destructor.
  */
-interface Lock{
-    fun lock()
-    fun unlock()
-    fun tryAcquire():Boolean
-}
-
-inline fun <T> Lock.withLock(block: () -> T): T {
-    lock()
-    try {
-        return block()
-    } finally {
-        unlock()
+actual class SingleLock actual constructor() : Lock {
+    var locked = false
+    actual override fun lock() {
+        if(locked)
+            throw IllegalStateException("Locks are non-reentrant and JS is single threaded")
+        locked = true
     }
+    actual override fun unlock() {
+        locked = false
+    }
+
+    actual override fun tryAcquire(): Boolean = !locked
 }

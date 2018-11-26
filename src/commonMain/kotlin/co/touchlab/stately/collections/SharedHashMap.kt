@@ -19,7 +19,7 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.Lock
-import co.touchlab.stately.concurrency.QuickLock
+import co.touchlab.stately.concurrency.SingleLock
 import co.touchlab.stately.freeze
 
 /**
@@ -40,7 +40,7 @@ class SharedHashMap<K, V>(initialCapacity:Int = 16, val loadFactor:Float = 0.75.
         }
     }
 
-    private var lock: Lock = QuickLock()
+    private var lock: Lock = SingleLock()
     private var threshold:AtomicInt
     private val atomSize = AtomicInt(0)
     private val buckets:AtomicReference<Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>>

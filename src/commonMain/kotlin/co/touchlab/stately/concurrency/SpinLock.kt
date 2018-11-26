@@ -17,17 +17,30 @@
 package co.touchlab.stately.concurrency
 
 /**
- * On JVM this is a java.util.concurrent.Semaphore instance. On anything from apple this is an NSLock. On
- * all other platforms this will currently be a spin lock, as pthread_mutex requires a destructor.
+ * Good performance for short operations, but can consume lots of cpu if used in the
+ * wrong type of place.
+ *
+ * If you don't know what this is, use @see co.touchlab.stately.concurrency.ReentrantLock
  */
-actual class QuickLock actual constructor() : Lock {
-    var locked = false
-    actual override fun lock() {
-        if(locked)
-            throw IllegalStateException("Locks are non-reentrant and JS is single threaded")
-        locked = true
+class SpinLock:Lock{
+    val atomicLock = AtomicInt(0)
+
+    override fun lock() {
+        spinLock()
     }
-    actual override fun unlock() {
-        locked = false
+
+    override fun unlock() {
+        spinUnlock()
+    }
+
+    override fun tryAcquire(): Boolean = atomicLock.value == 0
+
+    private fun spinLock(){
+        while (!atomicLock.compareAndSet(0, 1)){}
+    }
+
+    private fun spinUnlock(){
+        if(!atomicLock.compareAndSet(1, 0))
+            throw IllegalStateException("Lock must always be 1 in unlock")
     }
 }

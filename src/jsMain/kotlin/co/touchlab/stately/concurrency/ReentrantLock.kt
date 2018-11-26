@@ -17,19 +17,10 @@
 package co.touchlab.stately.concurrency
 
 /**
- * A simple mutex lock.
+ * Reentrant locks aren't super exciting in a single threaded world.
  */
-interface Lock{
-    fun lock()
-    fun unlock()
-    fun tryAcquire():Boolean
-}
-
-inline fun <T> Lock.withLock(block: () -> T): T {
-    lock()
-    try {
-        return block()
-    } finally {
-        unlock()
-    }
+actual class ReentrantLock actual constructor() : Lock {
+    actual override fun lock() {}
+    actual override fun unlock() {}
+    actual override fun tryAcquire(): Boolean = true
 }
