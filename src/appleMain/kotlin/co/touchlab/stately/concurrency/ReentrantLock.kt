@@ -16,20 +16,18 @@
 
 package co.touchlab.stately.concurrency
 
-/**
- * A simple mutex lock.
- */
-interface Lock{
-    fun lock()
-    fun unlock()
-    fun tryAcquire():Boolean
-}
+import platform.Foundation.NSRecursiveLock
 
-inline fun <T> Lock.withLock(block: () -> T): T {
-    lock()
-    try {
-        return block()
-    } finally {
-        unlock()
+actual class ReentrantLock actual constructor() : Lock {
+    private val recursiveLock = NSRecursiveLock()
+
+    actual override fun lock() {
+        recursiveLock.lock()
     }
+
+    actual override fun unlock() {
+        recursiveLock.unlock()
+    }
+
+    actual override fun tryAcquire(): Boolean = recursiveLock.tryLock()
 }

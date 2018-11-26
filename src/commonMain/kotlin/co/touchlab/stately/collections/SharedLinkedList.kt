@@ -399,7 +399,7 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
         }
     }
 
-    private var lock: Lock = QuickLock()
+    private var lock: Lock = SingleLock()
     internal val sizeCount = AtomicInt(0)
     internal val head = AtomicReference<Node<T>?>(null)
     internal val tail = AtomicReference<Node<T>?>(null)

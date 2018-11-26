@@ -16,20 +16,20 @@
 
 package co.touchlab.stately.concurrency
 
-/**
- * A simple mutex lock.
- */
-interface Lock{
-    fun lock()
-    fun unlock()
-    fun tryAcquire():Boolean
-}
+import java.util.concurrent.Semaphore
 
-inline fun <T> Lock.withLock(block: () -> T): T {
-    lock()
-    try {
-        return block()
-    } finally {
-        unlock()
+actual class SingleLock : Lock {
+    private val mutex = Semaphore(1)
+
+    actual override fun lock() {
+        mutex.acquire()
+    }
+
+    actual override fun unlock() {
+        mutex.release()
+    }
+
+    actual override fun tryAcquire():Boolean {
+        return mutex.tryAcquire()
     }
 }

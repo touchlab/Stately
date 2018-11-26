@@ -2,7 +2,7 @@ package co.touchlab.stately.concurrency
 
 import platform.Foundation.NSLock
 
-actual class QuickLock actual constructor() : Lock {
+actual class SingleLock actual constructor() : Lock {
     val lock = NSLock()
 
     actual override fun lock() {
@@ -12,4 +12,6 @@ actual class QuickLock actual constructor() : Lock {
     actual override fun unlock() {
         lock.unlock()
     }
+
+    actual override fun tryAcquire(): Boolean = lock.tryLock()
 }
