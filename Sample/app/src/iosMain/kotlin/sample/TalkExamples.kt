@@ -30,7 +30,7 @@ val frozenData = FrozenData(
     AtomicReference(
         OtherState(
             1,
-            "qwert")
+            "qwert").freeze()
     )
 ).freeze()
 
