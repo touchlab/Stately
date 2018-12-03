@@ -6,24 +6,6 @@ import kotlin.native.concurrent.AtomicReference
 import kotlin.native.concurrent.DetachedObjectGraph
 import kotlin.native.concurrent.TransferMode
 
-class TalkExamplesNative{
-    var justCountingStuff:Int = 0
-
-    init {
-        backgroundCall {
-            //do something
-            justCountingStuff++
-        }.freeze()
-    }
-
-
-
-    fun detachState(a:SomeState):DetachedObjectGraph<SomeState>{
-        return DetachedObjectGraph(TransferMode.SAFE, {a})
-    }
-
-}
-
 val frozenData = FrozenData(
     AtomicInt(1),
     "asdf",

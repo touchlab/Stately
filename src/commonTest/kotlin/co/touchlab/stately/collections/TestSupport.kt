@@ -59,7 +59,9 @@ class ThreadOps<C>(val producer:()->C){
         for(i in 0 until exes.size){
             val ex = exes[i]
             workers[i % workers.size]
-                .runBackground { ex(collection) }
+                .runBackground {
+                    ex(collection)
+                }
         }
         workers.forEach { it.requestTermination() }
 
