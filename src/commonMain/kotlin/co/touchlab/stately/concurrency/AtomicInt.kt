@@ -19,11 +19,18 @@ package co.touchlab.stately.concurrency
 /**
  * Multiplatform AtomicInt implementation
  */
-expect class AtomicInt(value_: Int) {
-    var value:Int
-    fun increment()
-    fun decrement()
+expect class AtomicInt(initialValue: Int) {
+    fun get():Int
+    fun set(newValue:Int)
+    fun incrementAndGet():Int
+    fun decrementAndGet():Int
 
     fun addAndGet(delta: Int): Int
     fun compareAndSet(expected: Int, new: Int): Boolean
 }
+
+var AtomicInt.value
+    get() = get()
+    set(value) {
+        set(value)
+    }

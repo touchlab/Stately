@@ -13,18 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+@file:JvmName("AtomicReferenceActual")
 package co.touchlab.stately.concurrency
 
 import java.util.concurrent.atomic.AtomicReference
 
-actual class AtomicReference<T> actual constructor(value_: T) {
-    private val atom = AtomicReference(value_)
-    actual var value: T
-        get() = atom.get()
-        set(value) {
-            atom.set(value)
-        }
-
-    actual fun compareAndSet(expected: T, new: T): Boolean = atom.compareAndSet(expected, new)
-}
+actual typealias AtomicReference<V> = AtomicReference<V>

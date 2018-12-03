@@ -18,6 +18,7 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.Random
 import co.touchlab.stately.concurrency.AtomicInt
+import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.stately.isNativeFrozen
 import kotlin.test.*
@@ -213,7 +214,7 @@ class SharedHashMapTest{
                 }
             }
 
-            count.increment()
+            count.incrementAndGet()
         }
         workers.forEach { it.requestTermination() }
 

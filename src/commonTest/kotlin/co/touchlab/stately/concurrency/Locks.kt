@@ -29,20 +29,7 @@ import kotlin.test.assertTrue
 class Locks{
     @Test
     fun spinLockWorks(){
-        basicLockWorks(SpinLock())
-    }
-
-    @Test
-    fun singleLockWorks(){
-        basicLockWorks(SingleLock())
-    }
-
-    @Test
-    fun reentrantLockWorks(){
-        basicLockWorks(ReentrantLock())
-    }
-
-    fun basicLockWorks(lock:Lock){
+        val lock = Lock()
         val ops = ThreadOps {Unit}
 
         val times = frozenLinkedList<Long>()

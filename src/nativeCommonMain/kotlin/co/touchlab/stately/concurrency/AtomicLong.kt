@@ -18,4 +18,21 @@ package co.touchlab.stately.concurrency
 
 import kotlin.native.concurrent.AtomicLong
 
-actual typealias AtomicLong = AtomicLong
+actual class AtomicLong actual constructor(initialValue:Long){
+    private val atom = AtomicLong(initialValue)
+
+    actual fun get(): Long = atom.value
+
+    actual fun set(newValue: Long) {
+        atom.value = newValue
+    }
+
+    actual fun incrementAndGet(): Long = atom.addAndGet(1)
+
+    actual fun decrementAndGet(): Long = atom.addAndGet(-1)
+
+    actual fun addAndGet(delta: Long): Long = atom.addAndGet(delta)
+
+    actual fun compareAndSet(expected: Long, new: Long): Boolean = atom.compareAndSet(expected, new)
+
+}

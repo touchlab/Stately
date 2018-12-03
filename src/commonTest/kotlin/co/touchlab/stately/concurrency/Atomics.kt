@@ -55,16 +55,16 @@ class Atomics{
         val ref = AtomicInt(22)
         assertEquals(22, ref.value)
 
-        ref.increment()
+        ref.incrementAndGet()
 
         assertEquals(23, ref.value)
 
-        ref.increment()
-        ref.increment()
+        ref.incrementAndGet()
+        ref.incrementAndGet()
 
         assertEquals(25, ref.value)
 
-        ref.decrement()
+        ref.decrementAndGet()
 
         assertEquals(24, ref.value)
 
@@ -87,16 +87,16 @@ class Atomics{
         val ref = AtomicLong(22)
         assertEquals(22, ref.value)
 
-        ref.increment()
+        ref.incrementAndGet()
 
         assertEquals(23, ref.value)
 
-        ref.increment()
-        ref.increment()
+        ref.incrementAndGet()
+        ref.incrementAndGet()
 
         assertEquals(25, ref.value)
 
-        ref.decrement()
+        ref.decrementAndGet()
 
         assertEquals(24, ref.value)
 

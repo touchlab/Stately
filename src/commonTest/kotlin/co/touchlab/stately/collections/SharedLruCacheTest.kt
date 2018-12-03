@@ -17,6 +17,7 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.AtomicInt
+import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.stately.isNative
 import co.touchlab.stately.isNativeFrozen
@@ -306,7 +307,7 @@ class SharedLruCacheTest{
 
         val count = AtomicInt(0)
         val ops = ThreadOps<SharedLruCache<String, MapData>> {
-            SharedLruCache(CACHE_SIZE){count.increment()}
+            SharedLruCache(CACHE_SIZE){count.incrementAndGet()}
         }
 
         for(i in 0 until LOOPS){

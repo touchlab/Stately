@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+@file:JvmName("LockIntActual")
 package co.touchlab.stately.concurrency
 
-/**
- * Single (non-reentrant) lock
- */
-expect class SingleLock():Lock{
-    override fun lock()
-    override fun unlock()
-    override fun tryAcquire():Boolean
-}
+actual typealias Lock = java.util.concurrent.locks.ReentrantLock

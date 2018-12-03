@@ -16,8 +16,6 @@
 
 package co.touchlab.stately.concurrency
 
-expect class ReentrantLock():Lock{
-    override fun lock()
-    override fun unlock()
-    override fun tryAcquire():Boolean
-}
+import platform.Foundation.NSRecursiveLock
+
+actual typealias Lock = NSRecursiveLock

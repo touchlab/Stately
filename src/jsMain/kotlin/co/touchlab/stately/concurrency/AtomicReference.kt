@@ -19,20 +19,26 @@ package co.touchlab.stately.concurrency
 /**
  * Multiplatform AtomicReference implementation
  */
-actual class AtomicReference<T> actual constructor(value_: T) {
-    actual var value: T = value_
+actual class AtomicReference<V> actual constructor(initialValue: V) {
+    private var internalValue: V = initialValue
 
     /**
      * Compare current value with expected and set to new if they're the same. Note, 'compare' is checking
      * the actual object id, not 'equals'.
      */
-    actual fun compareAndSet(expected: T, new: T): Boolean {
-        return if(expected === value){
-            value = new
+    actual fun compareAndSet(expected: V, new: V): Boolean {
+        return if(expected === internalValue){
+            internalValue = new
             true
         }else{
             false
         }
+    }
+
+    actual fun get(): V = internalValue
+
+    actual fun set(value_: V) {
+        internalValue = value_
     }
 
 }

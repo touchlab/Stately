@@ -19,8 +19,8 @@ package co.touchlab.stately.concurrency
 /**
  * Reentrant locks aren't super exciting in a single threaded world.
  */
-actual class ReentrantLock actual constructor() : Lock {
-    actual override fun lock() {}
-    actual override fun unlock() {}
-    actual override fun tryAcquire(): Boolean = true
+actual class Lock actual constructor()  {
+    actual fun lock() {}
+    actual fun unlock() {}
+    actual fun tryLock(): Boolean = true
 }

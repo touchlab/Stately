@@ -17,7 +17,6 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.Lock
-import co.touchlab.stately.concurrency.SingleLock
 import co.touchlab.stately.freeze
 
 /**
@@ -42,7 +41,7 @@ import co.touchlab.stately.freeze
  */
 class SharedLruCache<K, V>(private val maxCacheSize:Int, private val onRemove:(MutableMap.MutableEntry<K, V>) -> Unit = {}):LruCache<K, V>{
 
-    private var lock: Lock = SingleLock()
+    private var lock: Lock = Lock()
     private val cacheMap = SharedHashMap<K, CacheEntry<K, V>>(initialCapacity = maxCacheSize)
     private val cacheList = SharedLinkedList<K>()
 

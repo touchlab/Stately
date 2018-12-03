@@ -19,10 +19,10 @@ package co.touchlab.stately.concurrency
 /**
  * A simple mutex lock.
  */
-interface Lock{
+expect class Lock(){
     fun lock()
     fun unlock()
-    fun tryAcquire():Boolean
+    fun tryLock():Boolean
 }
 
 inline fun <T> Lock.withLock(block: () -> T): T {

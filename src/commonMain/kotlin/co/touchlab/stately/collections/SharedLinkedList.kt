@@ -320,7 +320,7 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
             ins.prev.value = prevNode
             ins.next.value = this
 
-            list.sizeCount.increment()
+            list.sizeCount.incrementAndGet()
 
             //If replacing 0
             if (prevNode == null) {
@@ -383,7 +383,7 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
             val prevNode = prev.value
             val nextNode = next.value
 
-            list.sizeCount.decrement()
+            list.sizeCount.decrementAndGet()
 
             if (nextNode == null) {
                 list.tail.value = prevNode
@@ -399,7 +399,7 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
         }
     }
 
-    private var lock: Lock = SingleLock()
+    private var lock: Lock = Lock()
     internal val sizeCount = AtomicInt(0)
     internal val head = AtomicReference<Node<T>?>(null)
     internal val tail = AtomicReference<Node<T>?>(null)
@@ -448,7 +448,7 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
             node.prev.value = prev
             tail.value = node
         }
-        sizeCount.increment()
+        sizeCount.incrementAndGet()
         return true
     }
 

@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2018 Touchlab, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 package co.touchlab.stately.concurrency
 
 /*
+
 import platform.Foundation.NSLock
 
 actual class QuickLock actual constructor() : Lock {
