@@ -21,24 +21,18 @@ import co.touchlab.stately.annotation.ThreadLocal
 actual open class ThreadLocalRef<T> actual constructor(){
     private val threadLocalId = ThreadLocalIdCounter.nextThreadLocalId()
 
-    actual var value: T?
-        get() = get()
-        set(value) {
-            set(value)
-        }
-
     actual fun remove(){
         ThreadLocalState.threadLocalMap.remove(threadLocalId)
     }
 
-    private fun get():T?{
+    actual fun get():T?{
         return if(ThreadLocalState.threadLocalMap.containsKey(threadLocalId))
             ThreadLocalState.threadLocalMap.get(threadLocalId) as T
         else
             null
     }
 
-    fun set(value: T?){
+    actual fun set(value: T?){
         if(value == null)
             remove()
         else

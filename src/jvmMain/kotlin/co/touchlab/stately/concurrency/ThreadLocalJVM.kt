@@ -18,15 +18,4 @@ package co.touchlab.stately.concurrency
 
 import java.lang.ThreadLocal
 
-actual open class ThreadLocalRef<T> actual constructor() {
-    private val tl = ThreadLocal<T>()
-    actual var value: T?
-        get() = tl.get()
-        set(value) {
-            tl.set(value)
-        }
-
-    actual fun remove() {
-        value = null
-    }
-}
+actual typealias ThreadLocalRef<T> = ThreadLocal<T>
