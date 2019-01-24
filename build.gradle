@@ -41,7 +41,7 @@ kotlin {
         //Uncomment to refresh intellij plugin
 //        fromPreset(presets.macosX64, 'nativeCommon')
 //        fromPreset(presets.macosX64, 'apple')
-        
+
         fromPreset(presets.jvm, 'jvm')
         fromPreset(presets.js, 'js')
         fromPreset(presets.macosX64, 'macos')
@@ -84,8 +84,13 @@ kotlin {
             }
         }
 
-        nativeCommonMain { }
-        nativeCommonTest { }
+        nativeCommonMain {
+            dependsOn commonMain
+        }
+        
+        nativeCommonTest {
+            dependsOn commonTest
+        }
 
         appleMain {
             dependsOn nativeCommonMain
