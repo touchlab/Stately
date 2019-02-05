@@ -48,6 +48,7 @@ kotlin {
         fromPreset(presets.iosX64, 'iosX64')
         fromPreset(presets.iosArm32, 'iosArm32')
         fromPreset(presets.iosArm64, 'iosArm64')
+        fromPreset(presets.mingwX64, 'mingw')
     }
     sourceSets {
         commonMain {
@@ -108,7 +109,7 @@ kotlin {
             dependsOn appleTest
         }
 
-        /*otherNativeMain {
+        otherNativeMain {
             dependsOn nativeCommonMain
         }
 
@@ -116,7 +117,15 @@ kotlin {
             dependsOn nativeCommonTest
         }
 
-        configure([androidNativeArm32, androidNativeArm64]) {
+        configure([mingwMain]) {
+            dependsOn otherNativeMain
+        }
+
+        configure([mingwTest]) {
+            dependsOn otherNativeTest
+        }
+
+        /*configure([androidNativeArm32, androidNativeArm64]) {
             dependsOn otherNativeMain
         }
 

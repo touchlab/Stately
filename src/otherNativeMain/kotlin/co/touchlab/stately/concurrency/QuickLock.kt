@@ -2,15 +2,19 @@ package co.touchlab.stately.concurrency
 
 import kotlin.native.concurrent.AtomicInt
 
-actual class QuickLock actual constructor() : Lock {
+actual class Lock actual constructor() {
     val lock = AtomicInt(0)
 
-    actual override fun lock() {
+    actual fun lock() {
         spinLock()
     }
 
-    actual override fun unlock() {
+    actual fun unlock() {
         spinUnlock()
+    }
+
+    actual fun tryLock():Boolean {
+        return lock.compareAndSet(0, 1)
     }
 
     private fun spinLock(){

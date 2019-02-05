@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.collections
 
-import kotlin.random.Random
+import platform.windows.Sleep
 
-actual class Random actual constructor() {
-    actual fun nextInt(): Int = Random.nextInt()
+@ExperimentalUnsignedTypes
+actual fun sleep(time: Long) {
+    Sleep(time.toUInt())
 }

@@ -20,7 +20,7 @@ import co.touchlab.stately.collections.ListData
 import co.touchlab.stately.collections.SharedLinkedList
 import co.touchlab.stately.collections.frozenCopyOnWriteList
 import co.touchlab.stately.collections.frozenLinkedList
-import platform.Foundation.NSLock
+import co.touchlab.stately.concurrency.Lock
 import kotlin.native.concurrent.*
 import kotlin.system.getTimeMillis
 
@@ -80,7 +80,7 @@ class SharedMutableList<E>():MutableList<E>{
         DetachedObjectGraph(mode = TransferMode.SAFE,
             producer = { mutableListOf<E>() as Any })
     )
-    private val lock = NSLock()
+    private val lock = Lock()
     internal fun withLockDetached(proc: (MutableList<E>) -> MutableList<E>) {
         lock.lock()
         try {
