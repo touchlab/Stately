@@ -16,15 +16,15 @@
 
 package co.touchlab.stately.concurrency
 
-expect open class ThreadLocalRef<T>(){
-    fun get():T?
-    fun set(value: T?)
-    fun remove()
+expect open class ThreadLocalRef<T>() {
+  fun get(): T?
+  fun set(value: T?)
+  fun remove()
 }
 
-var <T> ThreadLocalRef<T>.value:T?
-    get() = get()
-    set(value) {
-        set(value)
-    }
+var <T> ThreadLocalRef<T>.value: T?
+  get() = get()
+  set(value) {
+    set(value)
+  }
 

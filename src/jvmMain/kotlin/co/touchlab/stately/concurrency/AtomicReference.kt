@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:JvmName("AtomicReferenceActual")
+
 package co.touchlab.stately.concurrency
 
 import java.util.concurrent.atomic.AtomicReference

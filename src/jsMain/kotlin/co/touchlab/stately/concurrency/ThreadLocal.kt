@@ -17,12 +17,15 @@
 package co.touchlab.stately.concurrency
 
 actual open class ThreadLocalRef<T> actual constructor() {
-    private var localValue: T? = null
+  private var localValue: T? = null
 
-    actual fun remove() {value = null}
-    actual fun get(): T? = localValue
+  actual fun remove() {
+    value = null
+  }
 
-    actual fun set(value: T?) {
-        localValue = value
-    }
+  actual fun get(): T? = localValue
+
+  actual fun set(value: T?) {
+    localValue = value
+  }
 }

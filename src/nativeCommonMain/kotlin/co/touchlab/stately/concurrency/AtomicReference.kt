@@ -19,18 +19,18 @@ package co.touchlab.stately.concurrency
 import kotlin.native.concurrent.AtomicReference
 
 //actual typealias AtomicReference<T> = AtomicReference<T>
-actual class AtomicReference<V> actual constructor(initialValue:V){
-    private val atom = AtomicReference(initialValue)
-    actual fun get(): V = atom.value
+actual class AtomicReference<V> actual constructor(initialValue: V) {
+  private val atom = AtomicReference(initialValue)
+  actual fun get(): V = atom.value
 
-    actual fun set(value_: V) {
-        atom.value = value_
-    }
+  actual fun set(value_: V) {
+    atom.value = value_
+  }
 
-    /**
-     * Compare current value with expected and set to new if they're the same. Note, 'compare' is checking
-     * the actual object id, not 'equals'.
-     */
-    actual fun compareAndSet(expected: V, new: V): Boolean = atom.compareAndSet(expected, new)
+  /**
+   * Compare current value with expected and set to new if they're the same. Note, 'compare' is checking
+   * the actual object id, not 'equals'.
+   */
+  actual fun compareAndSet(expected: V, new: V): Boolean = atom.compareAndSet(expected, new)
 }
 

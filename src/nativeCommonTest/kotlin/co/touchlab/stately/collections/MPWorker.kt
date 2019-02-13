@@ -23,25 +23,25 @@ import kotlin.native.concurrent.Worker
 import kotlin.native.concurrent.freeze
 import kotlin.system.getTimeMillis
 
-actual class MPWorker actual constructor(){
-    val worker = Worker.start()
-    actual fun <T> runBackground(backJob: () -> T): MPFuture<T> {
-        return MPFuture(worker.execute(TransferMode.SAFE, {backJob.freeze()}){
-            it()
-        })
-    }
+actual class MPWorker actual constructor() {
+  val worker = Worker.start()
+  actual fun <T> runBackground(backJob: () -> T): MPFuture<T> {
+    return MPFuture(worker.execute(TransferMode.SAFE, { backJob.freeze() }) {
+      it()
+    })
+  }
 
-    actual fun requestTermination() {
-        worker.requestTermination().result
-    }
+  actual fun requestTermination() {
+    worker.requestTermination().result
+  }
 }
 
-actual class MPFuture<T>(private val future:Future<T>) {
-    actual fun consume():T = future.result
+actual class MPFuture<T>(private val future: Future<T>) {
+  actual fun consume(): T = future.result
 }
 
 actual fun sleep(time: Long) {
-    NSThread.sleepForTimeInterval(time.toDouble()/1000.toDouble())
+  NSThread.sleepForTimeInterval(time.toDouble() / 1000.toDouble())
 }
 
 actual fun currentTimeMillis(): Long = getTimeMillis()

@@ -26,33 +26,33 @@ import kotlin.test.assertTrue
 /**
  * Just testing that the locks do their basic thing. Not testing reentrant/single.
  */
-class Locks{
-    @Test
-    fun spinLockWorks(){
-        val lock = Lock()
-        val ops = ThreadOps {Unit}
+class Locks {
+  @Test
+  fun spinLockWorks() {
+    val lock = Lock()
+    val ops = ThreadOps { Unit }
 
-        val times = frozenLinkedList<Long>()
-        val start = currentTimeMillis()
+    val times = frozenLinkedList<Long>()
+    val start = currentTimeMillis()
 
-        val THREADS = 3
+    val THREADS = 3
 
-        for(i in 0 until THREADS)
-        ops.exe {
-            lock.withLock{
-                sleep(1000)
-                times.add(currentTimeMillis())
-            }
+    for (i in 0 until THREADS)
+      ops.exe {
+        lock.withLock {
+          sleep(1000)
+          times.add(currentTimeMillis())
         }
+      }
 
-        ops.run(THREADS)
+    ops.run(THREADS)
 
-        var lastVal = start
+    var lastVal = start
 
-        times.forEach {
-            val diff = it - lastVal
-            assertTrue { diff in 900..1100 }
-            lastVal = it
-        }
+    times.forEach {
+      val diff = it - lastVal
+      assertTrue { diff in 900..1100 }
+      lastVal = it
     }
+  }
 }

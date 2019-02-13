@@ -20,28 +20,29 @@ package co.touchlab.stately.concurrency
  * Multiplatform AtomicLong implementation
  */
 actual class AtomicLong actual constructor(initialValue: Long) {
-    private var internalValue: Long = initialValue
+  private var internalValue: Long = initialValue
 
-    actual fun addAndGet(delta: Long): Long {
-        internalValue += delta
-        return internalValue
+  actual fun addAndGet(delta: Long): Long {
+    internalValue += delta
+    return internalValue
+  }
+
+  actual fun compareAndSet(expected: Long, new: Long): Boolean {
+    return if (expected == internalValue) {
+      internalValue = new
+      true
+    } else {
+      false
     }
+  }
 
-    actual fun compareAndSet(expected: Long, new: Long): Boolean {
-        return if (expected == internalValue) {
-            internalValue = new
-            true
-        } else {
-            false
-        }
-    }
+  actual fun get(): Long = internalValue
 
-    actual fun get(): Long = internalValue
+  actual fun set(newValue: Long) {
+    internalValue = newValue
+  }
 
-    actual fun set(newValue: Long) {
-        internalValue = newValue
-    }
-    actual fun incrementAndGet(): Long = addAndGet(1)
+  actual fun incrementAndGet(): Long = addAndGet(1)
 
-    actual fun decrementAndGet(): Long = addAndGet(-1)
+  actual fun decrementAndGet(): Long = addAndGet(-1)
 }

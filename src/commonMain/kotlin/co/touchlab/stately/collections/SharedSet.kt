@@ -18,55 +18,55 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.freeze
 
-class SharedSet<T> :MutableSet<T>{
-    private val backingMap = frozenHashMap<T, Unit>()
+class SharedSet<T> : MutableSet<T> {
+  private val backingMap = frozenHashMap<T, Unit>()
 
-    init {
-        freeze()
+  init {
+    freeze()
+  }
+
+  override fun add(element: T): Boolean {
+    val result = backingMap.containsKey(element)
+    backingMap.put(element, Unit)
+    return !result
+  }
+
+  override fun addAll(elements: Collection<T>): Boolean =
+    elements.fold(false) { b, t ->
+      val result = backingMap.containsKey(t)
+      backingMap.put(t, Unit)
+      b || result
     }
 
-    override fun add(element: T): Boolean {
-        val result = backingMap.containsKey(element)
-        backingMap.put(element, Unit)
-        return !result
+  override fun clear() {
+    backingMap.clear()
+  }
+
+  override fun remove(element: T): Boolean {
+    val result = backingMap.containsKey(element)
+    backingMap.remove(element)
+    return result
+  }
+
+  override fun removeAll(elements: Collection<T>): Boolean =
+    elements.fold(false) { b, t ->
+      val result = backingMap.containsKey(t)
+      backingMap.remove(t)
+      b || result
     }
 
-    override fun addAll(elements: Collection<T>): Boolean =
-        elements.fold(false) { b, t ->
-            val result = backingMap.containsKey(t)
-            backingMap.put(t, Unit)
-            b || result
-        }
+  override fun retainAll(elements: Collection<T>): Boolean {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+  }
 
-    override fun clear() {
-        backingMap.clear()
-    }
+  override val size: Int
+    get() = backingMap.size
 
-    override fun remove(element: T): Boolean {
-        val result = backingMap.containsKey(element)
-        backingMap.remove(element)
-        return result
-    }
+  override fun contains(element: T): Boolean = backingMap.containsKey(element)
 
-    override fun removeAll(elements: Collection<T>): Boolean  =
-        elements.fold(false) { b, t ->
-            val result = backingMap.containsKey(t)
-            backingMap.remove(t)
-            b || result
-        }
+  override fun containsAll(elements: Collection<T>): Boolean = backingMap.keys.containsAll(elements)
 
-    override fun retainAll(elements: Collection<T>): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+  override fun isEmpty(): Boolean = backingMap.isEmpty()
 
-    override val size: Int
-        get() = backingMap.size
-
-    override fun contains(element: T): Boolean = backingMap.containsKey(element)
-
-    override fun containsAll(elements: Collection<T>): Boolean = backingMap.keys.containsAll(elements)
-
-    override fun isEmpty(): Boolean = backingMap.isEmpty()
-
-    override fun iterator(): MutableIterator<T> = backingMap.keys.iterator()
+  override fun iterator(): MutableIterator<T> = backingMap.keys.iterator()
 }

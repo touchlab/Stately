@@ -18,42 +18,41 @@ package co.touchlab.stately.collections
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class SharedSetTest {
 
-    @Test
-    fun dataClassEquals(){
-        val set = frozenHashSet<CollectionValues>()
-        assertEquals(0, set.size)
-        set.add(CollectionValues("asdf", 123))
-        assertEquals(1, set.size)
+  @Test
+  fun dataClassEquals() {
+    val set = frozenHashSet<CollectionValues>()
+    assertEquals(0, set.size)
+    set.add(CollectionValues("asdf", 123))
+    assertEquals(1, set.size)
 
-        set.add(CollectionValues("asdf", 123))
-        assertEquals(1, set.size)
+    set.add(CollectionValues("asdf", 123))
+    assertEquals(1, set.size)
 
-        set.add(CollectionValues("asdf", 124))
-        assertEquals(2, set.size)
-    }
+    set.add(CollectionValues("asdf", 124))
+    assertEquals(2, set.size)
+  }
 
-    data class CollectionValues(val a:String, val b:Int)
+  data class CollectionValues(val a: String, val b: Int)
 
-    /*@Test
-    fun testLambdas(){
-        val set = SharedSet<()->Unit>()
+  /*@Test
+  fun testLambdas(){
+      val set = SharedSet<()->Unit>()
 
-        val a: () -> Unit = { 1 + 2 }
-        val b: () -> Unit = { 1 + 2 }
-        val c: () -> Unit = { 2 + 2 }
+      val a: () -> Unit = { 1 + 2 }
+      val b: () -> Unit = { 1 + 2 }
+      val c: () -> Unit = { 2 + 2 }
 
-        assertEquals(a, b)
-        assertNotEquals(a, c)
+      assertEquals(a, b)
+      assertNotEquals(a, c)
 
-        set.add(a)
-        set.add(b)
-        assertEquals(1, set.size)
+      set.add(a)
+      set.add(b)
+      assertEquals(1, set.size)
 
-        set.add(c)
-        assertEquals(2, set.size)
-    }*/
+      set.add(c)
+      assertEquals(2, set.size)
+  }*/
 }

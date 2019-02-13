@@ -16,6 +16,4 @@
 
 package co.touchlab.stately.concurrency
 
-import java.lang.ThreadLocal
-
 actual typealias ThreadLocalRef<T> = ThreadLocal<T>

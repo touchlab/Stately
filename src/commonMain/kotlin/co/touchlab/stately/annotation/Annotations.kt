@@ -21,8 +21,10 @@ import kotlin.reflect.KClass
 /**
  * expect/actual for native annotation. Only impacts native code.
  */
-@Deprecated("SharedImmutable is now available in common",
-    ReplaceWith("kotlin.native.concurrent.SharedImmutable"))
+@Deprecated(
+  "SharedImmutable is now available in common",
+  ReplaceWith("kotlin.native.concurrent.SharedImmutable")
+)
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.BINARY)
 expect annotation class SharedImmutable()
@@ -30,8 +32,10 @@ expect annotation class SharedImmutable()
 /**
  * expect/actual for native annotation. Only impacts native code.
  */
-@Deprecated("ThreadLocal is now available in common",
-    ReplaceWith("kotlin.native.concurrent.ThreadLocal"))
+@Deprecated(
+  "ThreadLocal is now available in common",
+  ReplaceWith("kotlin.native.concurrent.ThreadLocal")
+)
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.BINARY)
 expect annotation class ThreadLocal()

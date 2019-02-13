@@ -19,5 +19,5 @@ package co.touchlab.stately
 import platform.posix.arc4random
 
 actual class Random actual constructor() {
-    actual fun nextInt(): Int = arc4random().toInt()
+  actual fun nextInt(): Int = arc4random().toInt()
 }

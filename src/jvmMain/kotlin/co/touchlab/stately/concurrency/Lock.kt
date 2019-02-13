@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:JvmName("LockIntActual")
+
 package co.touchlab.stately.concurrency
 
 actual typealias Lock = java.util.concurrent.locks.ReentrantLock

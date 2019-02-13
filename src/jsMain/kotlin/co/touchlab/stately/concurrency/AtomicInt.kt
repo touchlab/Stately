@@ -20,28 +20,29 @@ package co.touchlab.stately.concurrency
  * Multiplatform AtomicInt implementation
  */
 actual class AtomicInt actual constructor(initialValue: Int) {
-    private var internalValue: Int = initialValue
+  private var internalValue: Int = initialValue
 
-    actual fun addAndGet(delta: Int): Int {
-        internalValue += delta
-        return internalValue
+  actual fun addAndGet(delta: Int): Int {
+    internalValue += delta
+    return internalValue
+  }
+
+  actual fun compareAndSet(expected: Int, new: Int): Boolean {
+    return if (expected == internalValue) {
+      internalValue = new
+      true
+    } else {
+      false
     }
+  }
 
-    actual fun compareAndSet(expected: Int, new: Int): Boolean {
-        return if (expected == internalValue) {
-            internalValue = new
-            true
-        } else {
-            false
-        }
-    }
+  actual fun get(): Int = internalValue
 
-    actual fun get(): Int = internalValue
+  actual fun set(newValue: Int) {
+    internalValue = newValue
+  }
 
-    actual fun set(newValue: Int) {
-        internalValue = newValue
-    }
-    actual fun incrementAndGet(): Int = addAndGet(1)
+  actual fun incrementAndGet(): Int = addAndGet(1)
 
-    actual fun decrementAndGet(): Int = addAndGet(-1)
+  actual fun decrementAndGet(): Int = addAndGet(-1)
 }

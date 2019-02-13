@@ -18,4 +18,4 @@ package co.touchlab.stately.concurrency
 
 import platform.Foundation.NSRecursiveLock
 
-actual typealias Lock = NSRecursiveLock
+actual typealias  Lock = NSRecursiveLock
