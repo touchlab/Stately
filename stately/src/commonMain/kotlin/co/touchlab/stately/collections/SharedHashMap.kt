@@ -192,6 +192,15 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
 
   override fun remove(key: K): V? = withLock {
     val entryList = findEntryList(buckets.value, key)
+    var result: V? = internalRemoveByKey(entryList, key)
+
+    return result
+  }
+
+  private fun internalRemoveByKey(
+    entryList: SharedLinkedList<Entry<K, V>>,
+    key: K
+  ): V? {
     var result: V? = null
     entryList.nodeIterator().forEach {
       if (it.nodeValue.key == key) {
@@ -201,7 +210,6 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
         return@forEach
       }
     }
-
     return result
   }
 
@@ -210,15 +218,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
 
   private fun internalPut(key: K, value: V): V? {
     val entryList = findEntryList(buckets.value, key)
-    var result: V? = null
-    entryList.nodeIterator().forEach {
-      if (it.nodeValue.key == key) {
-        result = it.nodeValue.value
-        it.remove()
-        atomSize.decrementAndGet()
-        return@forEach
-      }
-    }
+    var result: V? = internalRemoveByKey(entryList, key)
 
     entryList.add(Entry(key, value).freeze())
     atomSize.incrementAndGet()
@@ -244,6 +244,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
       it.value.iterator().forEach {
         findEntryList(newTable, it.key).add(it)
       }
+      it.value.clear()
     }
   }
 

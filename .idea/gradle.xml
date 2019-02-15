@@ -8,6 +8,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/memtest" />
+            <option value="$PROJECT_DIR$/stately" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

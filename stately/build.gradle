@@ -1,0 +1,131 @@
+/*
+ * Copyright (C) 2018 Touchlab, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+
+repositories {
+    mavenCentral()
+}
+
+group = GROUP
+version = VERSION_NAME
+
+kotlin {
+    targets {
+        
+        //Uncomment to refresh intellij plugin
+//        fromPreset(presets.macosX64, 'nativeCommon')
+//        fromPreset(presets.macosX64, 'apple')
+
+        fromPreset(presets.jvm, 'jvm')
+        fromPreset(presets.js, 'js')
+        fromPreset(presets.macosX64, 'macos')
+        fromPreset(presets.iosX64, 'iosX64')
+        fromPreset(presets.iosArm32, 'iosArm32')
+        fromPreset(presets.iosArm64, 'iosArm64')
+    }
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+            }
+        }
+        commonTest {
+            dependencies {
+        		implementation 'org.jetbrains.kotlin:kotlin-test-common'
+        		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+            }
+        }
+        jvmTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test'
+                implementation 'org.jetbrains.kotlin:kotlin-test-junit'
+            }
+        }
+        
+        jsMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
+            }
+        }
+        jsTest {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test-js'
+            }
+        }
+
+        nativeCommonMain {
+            dependsOn commonMain
+        }
+        
+        nativeCommonTest {
+            dependsOn commonTest
+        }
+
+        appleMain {
+            dependsOn nativeCommonMain
+        }
+
+        appleTest {
+            dependsOn nativeCommonTest
+        }
+
+        configure([iosX64Main, iosArm32Main, iosArm64Main, macosMain]) {
+            dependsOn appleMain
+        }
+
+        configure([iosX64Test, iosArm32Test, iosArm64Test, macosTest]) {
+            dependsOn appleTest
+        }
+
+        /*otherNativeMain {
+            dependsOn nativeCommonMain
+        }
+
+        otherNativeTest {
+            dependsOn nativeCommonTest
+        }
+
+        configure([androidNativeArm32, androidNativeArm64]) {
+            dependsOn otherNativeMain
+        }
+
+        configure([androidNativeArm32, androidNativeArm64]) {
+            dependsOn otherNativeTest
+        }*/
+    }
+}
+
+task iosTest {
+    def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
+    dependsOn 'linkTestDebugExecutableIosX64'
+    group = JavaBasePlugin.VERIFICATION_GROUP
+    description = "Runs tests for target 'ios' on an iOS simulator"
+
+    doLast {
+        def binary = kotlin.targets.iosX64.compilations.test.getBinary('EXECUTABLE', 'DEBUG')
+        exec {
+            commandLine 'xcrun', 'simctl', 'spawn', device, binary.absolutePath
+        }
+    }
+}
+
+apply from: '../gradle/gradle-mvn-mpp-push.gradle'

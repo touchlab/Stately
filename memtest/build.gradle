@@ -1,0 +1,45 @@
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+
+repositories {
+    mavenCentral()
+}
+kotlin {
+    // For ARM, should be changed to iosArm32 or iosArm64
+    // For Linux, should be changed to e.g. linuxX64
+    // For MacOS, should be changed to e.g. macosX64
+    // For Windows, should be changed to e.g. mingwX64
+    macosX64("macos") {
+        compilations.main {
+            // Comment to generate Kotlin/Native library (KLIB) instead of executable file:
+            outputKinds("executable")
+            // Change to specify fully qualified name of your application's entry point:
+            entryPoint 'sample.main'
+        }
+    }
+    
+    sourceSets {
+        // Note: To enable common source sets please comment out 'kotlin.import.noCommonSourceSets' property
+        // in gradle.properties file and re-import your project in IDE.
+        macosMain {
+            dependencies {
+                implementation project(":stately")
+            }
+        }
+        macosTest {
+        }
+    }
+}
+
+task runProgram {
+    def buildType = 'DEBUG' // Change to 'DEBUG' to run application with debug symbols.
+    dependsOn kotlin.targets.macos.compilations.main.linkTaskName('EXECUTABLE', buildType)
+    doLast {
+        def programFile = kotlin.targets.macos.compilations.main.getBinary('EXECUTABLE', buildType)
+        exec {
+            executable programFile
+            args ''
+        }
+    }
+}
+
+tasks.build.dependsOn runProgram

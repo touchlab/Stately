@@ -240,6 +240,9 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
   }
 
   private fun internalClear() {
+    while (!isEmpty()){
+      removeAt(0)
+    }
     head.value = null
     tail.value = null
     sizeCount.value = 0

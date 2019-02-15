@@ -62,6 +62,11 @@ Converts an Iterator to a List. This is an extension function that works on any 
 
 ## Collections
 
+## Important note for all collections!!!
+
+AtomicReference can leak memory in Kotlin Native. To avoid leaking memory, you should call `clear()`
+on any collection when done using it.
+
 ### Copy On Write List
 
 A MutableList that updates a stable copy on each edit. When you get an iterator, that iterator remains stable regardless
