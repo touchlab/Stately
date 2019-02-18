@@ -51,7 +51,11 @@ class Locks {
 
     times.forEach {
       val diff = it - lastVal
-      assertTrue { diff in 900..1100 }
+      //Checks that each run of the loop is significantly delayed, but
+      //giving it a pretty wide range. Used to be +/- 100 ms.
+      //Have had CI failures presumably because
+      //the machines are more "distracted" than my laptop.
+      assertTrue { diff in 500..1500 }
       lastVal = it
     }
   }
