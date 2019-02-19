@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.collections
 
-import kotlin.random.Random
+import platform.Foundation.NSThread
 
-actual class Random actual constructor() {
-    actual fun nextInt(): Int = Random.nextInt()
+actual fun sleep(time: Long) {
+    NSThread.sleepForTimeInterval(time.toDouble()/1000.toDouble())
 }

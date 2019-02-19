@@ -16,7 +16,6 @@
 
 package co.touchlab.stately.collections
 
-import platform.Foundation.NSThread
 import kotlin.native.concurrent.Future
 import kotlin.native.concurrent.TransferMode
 import kotlin.native.concurrent.Worker
@@ -38,10 +37,6 @@ actual class MPWorker actual constructor() {
 
 actual class MPFuture<T>(private val future: Future<T>) {
   actual fun consume(): T = future.result
-}
-
-actual fun sleep(time: Long) {
-  NSThread.sleepForTimeInterval(time.toDouble() / 1000.toDouble())
 }
 
 actual fun currentTimeMillis(): Long = getTimeMillis()
