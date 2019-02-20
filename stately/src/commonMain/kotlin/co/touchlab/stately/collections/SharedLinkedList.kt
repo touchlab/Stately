@@ -240,8 +240,8 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
   }
 
   private fun internalClear() {
-    while (!isEmpty()){
-      removeAt(0)
+    while (sizeCount.value != 0){
+      internalRemoveAt(0)
     }
     head.value = null
     tail.value = null
@@ -264,9 +264,7 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
   override fun removeAll(elements: Collection<T>): Boolean = withLock { elements.all { internalRemove(it) } }
 
   override fun removeAt(index: Int): T = withLock {
-    val node = internalNodeAt(index)
-    node.internalRemove()
-    node.nodeValue
+    internalRemoveAt(index)
   }
 
   override fun set(index: Int, element: T): T = withLock {
@@ -428,6 +426,12 @@ abstract class AbstractSharedLinkedList<T>() : MutableList<T> {
     }
 
     throw IllegalStateException("Bad math")
+  }
+
+  internal fun internalRemoveAt(i: Int):T {
+    val node = internalNodeAt(i)
+    node.internalRemove()
+    return node.nodeValue
   }
 
   /**
