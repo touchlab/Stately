@@ -28,6 +28,7 @@ kotlin {
         
         //Uncomment to refresh intellij plugin
 //        fromPreset(presets.macosX64, 'nativeCommon')
+//        fromPreset(presets.macosX64, 'otherNative')
 //        fromPreset(presets.macosX64, 'apple')
 
         fromPreset(presets.jvm, 'jvm')
@@ -36,6 +37,7 @@ kotlin {
         fromPreset(presets.iosX64, 'iosX64')
         fromPreset(presets.iosArm32, 'iosArm32')
         fromPreset(presets.iosArm64, 'iosArm64')
+        fromPreset(presets.mingwX64, 'mingw')
     }
     sourceSets {
         commonMain {
@@ -96,15 +98,23 @@ kotlin {
             dependsOn appleTest
         }
 
-        /*otherNativeMain {
+        otherNativeMain {
             dependsOn nativeCommonMain
         }
 
         otherNativeTest {
             dependsOn nativeCommonTest
         }
+        
+        configure([mingwMain]) {
+            dependsOn otherNativeMain
+        }
 
-        configure([androidNativeArm32, androidNativeArm64]) {
+        configure([mingwTest]) {
+            dependsOn otherNativeTest
+        }
+
+        /*configure([androidNativeArm32, androidNativeArm64]) {
             dependsOn otherNativeMain
         }
 

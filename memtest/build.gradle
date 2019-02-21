@@ -42,4 +42,7 @@ task runProgram {
     }
 }
 
-tasks.build.dependsOn runProgram
+String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+if(OS_NAME.contains("mac") || OS_NAME.contains("darwin")) {
+    tasks.build.dependsOn runProgram
+}
