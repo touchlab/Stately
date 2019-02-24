@@ -29,7 +29,7 @@ import co.touchlab.stately.freeze
  * while iterating, you won't have concurrent modification exceptions, but obviously the state of the list from
  * when you started iterating is not guaranteed.
  */
-class SharedLinkedList<T>(objectPoolSize: Int = 5) : AbstractSharedLinkedList<T>(objectPoolSize) {
+class SharedLinkedList<T>(objectPoolSize: Int = 0) : AbstractSharedLinkedList<T>(objectPoolSize) {
 
   internal val version = AtomicInt(0)
 
@@ -113,7 +113,7 @@ class SharedLinkedList<T>(objectPoolSize: Int = 5) : AbstractSharedLinkedList<T>
  * this is better than the simpler CopyOnWriteList, because EVERY update will lock and save, but something
  * to keep in mind. If updating the list while you're iterating isn't a huge problem, use SharedLinkedList
  */
-class CopyOnIterateLinkedList<T>(objectPoolSize: Int = 5) : AbstractSharedLinkedList<T>(objectPoolSize) {
+class CopyOnIterateLinkedList<T>(objectPoolSize: Int = 0) : AbstractSharedLinkedList<T>(objectPoolSize) {
 
   private val updated: AtomicInt
   private val lastList: AtomicReference<MutableList<T>>

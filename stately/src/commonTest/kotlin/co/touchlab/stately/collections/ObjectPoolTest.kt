@@ -4,6 +4,7 @@ import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFalse
 
 class ObjectPoolTest {
@@ -41,6 +42,26 @@ class ObjectPoolTest {
     assertEquals(25, cleanCount.value)
   }
 
+  @Test
+  fun noNegativeSize(){
+    assertFails { ObjectPool(maxSize = -2, createBlock = {PoolVal("arst")}) }
+  }
+
+  @Test
+  fun noCacheWorks(){
+    val dumpedList = ArrayList<PoolVal>()
+    val createdList = ArrayList<PoolVal>()
+    val pool = ObjectPool<PoolVal>(0, { PoolVal("arst") }, {dumpedList.add(it)})
+    for (i in 0 until 10){
+      createdList.add(pool.pop())
+    }
+
+    createdList.forEach {
+      assertFalse (pool.push(it))
+    }
+
+    assertEquals(10, dumpedList.size)
+  }
 }
 
 data class PoolVal(val s:String)

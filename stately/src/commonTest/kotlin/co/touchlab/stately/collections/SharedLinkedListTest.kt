@@ -500,9 +500,20 @@ class LinkedListTest {
     concurRun(false) {
       it.size
     }
+    concurRun(false) {
+      it.indexOf(MapData("val 5"))
+    }
+
     concurRun(true) {
       it.removeAt(7)
     }
+    concurRun(true) {
+      it.add(MapData("arst"))
+    }
+    concurRun(true) {
+      it.set(8, MapData("arst"))
+    }
+
   }
 
   private fun concurRun(shouldFail: Boolean, block: (ll: SharedLinkedList<MapData>) -> Unit) {
@@ -546,6 +557,10 @@ class LinkedListTest {
     assertFails { ll.internalAdd(node) }
   }
 
+  /**
+   * Unlikely we'll get to max int edits on a list, but not exactly impossible either.
+   * The version is only used for iterator and concurrent mutability issues
+   */
   @Test
   fun versionRollover(){
     val ll = makeTen()
@@ -555,6 +570,12 @@ class LinkedListTest {
       ll.add(ListData("a $i"))
     }
     assertEquals(0, ll.version.value)
+  }
+
+  @Test
+  fun defaultZeroPool(){
+    assertEquals(SharedLinkedList<ListData>().nodePool.pool.size, 0)
+    assertEquals(CopyOnIterateLinkedList<ListData>().nodePool.pool.size, 0)
   }
 
   private fun makeTen(): SharedLinkedList<ListData> {
