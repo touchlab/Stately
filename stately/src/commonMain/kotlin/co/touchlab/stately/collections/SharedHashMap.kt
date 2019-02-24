@@ -67,7 +67,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
 
   private fun makeBuckets(capacity: Int): Array<AtomicReference<SharedLinkedList<Entry<K, V>>>> {
     return (Array(capacity) {
-      AtomicReference(SharedLinkedList<Entry<K, V>>().freeze())
+      AtomicReference(SharedLinkedList<Entry<K, V>>(1).freeze())
     }).freeze()
   }
 

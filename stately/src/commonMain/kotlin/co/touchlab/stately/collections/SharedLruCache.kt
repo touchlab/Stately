@@ -46,7 +46,7 @@ class SharedLruCache<K, V>(
 
   private var lock: Lock = Lock()
   private val cacheMap = SharedHashMap<K, CacheEntry<K, V>>(initialCapacity = maxCacheSize)
-  private val cacheList = SharedLinkedList<K>()
+  private val cacheList = SharedLinkedList<K>(20)
 
   init {
     freeze()
