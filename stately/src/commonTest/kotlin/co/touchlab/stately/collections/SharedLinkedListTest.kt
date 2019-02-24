@@ -16,9 +16,15 @@
 
 package co.touchlab.stately.collections
 
+import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.stately.isNativeFrozen
-import kotlin.test.*
+import co.touchlab.testhelp.concurrency.ThreadOperations
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class LinkedListTest {
 
@@ -316,7 +322,7 @@ class LinkedListTest {
 
     nodeList.freeze()
 
-    val ops = ThreadOps { mutableListOf<ListData>() }
+    val ops = ThreadOperations { }
     for (i in 0 until LOOPS) {
       ops.exe {
         val node = nodeList.get(i)
@@ -327,7 +333,7 @@ class LinkedListTest {
       }
     }
 
-    ops.run(8, ll)
+    ops.run(8)
 
     assertEquals(DOOPS * LOOPS, ll.size)
 
@@ -372,7 +378,7 @@ class LinkedListTest {
 
     nodeList.freeze()
 
-    val ops = ThreadOps { mutableListOf<ListData>() }
+    val ops = ThreadOperations { }
     for (i in 0 until LOOPS) {
       ops.exe {
         val node = nodeList.get(i)
@@ -382,7 +388,7 @@ class LinkedListTest {
       }
     }
 
-    ops.run(8, ll)
+    ops.run(8)
 
     assertEquals(LOOPS / 100, ll.size)
   }
@@ -402,13 +408,13 @@ class LinkedListTest {
 
     nodeList.freeze()
 
-    val ops = ThreadOps { mutableListOf<ListData>() }
+    val ops = ThreadOperations { }
     for (i in 0 until LOOPS) {
       ops.exe { nodeList.get(i).set(ListData("b $i")) }
       ops.test { assertEquals(ll.get(i), ListData("b $i")) }
     }
 
-    ops.run(8, ll, true)
+    ops.run(8, true)
 
     assertEquals(LOOPS, ll.size)
   }
@@ -419,7 +425,7 @@ class LinkedListTest {
   @Test
   fun mtAdd() {
 
-    val ops = ThreadOps({ SharedLinkedList<ListData>() })
+    val ops = ThreadOperations { SharedLinkedList<ListData>() }
 
     val LOOPS = 50
 
@@ -442,7 +448,7 @@ class LinkedListTest {
   @Test
   fun testBasicThreads() {
     val LOOPS = 2500
-    val ops = ThreadOps({ SharedLinkedList<TestData>() })
+    val ops = ThreadOperations { SharedLinkedList<TestData>() }
     val ll = SharedLinkedList<TestData>().freeze()
 
     for (i in 0 until LOOPS) {
@@ -450,7 +456,7 @@ class LinkedListTest {
       ops.test { ll.contains(TestData("Value: $i")) }
     }
 
-    ops.run(30, ll, true)
+    ops.run(30, true)
 
 /*        val workers = Array(8) { createWorker() }
 
@@ -489,72 +495,38 @@ class LinkedListTest {
     assertEquals(LOOPS, ll.size)
   }
 
-  /**
-   * Multithreaded sanity check. May not be super useful as code matures.
-   */
   @Test
-  fun testDualList() {
-    val operations = ArrayList<(Int, SharedLinkedList<MapData>) -> Unit>()
-    for (i in 0 until 1000) {
-      operations.add { workerId, list -> list.add(MapData("Worker: $workerId, Index: $i")) }
+  fun concurrentModificationExceptionIterator() {
+    concurRun(false) {
+      it.size
+    }
+    concurRun(true) {
+      it.removeAt(7)
+    }
+  }
+
+  private fun concurRun(shouldFail: Boolean, block: (ll: SharedLinkedList<MapData>) -> Unit) {
+    val ll = SharedLinkedList<MapData>()
+    for (i in 0 until 10) {
+      ll.add(MapData("val $i"))
     }
 
-    operations.freeze()
-
-    val listA = SharedLinkedList<MapData>().freeze()
-    val listB = SharedLinkedList<MapData>().freeze()
-
-    val workers = Array(8) {
-      MPWorker()
+    val nodeIter = ll.nodeIterator()
+    block(ll)
+    if (shouldFail) {
+      assertFails { nodeIter.next() }
+    } else {
+      assertEquals(nodeIter.next().nodeValue.s, "val 0")
     }
 
-    var count = 0
-    val insertFutures = ArrayList<MPFuture<Unit>>()
-
-    workers.forEach {
-      val workerCount = count++
-      insertFutures.add(it.runBackground {
-        operations.forEach {
-          it(workerCount, listA)
-        }
-      })
+    val iter = ll.iterator()
+    block(ll)
+    if (shouldFail) {
+      assertFails { iter.next() }
+    } else {
+      assertEquals(iter.next().s, "val 0")
     }
 
-    count = 0
-    workers.forEach {
-      val workerCount = count++
-      insertFutures.add(it.runBackground {
-        operations.forEach {
-          it(workerCount, listB)
-        }
-      })
-    }
-
-    insertFutures.forEach { it.consume() }
-
-    assertEquals(listA.size, listB.size)
-
-    val removeFutures = ArrayList<MPFuture<Unit>>()
-    count = 0
-    workers.forEach {
-      val workerCount = count++
-      removeFutures.add(it.runBackground {
-        listA.nodeIterator().forEach {
-          if (it.nodeValue.s.startsWith("Worker: $workerCount"))
-            it.remove()
-        }
-        listB.nodeIterator().forEach {
-          if (it.nodeValue.s.startsWith("Worker: $workerCount"))
-            it.remove()
-        }
-      })
-    }
-
-    removeFutures.forEach { it.consume() }
-    workers.forEach { it.requestTermination() }
-
-    assertEquals(listA.size, 0)
-    assertEquals(listB.size, 0)
   }
 
   /**
@@ -574,6 +546,16 @@ class LinkedListTest {
     assertFails { ll.internalAdd(node) }
   }
 
+  @Test
+  fun versionRollover(){
+    val ll = makeTen()
+    assertTrue(ll.version.value > 0)
+    ll.version.value = Int.MAX_VALUE - 4
+    for (i in 0 until 4){
+      ll.add(ListData("a $i"))
+    }
+    assertEquals(0, ll.version.value)
+  }
 
   private fun makeTen(): SharedLinkedList<ListData> {
     val ll = SharedLinkedList<ListData>()

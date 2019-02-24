@@ -1,6 +1,6 @@
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.collections.ThreadOps
+import co.touchlab.testhelp.concurrency.ThreadOperations
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -10,7 +10,7 @@ class ThreadRefTest {
   fun threadRefTest() {
     val ref = ThreadRef()
     assertTrue(ref.same())
-    val ops = ThreadOps { Unit }
+    val ops = ThreadOperations { }
     ops.exe {
       assertFalse(ref.same())
       ref.reset()

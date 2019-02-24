@@ -21,7 +21,14 @@ import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.stately.isNative
 import co.touchlab.stately.isNativeFrozen
-import kotlin.test.*
+import co.touchlab.testhelp.concurrency.MPWorker
+import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.concurrency.currentTimeMillis
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SharedLruCacheTest {
 
@@ -309,7 +316,7 @@ class SharedLruCacheTest {
     val LOOPS = 5000
 
     val count = AtomicInt(0)
-    val ops = ThreadOps<SharedLruCache<String, MapData>> {
+    val ops = ThreadOperations<SharedLruCache<String, MapData>> {
       SharedLruCache(CACHE_SIZE) { count.incrementAndGet() }
     }
 

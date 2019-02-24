@@ -16,12 +16,20 @@
 
 package co.touchlab.stately.collections
 
-import co.touchlab.stately.Random
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.stately.isNativeFrozen
-import kotlin.test.*
+import co.touchlab.testhelp.concurrency.MPWorker
+import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.concurrency.currentTimeMillis
+import kotlin.random.Random
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SharedHashMapTest {
   @Test
@@ -74,7 +82,7 @@ class SharedHashMapTest {
     m.clear()
     assertTrue(m.isEmpty())
     addTen(m)
-    m.entries.forEach {
+    m.entries.toList().forEach {
       m.remove(it.key)
     }
     assertTrue(m.isEmpty())
@@ -127,7 +135,7 @@ class SharedHashMapTest {
   fun rehash() {
     val m = SharedHashMap<String, MapData>()
 
-    val random = Random()
+    val random = Random
     for (i in 0 until 100_000) {
       val rand = random.nextInt()
       assertEquals(m.rehash(rand), m.rehash(rand))
@@ -142,8 +150,8 @@ class SharedHashMapTest {
   @Test
   fun mtAddRemove() {
     val LOOPS = 10_000
-    val ops = ThreadOps { SharedHashMap<String, MapData>() }
-    val removeOps = ThreadOps { SharedHashMap<String, MapData>() }
+    val ops = ThreadOperations { SharedHashMap<String, MapData>() }
+    val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
     val m = SharedHashMap<String, MapData>()
     for (i in 0 until LOOPS) {
       val key = "key $i"
@@ -154,8 +162,8 @@ class SharedHashMapTest {
       removeOps.test { assertFalse { m.containsKey(key) } }
     }
 
-    ops.run(threads = 8, randomize = true, collection = m)
-    removeOps.run(threads = 8, randomize = true, collection = m)
+    ops.run(threads = 8, randomize = true)
+    removeOps.run(threads = 8, randomize = true)
     assertEquals(0, m.size)
   }
 
@@ -164,21 +172,22 @@ class SharedHashMapTest {
    */
   @Test
   fun badHash() {
-    val ops = ThreadOps { SharedHashMap<BadHashKey, MapData>() }
-    val removeOps = ThreadOps { SharedHashMap<BadHashKey, MapData>() }
+    val map = SharedHashMap<BadHashKey, MapData>()
+    val ops = ThreadOperations { }
+    val removeOps = ThreadOperations { }
 
     val LOOPS = 2_000
     for (i in 0 until LOOPS) {
       val key = "key $i"
-      ops.exe { it.put(BadHashKey(key), MapData("val $i")) }
-      ops.test { assertTrue { it.containsKey(BadHashKey(key)) } }
-      removeOps.exe { it.remove(BadHashKey(key)) }
-      removeOps.test { assertFalse { it.containsKey(BadHashKey(key)) } }
+      ops.exe { map.put(BadHashKey(key), MapData("val $i")) }
+      ops.test { assertTrue { map.containsKey(BadHashKey(key)) } }
+      removeOps.exe { map.remove(BadHashKey(key)) }
+      removeOps.test { assertFalse { map.containsKey(BadHashKey(key)) } }
     }
 
-    val map = ops.run(threads = 8, randomize = true)
+    ops.run(threads = 8, randomize = true)
     assertEquals(LOOPS, map.size)
-    removeOps.run(threads = 8, randomize = true, collection = map)
+    removeOps.run(threads = 8, randomize = true)
     assertEquals(0, map.size)
   }
 

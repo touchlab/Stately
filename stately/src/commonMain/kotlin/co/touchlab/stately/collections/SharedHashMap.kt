@@ -201,14 +201,21 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
     entryList: SharedLinkedList<Entry<K, V>>,
     key: K
   ): V? {
-    var result: V? = null
-    entryList.nodeIterator().forEach {
+    var result: AbstractSharedLinkedList.Node<Entry<K, V>>? = null
+    val iter = entryList.nodeIterator()
+    while (iter.hasNext()){
+      val it = iter.next()
       if (it.nodeValue.key == key) {
-        result = it.nodeValue.value
-        it.remove()
-        atomSize.decrementAndGet()
-        return@forEach
+        result = it
+        break
       }
+    }
+
+    if (result != null){
+      val ret = result.nodeValue.value
+      result.remove()
+      atomSize.decrementAndGet()
+      return ret
     }
     return result
   }

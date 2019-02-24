@@ -16,10 +16,10 @@
 
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.collections.ThreadOps
-import co.touchlab.stately.collections.currentTimeMillis
 import co.touchlab.stately.collections.frozenLinkedList
-import co.touchlab.stately.collections.sleep
+import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.concurrency.currentTimeMillis
+import co.touchlab.testhelp.concurrency.sleep
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -30,7 +30,7 @@ class Locks {
   @Test
   fun spinLockWorks() {
     val lock = Lock()
-    val ops = ThreadOps { Unit }
+    val ops = ThreadOperations { }
 
     val times = frozenLinkedList<Long>()
     val start = currentTimeMillis()

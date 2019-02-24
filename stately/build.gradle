@@ -24,21 +24,15 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    targets {
-        
-        //Uncomment to refresh intellij plugin
-//        fromPreset(presets.macosX64, 'nativeCommon')
-//        fromPreset(presets.macosX64, 'otherNative')
-//        fromPreset(presets.macosX64, 'apple')
-
-        fromPreset(presets.jvm, 'jvm')
-        fromPreset(presets.js, 'js')
-        fromPreset(presets.macosX64, 'macos')
-        fromPreset(presets.iosX64, 'iosX64')
-        fromPreset(presets.iosArm32, 'iosArm32')
-        fromPreset(presets.iosArm64, 'iosArm64')
-        fromPreset(presets.mingwX64, 'mingw')
-    }
+//    macosX64("apple")
+    jvm()
+//    js()
+    macosX64()
+    iosArm32()
+    iosArm64()
+    iosX64()
+    mingwX64()
+    
     sourceSets {
         commonMain {
             dependencies {
@@ -49,30 +43,36 @@ kotlin {
             dependencies {
         		implementation 'org.jetbrains.kotlin:kotlin-test-common'
         		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
+                implementation 'co.touchlab:testhelp:0.1.2'
             }
         }
         jvmMain {
+            dependsOn commonMain
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
             }
         }
         jvmTest {
+            dependsOn commonTest
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-test'
                 implementation 'org.jetbrains.kotlin:kotlin-test-junit'
             }
         }
         
-        jsMain {
+        //Disabling js till we sort out some testing
+        /*jsMain {
+            dependsOn commonMain
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
             }
         }
         jsTest {
+            dependsOn commonTest
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-test-js'
             }
-        }
+        }*/
 
         nativeCommonMain {
             dependsOn commonMain
@@ -90,11 +90,35 @@ kotlin {
             dependsOn nativeCommonTest
         }
 
-        configure([iosX64Main, iosArm32Main, iosArm64Main, macosMain]) {
+        macosX64().compilations.main.defaultSourceSet {
             dependsOn appleMain
         }
 
-        configure([iosX64Test, iosArm32Test, iosArm64Test, macosTest]) {
+        macosX64().compilations.test.defaultSourceSet {
+            dependsOn appleTest
+        }
+        
+        iosArm32().compilations.main.defaultSourceSet {
+            dependsOn appleMain
+        }
+
+        iosArm32().compilations.test.defaultSourceSet {
+            dependsOn appleTest
+        }
+        
+        iosArm64().compilations.main.defaultSourceSet {
+            dependsOn appleMain
+        }
+
+        iosArm64().compilations.test.defaultSourceSet {
+            dependsOn appleTest
+        }
+        
+        iosX64().compilations.main.defaultSourceSet {
+            dependsOn appleMain
+        }
+
+        iosX64().compilations.test.defaultSourceSet {
             dependsOn appleTest
         }
 
@@ -105,22 +129,14 @@ kotlin {
         otherNativeTest {
             dependsOn nativeCommonTest
         }
+
+        mingwX64().compilations.main.defaultSourceSet {
+            dependsOn otherNativeMain
+        }
         
-        configure([mingwMain]) {
-            dependsOn otherNativeMain
-        }
-
-        configure([mingwTest]) {
+        mingwX64().compilations.test.defaultSourceSet {
             dependsOn otherNativeTest
         }
-
-        /*configure([androidNativeArm32, androidNativeArm64]) {
-            dependsOn otherNativeMain
-        }
-
-        configure([androidNativeArm32, androidNativeArm64]) {
-            dependsOn otherNativeTest
-        }*/
     }
 }
 

@@ -16,10 +16,10 @@
 
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.collections.ThreadOps
 import co.touchlab.stately.collections.frozenHashMap
 import co.touchlab.stately.collections.frozenLinkedList
 import co.touchlab.stately.freeze
+import co.touchlab.testhelp.concurrency.ThreadOperations
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -119,7 +119,7 @@ class Atomics {
   @Test
   fun atomicCyclic() {
     val atList = mutableListOf<AtomicReference<CycleData>>()
-    for (i in 0 until 50){
+    for (i in 0 until 50) {
       val c = CycleData(null)
       val c2 = CycleData2(c)
       val c3 = CycleData3(c2)
@@ -144,7 +144,7 @@ class Atomics {
       ll.add(AtomicReference(c.freeze()))
     }
 
-    val ops = ThreadOps(){ Unit}
+    val ops = ThreadOperations { }
 
     for (i in 0 until 100) {
       ops.exe {
@@ -162,7 +162,7 @@ class Atomics {
   }
 
   @Test
-  fun mapMemory(){
+  fun mapMemory() {
     val map = frozenHashMap<String, CycleData>()
     for (i in 0 until 200) {
       val c = CycleData(null)
@@ -183,6 +183,6 @@ data class ATData(val s: String) {
   }
 }
 
-data class CycleData(var b:CycleData3?)
-data class CycleData2(val b:CycleData)
-data class CycleData3(val b:CycleData2)
+data class CycleData(var b: CycleData3?)
+data class CycleData2(val b: CycleData)
+data class CycleData3(val b: CycleData2)
