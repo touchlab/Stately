@@ -1,6 +1,5 @@
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.freeze
 import kotlin.native.concurrent.AtomicInt
 import kotlin.native.concurrent.ThreadLocal
 
@@ -11,7 +10,7 @@ private object Thread {
 
 /*
  * This is a re-entrant implementation of Lock.
- * a thread may acquire the lock as many times as the wish.
+ * a thread may acquire the lock as many times as they wish.
  */
 actual class Lock actual constructor() {
   private val lockedThreadId = AtomicInt(0)
