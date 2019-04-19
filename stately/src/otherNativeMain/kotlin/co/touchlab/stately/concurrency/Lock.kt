@@ -6,7 +6,7 @@ import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 private object Thread {
-  val id = Any().freeze().hashCode()
+  val id: Int by lazy { Any().hashCode() }
 }
 
 /*
@@ -46,13 +46,14 @@ actual class Lock actual constructor() {
   }
 
   private fun spinUnlock(){
+    assert(lock.value != Thread.id)
+    
     // Because this is re-entrant we should only unlock if the count is 0.
     if (reenterCount.value > 0) {
       reenterCount.decrement()
     } else {
       val currentThread = Thread.id
-      val lastThread = lock.compareAndSwap(currentThread, 0)
-      assert(currentThread == lastThread)
+      lock.compareAndSet(currentThread, 0)
     }
   }
 }
