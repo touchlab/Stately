@@ -14,7 +14,7 @@ private object Thread {
  * a thread may acquire the lock as many times as the wish.
  */
 actual class Lock actual constructor() {
-  private val lock = AtomicInt(0)
+  private val lockedThreadId = AtomicInt(0)
   private val reenterCount = AtomicInt(0)
 
   actual fun lock() {
@@ -26,7 +26,7 @@ actual class Lock actual constructor() {
   }
 
   actual fun tryLock():Boolean {
-    return when (lock.compareAndSwap(0, Thread.id)) {
+    return when (lockedThreadId.compareAndSwap(0, Thread.id)) {
       Thread.id -> {
         // We already have the lock, we are just re-entering.
         reenterCount.increment()
@@ -34,7 +34,7 @@ actual class Lock actual constructor() {
       }
       0 -> {
         // Another thread didn't have the lock so we just took it.
-        assert(reenterCount.value == 0)
+        assert(reenterCount.value == 0) { "Another thread just took a lock that had a non-zero reenter count." }
         true
       }
       else -> false
@@ -46,14 +46,13 @@ actual class Lock actual constructor() {
   }
 
   private fun spinUnlock(){
-    assert(lock.value == Thread.id)
-    
+    assert(lockedThreadId.value == Thread.id) { "Attempting to unlock from a thread that doesn't have the lock." }
+
     // Because this is re-entrant we should only unlock if the count is 0.
     if (reenterCount.value > 0) {
       reenterCount.decrement()
     } else {
-      val currentThread = Thread.id
-      lock.compareAndSet(currentThread, 0)
+      lockedThreadId.compareAndSet(Thread.id, 0)
     }
   }
 }
