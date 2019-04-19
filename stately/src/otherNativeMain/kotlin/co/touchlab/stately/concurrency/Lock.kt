@@ -33,7 +33,7 @@ actual class Lock actual constructor() {
       }
       0 -> {
         // Another thread didn't have the lock so we just took it.
-        assert(reenterCount.value == 0) { "Another thread just took a lock that had a non-zero reenter count." }
+        assert(reenterCount.value == 0) { "Attempt to acquire a lock with a non-zero reenter count." }
         true
       }
       else -> false
@@ -45,7 +45,7 @@ actual class Lock actual constructor() {
   }
 
   private fun spinUnlock(){
-    assert(lockedThreadId.value == Thread.id) { "Attempting to unlock from a thread that doesn't have the lock." }
+    assert(lockedThreadId.value == Thread.id) { "Attempt to unlock from a thread that doesn't own the lock." }
 
     // Because this is re-entrant we should only unlock if the count is 0.
     if (reenterCount.value > 0) {
