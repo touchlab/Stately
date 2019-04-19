@@ -46,7 +46,7 @@ actual class Lock actual constructor() {
   }
 
   private fun spinUnlock(){
-    assert(lock.value != Thread.id)
+    assert(lock.value == Thread.id)
     
     // Because this is re-entrant we should only unlock if the count is 0.
     if (reenterCount.value > 0) {
