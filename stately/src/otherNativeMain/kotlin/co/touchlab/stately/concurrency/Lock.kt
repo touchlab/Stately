@@ -5,7 +5,8 @@ import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 private object Thread {
-  val id: Int by lazy { Any().hashCode() }
+  private val pointer: Any by lazy { Any() }
+  val id: Int by lazy { pointer.hashCode() }
 }
 
 /*
