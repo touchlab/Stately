@@ -17,7 +17,8 @@
 package co.touchlab.stately.concurrency
 
 /**
- * A simple mutex lock.
+ * A simple lock.
+ * Implementations of this class should be re-entrant.
  */
 expect class Lock() {
   fun lock()
