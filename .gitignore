@@ -44,6 +44,7 @@ captures/
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/artifacts
 
 # Keystore files
 *.jks
