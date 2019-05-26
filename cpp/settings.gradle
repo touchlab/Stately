@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2018 Touchlab, Inc.
+ * Copyright 2010-2017 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-        google()
-        gradlePluginPortal()
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-    }
+import org.jetbrains.kotlin.*
 
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
-    }
-}
+enableFeaturePreview('GRADLE_METADATA')
+include ':code'
+
+String konanPath = DistroFunctions.findDistroPath(rootProject)
+
+include ':dependencies'
+project(':dependencies').projectDir = new File(new File(konanPath), "dependencies")
+
+includeBuild "${konanPath}/shared"
+includeBuild "${konanPath}/tools/kotlin-native-gradle-plugin"
