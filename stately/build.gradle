@@ -27,9 +27,14 @@ version = VERSION_NAME
 
 kotlin {
 //    macosX64("apple")
+//    macosX64("nativeCommon")
     jvm()
 //    js()
-    macosX64()
+    macosX64(){
+        compilations.test {
+            it.extraOpts("-native-library", "../cpp/bcdist/macos_x64/tlruntime.bc")
+        }
+    }
     iosArm32()
     iosArm64()
     iosX64()
@@ -156,4 +161,32 @@ task iosTest {
     }
 }
 
+void mergeCppOutput(String archFolder, String archZip){
+    ant.zip(
+            update: "true",
+            destfile: "${project.buildDir}/classes/kotlin/$archFolder/main/stately.klib"
+    ) {
+        zipfileset(
+                dir: "${project.projectDir}/../cpp/bcdist/$archZip",
+                prefix: "targets/$archZip/native"
+        ) {
+            include(name: '**.bc')
+        }
+    }
+}
+
+task mergeCppAll(dependsOn:build) {
+    doLast {
+        mergeCppOutput("iosArm32", "ios_arm32")
+        mergeCppOutput("iosArm64", "ios_arm64")
+        mergeCppOutput("iosX64", "ios_x64")
+        mergeCppOutput("macos", "macos_x64")
+//        mergeCppOutput("mingw", "mingw_x64")
+    }
+}
+
 apply from: '../gradle/gradle-mvn-mpp-push.gradle'
+
+tasks.findByName("publish").dependsOn("mergeCppAll")
+tasks.findByName("publishToMavenLocal").dependsOn("mergeCppAll")
+

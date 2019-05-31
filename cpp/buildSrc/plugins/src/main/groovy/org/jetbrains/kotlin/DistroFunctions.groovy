@@ -12,7 +12,8 @@ class DistroFunctions{
                 File zipFile = new File(buildDir, "kndist.zip")
                 File unzipFolder = new File(buildDir, "distextract")
 
-                DistroHelperKt.downloadKotlinNativeDistro(rootProject.property("kotlinNativeArchive"), zipFile)
+//rootProject.property("kotlinNativeArchive")
+                DistroHelperKt.downloadKotlinNativeDistro("https://github.com/JetBrains/kotlin-native/archive/v1.3.0.zip", zipFile)
                 DistroHelperKt.unzipFileToFolder(zipFile, unzipFolder)
                 DistroHelperKt.distroPath(unzipFolder).renameTo(distFolder)
             }

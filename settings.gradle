@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 include 'stately'
-include 'memtest'
+//include 'memtest'
 
 enableFeaturePreview('GRADLE_METADATA')
 enableFeaturePreview('STABLE_PUBLISHING')

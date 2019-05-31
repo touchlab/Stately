@@ -1,5 +1,6 @@
 package co.touchlab.stately
 
+import co.touchlab.stately.collections.FastNativeHashMap
 import kotlin.native.concurrent.ThreadLocal
 import kotlin.native.concurrent.TransferMode
 import kotlin.native.concurrent.Worker
@@ -23,7 +24,7 @@ class WorkerStorage {
 
 @ThreadLocal
 private object Storage {
-  val map = HashMap<String, SomeData>()
+  val map = FastNativeHashMap<String, SomeData>()
 }
 
 data class SomeData(val s: String)
