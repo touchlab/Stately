@@ -9,11 +9,13 @@ kotlin {
     // For MacOS, should be changed to e.g. macosX64
     // For Windows, should be changed to e.g. mingwX64
     macosX64("macos") {
-        compilations.main {
+        binaries {
             // Comment to generate Kotlin/Native library (KLIB) instead of executable file:
-            outputKinds("executable")
-            // Change to specify fully qualified name of your application's entry point:
-            entryPoint 'sample.main'
+            executable([RELEASE, DEBUG]) {
+                compilation = compilations.main
+                // Change to specify fully qualified name of your application's entry point:
+                entryPoint 'sample.main'
+            }
         }
     }
     
@@ -32,7 +34,7 @@ kotlin {
 
 task runProgram {
     def buildType = 'DEBUG' // Change to 'DEBUG' to run application with debug symbols.
-    dependsOn kotlin.targets.macos.compilations.main.linkTaskName('EXECUTABLE', buildType)
+    dependsOn kotlin.targets.macos.binaries.getExecutable(buildType).linkTask
     doLast {
         def programFile = kotlin.targets.macos.compilations.main.getBinary('EXECUTABLE', buildType)
         exec {
