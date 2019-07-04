@@ -16,7 +16,10 @@
 
 package co.touchlab.stately.collections
 
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 actual fun <T> frozenCopyOnWriteList(collection: Collection<T>?): MutableList<T> {
   return if (collection == null)
@@ -24,3 +27,9 @@ actual fun <T> frozenCopyOnWriteList(collection: Collection<T>?): MutableList<T>
   else
     CopyOnWriteArrayList<T>(collection)
 }
+
+actual fun <T> frozenLinkedList(): MutableList<T> = Collections.synchronizedList(LinkedList<T>())
+
+actual fun <K, V> frozenHashMap(): MutableMap<K, V> = Collections.synchronizedMap(HashMap<K, V>())
+
+actual fun <T> frozenHashSet(): MutableSet<T> = Collections.synchronizedSet(HashSet<T>())

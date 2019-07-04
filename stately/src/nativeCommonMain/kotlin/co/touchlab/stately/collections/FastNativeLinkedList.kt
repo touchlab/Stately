@@ -3,33 +3,77 @@ package co.touchlab.stately.collections
 import kotlin.native.concurrent.AtomicInt
 import kotlin.native.concurrent.freeze
 
+public fun <T> nativeListOf(vararg elements: T): List<T> {
+    val l = FastNativeLinkedList<T>()
+    l.addAll(elements)
+    return l
+}
+
+public fun <T> nativeEmptyList(): List<T> = FastNativeLinkedList<T>()
+
+public fun <T> Collection<T>.toNativeMutableList(): MutableList<T> {
+    val l = FastNativeLinkedList<T>()
+    l.addAll(this)
+    return l
+}
+
+public inline fun <T> NativeMutableList(size: Int, init: (index: Int) -> T): MutableList<T> {
+    val list = FastNativeLinkedList<T>()
+    repeat(size) { index -> list.add(init(index)) }
+    return list
+}
+
 class FastNativeLinkedList<T> : MutableList<T> {
+
+    internal val version = AtomicInt(0)
     private val nativePtr = nativeListCreate()
 
+    init {
+        freeze()
+    }
+
+    internal fun debugPrint():String{
+        return "list vals: ${joinToString()}"
+    }
     override val size: Int
         get() = nativeListSize(nativePtr)
 
-    override fun add(element: T): Boolean {
+    override fun add(element: T): Boolean = withLock {
         nativeListAdd(nativePtr, element.freeze())
+        version.increment()
         return true
+    }
+
+    internal fun addNode(element: T): Node = withLock {
+        val node = Node(nativeListAddNode(nativePtr, element.freeze()) as NativeMemory).freeze()
+        version.increment()
+        return node
     }
 
     override fun add(index: Int, element: T) {
         withLock {
             when {
-                index == size -> add(element)
+                index == size -> add(element.freeze())
                 index > size -> throw IndexOutOfBoundsException()
-                else -> listIterator(index).add(element.freeze())
+                else -> {
+                    val listIterator = listIterator(index)
+                    listIterator.next()
+                    listIterator.add(element.freeze())
+                }
             }
         }
     }
 
     override fun addAll(index: Int, elements: Collection<T>): Boolean = withLock {
-        if (index > size)
-            throw IndexOutOfBoundsException()
-
-        val iter = listIterator(index)
-        elements.reversed().iterator().forEach { iter.add(it.freeze()) }
+        when {
+            index == size -> addAll(elements)
+            index > size -> throw IndexOutOfBoundsException()
+            else -> {
+                val listIterator = listIterator(index)
+                listIterator.next()
+                elements.reversed().iterator().forEach { listIterator.add(it.freeze()) }
+            }
+        }
         true
     }
 
@@ -41,6 +85,7 @@ class FastNativeLinkedList<T> : MutableList<T> {
     }
 
     override fun clear() {
+        version.increment()
         nativeListClear(nativePtr)
     }
 
@@ -111,7 +156,9 @@ class FastNativeLinkedList<T> : MutableList<T> {
         false
     }
 
-    override fun removeAll(elements: Collection<T>): Boolean = withLock { elements.map { remove(it) }.any { it } }
+    override fun removeAll(elements: Collection<T>): Boolean = withLock {
+        elements.map { remove(it) }.any { it }
+    }
 
     override fun removeAt(index: Int): T = withLock {
         if (index >= size)
@@ -147,16 +194,80 @@ class FastNativeLinkedList<T> : MutableList<T> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other === this ||
+                (other is List<*>) && contentEquals(other)
+    }
 
+    override fun hashCode(): Int = withLock {
+        val iter = listIterator()
+        var result = 1
+        var i = 0
+
+        while (iter.hasNext()) {
+            val nextElement = iter.next()
+            val nextHash = if (nextElement != null) nextElement.hashCode() else 0
+            result = result * 31 + nextHash
+            i++
+        }
+        return result
+    }
+
+    /*override fun toString(): String {
+        return this.array.subarrayContentToString(offset, length)
+    }*/
+
+    private fun contentEquals(other: List<*>): Boolean = withLock {
+
+        fun compare(a: List<*>, b: List<*>): Boolean {
+            if (a.size != b.size) return false
+            val myIter = a.listIterator()
+            val otherIter = b.listIterator()
+            while (otherIter.hasNext() && myIter.hasNext()) {
+                if (myIter.next() != otherIter.next()) return false
+            }
+            return true
+        }
+
+        if (other is FastNativeLinkedList<*>) {
+            other.withLock {
+                compare(this, other)
+            }
+        } else {
+            compare(this, other)
+        }
+    }
+
+    internal inner class Node(private val nativeMemory: NativeMemory){
+        fun remove(){
+            nativeListNodeRemove(nativePtr, nativeMemory)
+        }
+
+        fun readd(){
+            nativeListNodeReadd(nativePtr, nativeMemory)
+        }
+    }
 
     internal inner class ListIterator(private val nativeMemory: NativeMemory) : MutableListIterator<T> {
+        private val myVersion = AtomicInt(version.value)
         private val atomicIndex = AtomicInt(0)
+
+        private fun incrementVersions(){
+            myVersion.increment()
+            version.increment()
+        }
+
+        private fun checkVersions(){
+            if(myVersion.value != version.value)
+                throw ConcurrentModificationException()
+        }
 
         override fun hasPrevious(): Boolean = nativeListIterHasPrevious(nativePtr, nativeMemory)
 
         override fun nextIndex(): Int = atomicIndex.value + 1
 
         override fun previous(): T = withLock {
+            checkVersions()
             val prev = nativeListIterPrevious(nativePtr, nativeMemory)
             atomicIndex.decrement()
             prev as T
@@ -164,23 +275,30 @@ class FastNativeLinkedList<T> : MutableList<T> {
 
         override fun previousIndex(): Int = atomicIndex.value - 1
 
-        override fun add(element: T) {
+        override fun add(element: T) = withLock{
+            checkVersions()
+            incrementVersions()
             nativeListIterAdd(nativePtr, nativeMemory, element.freeze())
         }
 
         override fun hasNext(): Boolean = nativeListIterHasNext(nativePtr, nativeMemory)
 
         override fun next(): T = withLock {
+            checkVersions()
             val next = nativeListIterNext(nativePtr, nativeMemory)
             atomicIndex.increment()
             next as T
         }
 
-        override fun remove() {
+        override fun remove() = withLock{
+            checkVersions()
+            incrementVersions()
             nativeListIterRemove(nativePtr, nativeMemory)
         }
 
-        override fun set(element: T) {
+        override fun set(element: T) = withLock{
+            checkVersions()
+            incrementVersions()
             nativeListIterSet(nativePtr, nativeMemory, element.freeze())
         }
     }
@@ -207,6 +325,15 @@ private external fun nativeListSize(ptr: Long): Int
 
 @SymbolName("Stately_list_add")
 private external fun nativeListAdd(ptr: Long, value: Any?)
+
+@SymbolName("Stately_list_addNode")
+private external fun nativeListAddNode(ptr: Long, value: Any?): Any?
+
+@SymbolName("Stately_list_nodeRemove")
+private external fun nativeListNodeRemove(ptr: Long, nativeMemory: NativeMemory)
+
+@SymbolName("Stately_list_nodeReadd")
+private external fun nativeListNodeReadd(ptr: Long, nativeMemory: NativeMemory)
 
 @SymbolName("Stately_list_clear")
 private external fun nativeListClear(ptr: Long)

@@ -1,5 +1,6 @@
 package co.touchlab.stately.collections
 
+import kotlin.native.concurrent.freeze
 import kotlin.native.internal.ExportForCppRuntime
 
 @ExportForCppRuntime
@@ -16,7 +17,7 @@ typealias NativeMemory = ByteArray
 
 @ExportForCppRuntime
 internal fun makeByteMemory(size:Int): NativeMemory {
-    val nativeMemory = NativeMemory(size)
+    val nativeMemory = NativeMemory(size).freeze()
     return nativeMemory
 }
 

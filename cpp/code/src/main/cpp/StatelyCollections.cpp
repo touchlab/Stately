@@ -20,6 +20,8 @@
 #include "Types.h"
 #include "Alloc.h"
 #include "Natives.h"
+#include "Memory.h"
+#include "KAssert.h"
 
 extern "C" {
 KInt generalHash(KRef a);
@@ -66,14 +68,134 @@ namespace stately {
       return (void *) ArrayAddressOfElementAt(nativeMemory->array(), 0);
     }
 
+    class ListNodeBox {
+    public:
+        ListNodeBox(const StatelyList::iterator &iterator, StatelyList *list) : iterator_(iterator), list_(list) {
+        }
+
+        void readd() {
+          void **pVoid = &*iterator_;
+          void* entry = *pVoid;
+          list_->erase(iterator_);
+          list_->push_back(entry);
+          auto endIter = list_->end();
+          endIter--;
+          iterator_ = endIter;
+        }
+
+        void remove() {
+          void *&entry = *iterator_;
+          list_->erase(iterator_);
+          DisposeStablePointer(entry);
+        }
+
+    private:
+        StatelyList::iterator iterator_;
+        StatelyList *list_;
+    };
+
     class ListIterBox {
     public:
         ListIterBox(const StatelyList::iterator &iterator, StatelyList *list) : iterator_(iterator), list_(list) {
         }
 
+        KBoolean hasPrevious() {
+          return !freshIter;
+        }
+
+        KBoolean hasNext() {
+          const std::list<void *, KonanAllocator<void *>>::iterator &iterEnd = list_->end();
+
+          if(list_->size() == 0 || iterator_ == iterEnd)
+            return false;
+
+          if(freshIter)
+            return true;
+
+          iterator_++;
+          bool nextEnd = iterator_ == iterEnd;
+          iterator_--;
+          return !nextEnd;
+        }
+
+        OBJ_GETTER0(next) {
+          const std::list<void *, KonanAllocator<void *>>::iterator &iterEnd = list_->end();
+
+          if(iterator_ == iterEnd)
+            Throw_NoSuchElementException();
+
+          if(freshIter)
+            freshIter = false;
+          else
+            iterator_++;
+
+          if(iterator_ == iterEnd)
+            Throw_NoSuchElementException();
+
+          auto retval = *iterator_;
+
+          RETURN_OBJ((KRef) retval);
+        }
+
+        OBJ_GETTER0(previous) {
+          _rewind();
+
+          auto retval = *iterator_;
+
+          RETURN_OBJ((KRef) retval);
+        }
+
+        void _rewind(){
+          if(freshIter)
+          {
+            Throw_NoSuchElementException();
+          }
+
+          if(iterator_ == list_->begin())
+            freshIter = true;
+          else
+            iterator_--;
+        }
+
+        void add(KRef value) {
+          if(freshIter)
+          {
+            Throw_NoSuchElementException();
+          }
+
+          RuntimeAssert(PermanentOrFrozen(value), "Must be frozen - iter add");
+
+          iterator_ = list_->insert(iterator_, CreateStablePointer(value));
+        }
+
+        void remove() {
+          if(freshIter)
+          {
+            Throw_NoSuchElementException();
+          }
+
+          void **pVoid = &*iterator_;
+          void * entry = *pVoid;
+          DisposeStablePointer(entry);
+
+          iterator_ = list_->erase(iterator_);
+
+          _rewind();
+
+
+        }
+
+        void set(KRef value) {
+          void **pVoid = &*iterator_;
+          DisposeStablePointer(*pVoid);
+          RuntimeAssert(PermanentOrFrozen(value), "Must be frozen - iter set");
+          *iterator_ = CreateStablePointer(value);
+        }
+
+    private:
         StatelyList::iterator iterator_;
         StatelyList *list_;
-        bool beforeStart = false;
+        bool freshIter = true;
     };
 
     class FastList {
@@ -95,6 +217,7 @@ namespace stately {
 
         void add(KRef value) {
           Locker locker(&lock_);
+          RuntimeAssert(PermanentOrFrozen(value), "Must be frozen - list add");
           list_.push_back(CreateStablePointer(value));
         }
 
@@ -114,6 +237,19 @@ namespace stately {
 
           KRef nativeMemory = makeByteMemory(sizeof(ListIterBox), OBJ_RESULT);
           auto iterBox = new(nativeMemToPointer(nativeMemory)) ListIterBox(list_.begin(), &list_);
+
+          RETURN_OBJ(nativeMemory);
+        }
+
+        OBJ_GETTER(addNode, KRef value) {
+          Locker locker(&lock_);
+          RuntimeAssert(PermanentOrFrozen(value), "Must be frozen - list addNode");
+          list_.push_back(CreateStablePointer(value));
+
+          KRef nativeMemory = makeByteMemory(sizeof(ListNodeBox), OBJ_RESULT);
+          auto endIter = list_.end();
+          endIter--;
+          auto iterBox = new(nativeMemToPointer(nativeMemory)) ListNodeBox(endIter, &list_);
 
           RETURN_OBJ(nativeMemory);
         }
@@ -147,7 +283,30 @@ namespace stately {
       ((FastList *) ptr)->add(value);
     }
 
+    OBJ_GETTER(Stately_list_addNode, KLong ptr, KRef value) {
+      FastList *pList = (FastList *) ptr;
+
+      RETURN_RESULT_OF(pList->addNode, value);
+    }
+
+    ListNodeBox * castNode(KRef nativeMemory){
+      return (ListNodeBox *) nativeMemToPointer(nativeMemory);
+    }
+
+    void Stately_list_nodeRemove(KLong ptr, KRef nativeMemory) {
+      Locker locker(&(((FastList *) ptr)->lock_));
+      ListNodeBox *pBox = castNode(nativeMemory);
+      pBox->remove();
+    }
+
+    void Stately_list_nodeReadd(KLong ptr, KRef nativeMemory) {
+      Locker locker(&(((FastList *) ptr)->lock_));
+      ListNodeBox *pBox = castNode(nativeMemory);
+      pBox->readd();
+    }
+
     void Stately_list_clear(KLong ptr) {
+      Locker locker(&(((FastList *) ptr)->lock_));
       ((FastList *) ptr)->clear();
     }
 
@@ -163,68 +322,43 @@ namespace stately {
     KBoolean Stately_list_iterHasPrevious(KLong ptr, KRef nativeMemory) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = castIter(nativeMemory);
-      return pBox->iterator_ != pBox->list_->begin();
+      return pBox->hasPrevious();
     }
 
     KBoolean Stately_list_iterHasNext(KLong ptr, KRef nativeMemory) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = castIter(nativeMemory);
-      return pBox->iterator_ != pBox->list_->end();
+      return pBox->hasNext();
     }
 
     OBJ_GETTER(Stately_list_iterNext, KLong ptr, KRef nativeMemory) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = castIter(nativeMemory);
-      if(pBox->iterator_ == pBox->list_->end())
-      {
-        Throw_NoSuchElementException();
-      }
-      std::list<void *, KonanAllocator<void *>>::iterator &iterator = pBox->iterator_;
-      auto retval = *iterator;
-      pBox->iterator_++;
-
-      RETURN_OBJ((KRef) retval);
+      RETURN_RESULT_OF0(pBox->next);
     }
 
     OBJ_GETTER(Stately_list_iterPrevious, KLong ptr, KRef nativeMemory) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = castIter(nativeMemory);
-      if(pBox->iterator_ == pBox->list_->begin())
-      {
-        Throw_NoSuchElementException();
-      }
-      std::list<void *, KonanAllocator<void *>>::iterator &iterator = pBox->iterator_;
-      auto retval = *iterator;
-      pBox->iterator_--;
-
-      RETURN_OBJ((KRef) retval);
+      RETURN_RESULT_OF0(pBox->previous);
     }
-
-
 
     void Stately_list_iterAdd(KLong ptr, KRef nativeMemory, KRef value) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = (ListIterBox *) nativeMemToPointer(nativeMemory);
-//      pBox->rewind();
-      pBox->iterator_ = pBox->list_->insert(pBox->iterator_, CreateStablePointer(value));
+      pBox->add(value);
     }
 
     void Stately_list_iterRemove(KLong ptr, KRef nativeMemory) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = castIter(nativeMemory);
-//      pBox->rewind();
-      void *&entry = *(pBox->iterator_);
-      pBox->iterator_ = pBox->list_->erase(pBox->iterator_);
-      DisposeStablePointer(entry);
+      pBox->remove();
     }
 
     void Stately_list_iterSet(KLong ptr, KRef nativeMemory, KRef value) {
       Locker locker(&(((FastList *) ptr)->lock_));
       ListIterBox *pBox = castIter(nativeMemory);
-//      pBox->rewind();
-      void *&entry = *(pBox->iterator_);
-      *(pBox->iterator_) = CreateStablePointer(value);
-      DisposeStablePointer(entry);
+      pBox->set(value);
     }
 
     void Stately_list_lock(KLong ptr) {
@@ -297,22 +431,13 @@ namespace stately {
           if (it != map_.end()) {
             currentValue = it->second;
 
-            if(traceCount < 50)
-            {
-              cppTrace(((KRef )it->first)->container()->refCount());
-              cppTrace(((KRef )currentValue)->container()->refCount());
-            }
-
             DisposeStablePointer(it->first);
-
-            if(traceCount++ < 50)
-            {
-              cppTrace(((KRef )it->first)->container()->refCount());
-              cppTrace(((KRef )currentValue)->container()->refCount());
-            }
 
             map_.erase(it);
           }
+
+          RuntimeAssert(PermanentOrFrozen(key), "Must be frozen - map put key");
+          RuntimeAssert(PermanentOrFrozen(value), "Must be frozen - map put value");
 
           auto keyPtr = CreateStablePointer(key);
           auto valuePtr = CreateStablePointer(value);
@@ -368,28 +493,10 @@ namespace stately {
           return nativeMemory;
         }
 
-        void setTempVar(KRef a){
-          tempvar_ = CreateStablePointer(a);
-        }
-        
-        KRef grabTempVar(){
-          DisposeStablePointer(tempvar_);
-          KRef resultVal = (KRef) tempvar_;
-          tempvar_ = nullptr;
-          return resultVal;
-        }
-
-        KInt tempRefCount(){
-          KRef resultVal = (KRef) tempvar_;
-          return resultVal->container()->refCount();
-        }
-
     private:
-        KInt traceCount = 0;
         StatelyMap map_;
         pthread_mutexattr_t attr_;
         pthread_mutex_t lock_;
-        KNativePtr tempvar_;
     };
 
     extern "C" {
@@ -400,7 +507,6 @@ namespace stately {
 
     void Stately_map_clear(KLong mapPtr) {
       ((FastHashMap *) mapPtr)->clear();
-      konanDestructInstance((FastHashMap *) mapPtr);
     }
 
     void Stately_map_destroy(KLong mapPtr) {
@@ -470,22 +576,9 @@ namespace stately {
       return sizeof(IterBox);
     }
 
-    void Stately_map_setTempVar(KLong mapPtr, KRef a) {
-      ((FastHashMap *) mapPtr)->setTempVar(a);
-    }
-
-    KRef Stately_map_grabTempVar(KLong mapPtr) {
-      return ((FastHashMap *) mapPtr)->grabTempVar();
-    }
-
     KInt Stately_debug_refCount(KRef a){
       return a->container()->refCount();
     }
-
-    KInt Stately_map_tempRefCount(KLong mapPtr) {
-      return ((FastHashMap *) mapPtr)->tempRefCount();
-    }
-
 
     }
 } // namespace stately

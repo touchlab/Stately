@@ -22,3 +22,9 @@ actual fun <T> frozenCopyOnWriteList(collection: Collection<T>?): MutableList<T>
   else
     CopyOnWriteList(collection)
 }
+
+actual fun <T> frozenLinkedList(): MutableList<T> = FastNativeLinkedList()
+
+actual fun <K, V> frozenHashMap(): MutableMap<K, V> = FastNativeHashMap()
+
+actual fun <T> frozenHashSet(): MutableSet<T> = FastNativeHashSet()

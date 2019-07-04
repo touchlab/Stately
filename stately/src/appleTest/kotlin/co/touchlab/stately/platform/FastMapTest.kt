@@ -26,7 +26,7 @@ class FastMapTest{
         assertEquals(1000, map.size)
     }*/
 
-    @Test
+//    @Test
     fun memleaks()
     {
         val map = FastNativeHashMap<SomeMapKey, SomeMapData>()

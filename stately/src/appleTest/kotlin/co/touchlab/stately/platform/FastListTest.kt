@@ -14,6 +14,8 @@ class FastListTest {
         }
     }
 
+
+
     @Test
     fun addAtStart() {
         verifyFunctionality {
@@ -34,9 +36,10 @@ class FastListTest {
                 if (count++ % 3 == 0)
                     iter.remove()
             }
+
+            println("iterRemove test count $count")
         }
     }
-
 
     @Test
     fun getAfterEndOOB() {
@@ -79,8 +82,10 @@ class FastListTest {
 
             assertEquals(fiveIter.next(), Dat("d 5"))
             it.removeAt(0)
-            assertEquals(fiveIter.next(), Dat("d 6"))
-            checkLast(fiveIter, Dat("d 9"))
+            assertFailsWith<ConcurrentModificationException> { fiveIter.next() }
+//            assertEquals(, Dat("d 6"))
+            assertEquals(it.last(), Dat("d 9"))
+//            checkLast(fiveIter, Dat("d 9"))
         }
     }
 
@@ -114,6 +119,8 @@ class FastListTest {
             }
         }
     }
+
+
 }
 
 //class FastListTest {

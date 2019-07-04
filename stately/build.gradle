@@ -35,9 +35,21 @@ kotlin {
             it.extraOpts("-native-library", "../cpp/bcdist/macos_x64/tlruntime.bc")
         }
     }
-    iosArm32()
-    iosArm64()
-    iosX64()
+    iosArm32(){
+        compilations.test {
+            it.extraOpts("-native-library", "../cpp/bcdist/ios_arm32/tlruntime.bc")
+        }
+    }
+    iosArm64(){
+        compilations.test {
+            it.extraOpts("-native-library", "../cpp/bcdist/ios_arm64/tlruntime.bc")
+        }
+    }
+    iosX64(){
+        compilations.test {
+            it.extraOpts("-native-library", "../cpp/bcdist/ios_x64/tlruntime.bc")
+        }
+    }
     mingwX64()
     
     sourceSets {

@@ -2,6 +2,41 @@ package co.touchlab.stately.collections
 
 import kotlin.native.concurrent.freeze
 
+class FastNativeHashSet<T>() : MutableSet<T>{
+    private val map = FastNativeHashMap<T, Unit>()
+
+    override fun add(element: T): Boolean = map.put(element, Unit) == null
+
+    override fun addAll(elements: Collection<T>): Boolean {
+        return elements.map {
+            add(it)
+        }.any { it }
+    }
+
+    override fun clear() {
+        map.clear()
+    }
+
+    override fun iterator(): MutableIterator<T> {
+        return map.keys.iterator()
+    }
+
+    override fun remove(element: T): Boolean = map.remove(element) != null
+
+    override fun removeAll(elements: Collection<T>): Boolean = elements.map { remove(it) }.any { it }
+
+    override fun retainAll(elements: Collection<T>): Boolean = map.keys.retainAll(elements)
+
+    override val size: Int
+        get() = map.size
+
+    override fun contains(element: T): Boolean = map.containsKey(element)
+
+    override fun containsAll(elements: Collection<T>): Boolean = elements.map { contains(it) }.all { it }
+
+    override fun isEmpty(): Boolean = map.isEmpty()
+}
+
 class FastNativeHashMap<K, V>() : MutableMap<K, V> {
     private val nativePtr = nativeMapCreate()
 
@@ -32,6 +67,10 @@ class FastNativeHashMap<K, V>() : MutableMap<K, V> {
     override fun put(key: K, value: V): V? = nativeMapPut(nativePtr, key.freeze(), value.freeze()) as V?
 
     override fun putAll(from: Map<out K, V>) {
+        println("*** putAll size(${from.size}) ***")
+        from.entries.forEach {
+            println("key: ${it.key}/value: ${it.value}")
+        }
         from.entries.forEach {
             put(it.key, it.value)
         }
