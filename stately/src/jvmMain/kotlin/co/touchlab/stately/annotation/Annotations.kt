@@ -18,14 +18,4 @@ package co.touchlab.stately.annotation
 
 import kotlin.jvm.Throws
 
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.BINARY)
-actual
-annotation class SharedImmutable
-
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.BINARY)
-actual
-annotation class ThreadLocal
-
 actual typealias Throws = Throws

@@ -2,6 +2,7 @@ apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 repositories {
     mavenCentral()
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
 }
 kotlin {
     // For ARM, should be changed to iosArm32 or iosArm64

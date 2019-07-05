@@ -26,6 +26,8 @@ expect class Lock() {
   fun tryLock(): Boolean
 }
 
+expect inline fun Lock.close()
+
 inline fun <T> Lock.withLock(block: () -> T): T {
   lock()
   try {

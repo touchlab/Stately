@@ -1,3 +1,4 @@
 #Runs specific test. Pass in test name.
+set -e
 ./gradlew linkTestDebugExecutableMacos
-./build/bin/macos/test/debug/executable/test.kexe --ktest_regex_filter=.*$1.*
+./stately/build/bin/macosX64/testDebugExecutable/test.kexe --ktest_regex_filter=.*$1.*

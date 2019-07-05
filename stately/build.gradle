@@ -18,19 +18,26 @@ apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 repositories {
     mavenCentral()
+    mavenLocal()
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
 }
 
 group = GROUP
 version = VERSION_NAME
 
 kotlin {
-//    macosX64("apple")
+//    macosX64("nativeCommon")
     jvm()
-//    js()
+    js()
     macosX64()
     iosArm32()
     iosArm64()
     iosX64()
+    linuxX64()
+    linuxArm32Hfp()
+    linuxMips32()
+//    androidNativeArm32()
+//    androidNativeArm64()
     mingwX64()
     
     sourceSets {
@@ -39,13 +46,15 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
             }
         }
+
         commonTest {
             dependencies {
         		implementation 'org.jetbrains.kotlin:kotlin-test-common'
         		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
-                implementation 'co.touchlab:testhelp:0.2.3'
+            implementation 'co.touchlab:testhelp:0.2.6'
             }
         }
+
         jvmMain {
             dependsOn commonMain
             dependencies {
@@ -77,79 +86,25 @@ kotlin {
         nativeCommonMain {
             dependsOn commonMain
         }
-        
+
         nativeCommonTest {
             dependsOn commonTest
         }
 
-        appleMain {
-            dependsOn nativeCommonMain
-        }
-
-        appleTest {
-            dependsOn nativeCommonTest
-        }
-
-        macosX64().compilations.main.defaultSourceSet {
-            dependsOn appleMain
-        }
-
-        macosX64().compilations.test.defaultSourceSet {
-            dependsOn appleTest
-        }
-        
-        iosArm32().compilations.main.defaultSourceSet {
-            dependsOn appleMain
-        }
-
-        iosArm32().compilations.test.defaultSourceSet {
-            dependsOn appleTest
-        }
-        
-        iosArm64().compilations.main.defaultSourceSet {
-            dependsOn appleMain
-        }
-
-        iosArm64().compilations.test.defaultSourceSet {
-            dependsOn appleTest
-        }
-        
-        iosX64().compilations.main.defaultSourceSet {
-            dependsOn appleMain
-        }
-
-        iosX64().compilations.test.defaultSourceSet {
-            dependsOn appleTest
-        }
-
-        otherNativeMain {
-            dependsOn nativeCommonMain
-        }
-
-        otherNativeTest {
-            dependsOn nativeCommonTest
-        }
-
-        mingwX64().compilations.main.defaultSourceSet {
-            dependsOn otherNativeMain
-        }
-        
-        mingwX64().compilations.test.defaultSourceSet {
-            dependsOn mingwTest
-        }
-    }
-}
-
-task iosTest {
-    def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
-    dependsOn 'linkTestDebugExecutableIosX64'
-    group = JavaBasePlugin.VERIFICATION_GROUP
-    description = "Runs tests for target 'ios' on an iOS simulator"
-
-    doLast {
-        def binary = kotlin.targets.iosX64.compilations.test.getBinary('EXECUTABLE', 'DEBUG')
-        exec {
-            commandLine 'xcrun', 'simctl', 'spawn', device, binary.absolutePath
+        configure([targets.iosX64,
+                   targets.iosArm32,
+                   targets.iosArm64,
+                   targets.macosX64,
+                   targets.mingwX64,
+                   targets.linuxX64,
+                   targets.linuxArm32Hfp,
+                   targets.linuxMips32
+//                   ,
+//                   targets.androidNativeArm32,
+//                   targets.androidNativeArm64
+        ]) {
+            compilations.main.source(sourceSets.nativeCommonMain)
+            compilations.test.source(sourceSets.nativeCommonTest)
         }
     }
 }

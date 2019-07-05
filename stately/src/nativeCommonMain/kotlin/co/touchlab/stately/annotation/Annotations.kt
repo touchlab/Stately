@@ -18,6 +18,4 @@ package co.touchlab.stately.annotation
 
 import kotlin.native.Throws
 
-actual typealias SharedImmutable = kotlin.native.concurrent.SharedImmutable
-actual typealias ThreadLocal = kotlin.native.concurrent.ThreadLocal
 actual typealias Throws = Throws

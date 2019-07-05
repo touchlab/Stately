@@ -1,0 +1,113 @@
+/*
+ * Copyright (C) 2018 Touchlab, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+}
+
+group = GROUP
+version = VERSION_NAME
+
+kotlin {
+    macosX64("nativeCommon")
+    jvm()
+//    js()
+    macosX64()
+    iosArm32()
+    iosArm64()
+    iosX64()
+    linuxX64()
+    linuxArm32Hfp()
+    linuxMips32()
+//    androidNativeArm32()
+//    androidNativeArm64()
+    mingwX64()
+    
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+                implementation project(":stately")
+            }
+        }
+
+        commonTest {
+            dependencies {
+        		implementation 'org.jetbrains.kotlin:kotlin-test-common'
+        		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
+                implementation 'co.touchlab:testhelp:0.2.6'
+            }
+        }
+
+        jvmMain {
+            dependsOn commonMain
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+            }
+        }
+        jvmTest {
+            dependsOn commonTest
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test'
+                implementation 'org.jetbrains.kotlin:kotlin-test-junit'
+            }
+        }
+        
+        //Disabling js till we sort out some testing
+        /*jsMain {
+            dependsOn commonMain
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
+            }
+        }
+        jsTest {
+            dependsOn commonTest
+            dependencies {
+                implementation 'org.jetbrains.kotlin:kotlin-test-js'
+            }
+        }*/
+
+        nativeCommonMain {
+            dependsOn commonMain
+        }
+
+        nativeCommonTest {
+            dependsOn commonTest
+        }
+
+        configure([targets.iosX64,
+                   targets.iosArm32,
+                   targets.iosArm64,
+                   targets.macosX64,
+                   targets.mingwX64,
+                   targets.linuxX64,
+                   targets.linuxArm32Hfp,
+                   targets.linuxMips32
+//                   ,
+//                   targets.androidNativeArm32,
+//                   targets.androidNativeArm64
+        ]) {
+            compilations.main.source(sourceSets.nativeCommonMain)
+            compilations.test.source(sourceSets.nativeCommonTest)
+        }
+    }
+}
+
+apply from: '../gradle/gradle-mvn-mpp-push.gradle'

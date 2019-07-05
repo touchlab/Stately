@@ -42,7 +42,4 @@ expect fun Any.ensureNeverFrozen()
  */
 expect val isNative: Boolean
 
-fun justcomp() {
-  val result = Result.success("asdf")
-  println(result)
-}
+expect val isMultithreaded: Boolean
