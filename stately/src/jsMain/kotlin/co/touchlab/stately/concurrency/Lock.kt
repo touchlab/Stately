@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.concurrency
 
-actual fun <T> T.freeze(): T = this
-actual fun <T> T.isFrozen(): Boolean = false
-actual fun <T> T.isNativeFrozen(): Boolean = true
-actual fun Any.ensureNeverFrozen() {}
+/**
+ * Reentrant locks aren't super exciting in a single threaded world.
+ */
+actual class Lock actual constructor() {
+  actual fun lock() {}
+  actual fun unlock() {}
+  actual fun tryLock(): Boolean = true
+}
 
-actual val isNative: Boolean = false
-actual val isMultithreaded: Boolean = true
+@Suppress("NOTHING_TO_INLINE")
+actual inline fun Lock.close(){}

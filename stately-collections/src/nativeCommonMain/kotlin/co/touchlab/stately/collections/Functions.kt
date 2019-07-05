@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.collections
 
-actual fun <T> T.freeze(): T = this
-actual fun <T> T.isFrozen(): Boolean = false
-actual fun <T> T.isNativeFrozen(): Boolean = true
-actual fun Any.ensureNeverFrozen() {}
-
-actual val isNative: Boolean = false
-actual val isMultithreaded: Boolean = true
+actual fun <T> frozenCopyOnWriteList(collection: Collection<T>?): MutableList<T> {
+  return if (collection == null)
+    CopyOnWriteList()
+  else
+    CopyOnWriteList(collection)
+}

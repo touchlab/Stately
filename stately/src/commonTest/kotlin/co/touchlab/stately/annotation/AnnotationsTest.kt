@@ -20,6 +20,8 @@ import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.isFrozen
 import co.touchlab.stately.isNative
 import co.touchlab.stately.isNativeFrozen
+import kotlin.native.concurrent.SharedImmutable
+import kotlin.native.concurrent.ThreadLocal
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

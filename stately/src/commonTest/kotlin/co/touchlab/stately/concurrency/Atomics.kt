@@ -16,10 +16,7 @@
 
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.collections.frozenHashMap
-import co.touchlab.stately.collections.frozenLinkedList
 import co.touchlab.stately.freeze
-import co.touchlab.testhelp.concurrency.ThreadOperations
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -132,7 +129,7 @@ class Atomics {
     atList.freeze()
   }
 
-  @Test
+  /*@Test
   fun bigAtomicCyclic() {
     val ll = frozenLinkedList<AtomicReference<CycleData?>>()
     for (i in 0 until 200) {
@@ -172,7 +169,7 @@ class Atomics {
 
       map.put("key $i", c)
     }
-  }
+  }*/
 
 
 }

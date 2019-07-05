@@ -12,6 +12,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/stately" />
+            <option value="$PROJECT_DIR$/stately-collections" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

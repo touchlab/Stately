@@ -26,9 +26,9 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-//    macosX64("nativeCommon")
+    macosX64("nativeCommon")
     jvm()
-    js()
+//    js()
     macosX64()
     iosArm32()
     iosArm64()
@@ -44,6 +44,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+                implementation project(":stately")
             }
         }
 

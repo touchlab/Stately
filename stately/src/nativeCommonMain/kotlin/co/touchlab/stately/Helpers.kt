@@ -26,6 +26,5 @@ actual fun <T> T.isNativeFrozen(): Boolean = this.isFrozen
 actual fun Any.ensureNeverFrozen() = this.ensureNeverFrozen()
 
 actual val isNative: Boolean = true
-/**
- * Call on an object which should never be frozen. Will help debug when something inadvertently is.
- */
+
+actual val isMultithreaded: Boolean = true
