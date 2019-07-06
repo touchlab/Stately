@@ -21,9 +21,9 @@ import kotlin.native.concurrent.freeze
  * Implementations of this class should be re-entrant.
  */
 actual class Lock actual constructor() {
-    val arena = Arena()
-    val attr = arena.alloc<pthread_mutexattr_t>()
-    val mutex = arena.alloc<pthread_mutex_t>()
+    private val arena = Arena()
+    private val attr = arena.alloc<pthread_mutexattr_t>()
+    private val mutex = arena.alloc<pthread_mutex_t>()
 
     init {
         pthread_mutexattr_init(attr.ptr)
@@ -41,10 +41,14 @@ actual class Lock actual constructor() {
     }
 
     actual fun tryLock(): Boolean = pthread_mutex_trylock(mutex.ptr) == 0
+
+    fun internalClose(){
+        pthread_mutex_destroy(mutex.ptr)
+        pthread_mutexattr_destroy(attr.ptr)
+        arena.clear()
+    }
 }
 
 actual inline fun Lock.close() {
-    pthread_mutex_destroy(mutex.ptr)
-    pthread_mutexattr_destroy(attr.ptr)
-    arena.clear()
+    internalClose()
 }

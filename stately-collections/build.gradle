@@ -26,7 +26,7 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    macosX64("nativeCommon")
+//    macosX64("nativeCommon")
     jvm()
 //    js()
     macosX64()
