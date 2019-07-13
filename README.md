@@ -137,10 +137,9 @@ dependencies {
 }
 ```
 
-*DO NOT LOOK AT THE SAMPLE APP*
+## Sample App
 
-It's pretty old.
-
+The sample app is updated!!! It doesn't 
 
 License
 =======

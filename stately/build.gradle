@@ -25,6 +25,10 @@ repositories {
 group = GROUP
 version = VERSION_NAME
 
+configurations {
+    compileClasspath
+}
+
 kotlin {
 //    macosX64("darwinMain")
     jvm()
