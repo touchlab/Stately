@@ -1,40 +1,13 @@
 # Stately
 
-Stately is a state utility library to facilitate the Native side of Kotlin Multiplatform.
+Stately is a state utility library to facilitate state management in Kotlin Multiplatform.
 
-The library consists of some useful expect/actual definitions, as well as a set of multithreaded collection classes that 
-will allow multithreaded mutation in Kotlin/Native.
+The core library consists primarily of some useful expect/actual definitions, Atomics, and Locks. There is also a library
+with a set of multithreaded collection classes that will allow multithreaded mutation in Kotlin/Native.
 
 Kotlin/Native has a fairly different model of concurrency than what JVM developers are used to. This includes very 
 different rules around sharing state. These rules are intended to reduce the likelihood of concurrency related issues.
-
-One of the rules is that shared state is immutable. While generally a good idea, some shared state mutability is also 
-pretty useful. Kotlin/Native provides a set of Atomics to allow for some state to be changed in a safe way. Stately provides
-a set of collection classes that use Atomics under the hood to function, as well as some multiplatform definitions to 
-make using Atomics and Kotlin/Native related state management simpler.
-
-The documentation here is about the structure, or the *what* of the library. A follow on blog post will talk a bit more 
-about the *why*.
-
-## Status
-
-[![Build status](https://build.appcenter.ms/v0.1/apps/fcda190b-7ec8-43b7-8216-6fc1be836332/branches/master/badge)](https://appcenter.ms)
-
-This a pretty early version. Expect changes in the near future.
-
-## Annotations
-
-Kotlin/Native provides some annotations to support state characteristics. These do not have common kotlin analogs, which 
-makes multiplatform code somewhat more difficult to define. Stately defines expect/actual parallels which have no impact 
-on JVM or JS.
-
-### ThreadLocal
-
-Place on top level var or object to make it available as thread local. See [`ThreadLocal`](https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L51).
-
-### SharedImmutable
-
-Top level var will default to main thread only. To share it as an immutable, add this annotation. See [`SharedImmutable`](https://github.com/JetBrains/kotlin-native/blob/master/runtime/src/main/kotlin/kotlin/native/Annotations.kt#L59).
+[Read this](https://medium.com/@kpgalligan/kotlin-native-stranger-threads-ep-2-208523d63c8f) for more info.
 
 ## Functions/Extensions
 
@@ -60,7 +33,21 @@ Simple way to find out if we're in a native context.
 
 Converts an Iterator to a List. This is an extension function that works on any Iterator. Mostly useful for testing.
 
+## Atomics
+
+Atomic value definitions for Int, Long, Boolean, and object references.
+
+## Lock
+
+Mutex lock for various platforms. It is important to note that there is an extension method called `close()`. This only
+needs to be called if you are on a native platform other than an apple platform. So, if you're on Windows or Linux.
+JVM, JS, iOS, and MacOS can safely ignore `close`.
+
 ## Collections
+
+Collections allow mutable collections in frozen code. They've been moved to a separate package as the current form will 
+likely be removed in the future. Either a faster version will be created, or "relaxed mode" for Kotlin/Native will make
+them relatively useless. However, they do work and are available.
 
 ## Important note for all collections!!!
 
@@ -143,7 +130,16 @@ be frozen.
 
 ## Usage
 
-See the [Sample App](Sample/) for usage.
+```groovy
+dependencies {
+    implementation "co.touchlab:stately:0.9.x"
+    implementation "co.touchlab:stately-collections:0.9.x"
+}
+```
+
+*DO NOT LOOK AT THE SAMPLE APP*
+
+It's pretty old.
 
 
 License

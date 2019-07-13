@@ -1,11 +1,9 @@
 plugins {
-    id 'kotlin-multiplatform' version '1.3.10'
+    id 'kotlin-multiplatform' version '1.3.41'
 }
 repositories {
     google()
     jcenter()
-    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap' }
-    maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
     mavenCentral()
 }
 apply plugin: 'com.android.application'
@@ -37,7 +35,7 @@ dependencies {
 
 kotlin {
     targets {
-        fromPreset(presets.android, 'android')
+        android()
         // This preset is for iPhone emulator
         // Switch here to presets.iosArm64 (or iosArm32) to build library for iPhone device
         fromPreset(presets.iosX64, 'ios') {

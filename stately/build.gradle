@@ -26,9 +26,19 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-//    macosX64("nativeCommon")
+//    macosX64("darwinMain")
     jvm()
-    js()
+    js() {
+        nodejs()
+        /*browser()
+        configure([compilations.main, compilations.test]) {
+            tasks.getByName(compileKotlinTaskName).kotlinOptions {
+                metaInfo = true
+                sourceMap = true
+                moduleKind = 'umd'
+            }
+        }*/
+    }
     macosX64()
     iosArm32()
     iosArm64()
@@ -69,8 +79,7 @@ kotlin {
             }
         }
         
-        //Disabling js till we sort out some testing
-        /*jsMain {
+        jsMain {
             dependsOn commonMain
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
@@ -81,7 +90,7 @@ kotlin {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-test-js'
             }
-        }*/
+        }
 
         nativeCommonMain {
             dependsOn commonMain
@@ -91,11 +100,23 @@ kotlin {
             dependsOn commonTest
         }
 
+        darwinMain {
+            dependsOn nativeCommonMain
+        }
+
+        pthreadMain {
+            dependsOn nativeCommonMain
+        }
+
         configure([targets.iosX64,
                    targets.iosArm32,
                    targets.iosArm64,
-                   targets.macosX64,
-                   targets.mingwX64,
+                   targets.macosX64]){
+            compilations.main.source(sourceSets.darwinMain)
+            compilations.test.source(sourceSets.nativeCommonTest)
+        }
+
+        configure([targets.mingwX64,
                    targets.linuxX64,
                    targets.linuxArm32Hfp,
                    targets.linuxMips32
@@ -103,7 +124,7 @@ kotlin {
 //                   targets.androidNativeArm32,
 //                   targets.androidNativeArm64
         ]) {
-            compilations.main.source(sourceSets.nativeCommonMain)
+            compilations.main.source(sourceSets.pthreadMain)
             compilations.test.source(sourceSets.nativeCommonTest)
         }
     }

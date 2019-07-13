@@ -46,6 +46,10 @@ class LockTest{
 
     @Test
     fun lockReentrant(){
+        //Don't care about JS
+        if(!isMultithreaded)
+            return
+
         val lock = Lock()
 
         lock.withLock {

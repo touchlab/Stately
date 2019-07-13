@@ -18,7 +18,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.1'
@@ -27,6 +27,5 @@ buildscript {
 repositories {
     google()
     jcenter()
-    maven { url 'https://dl.bintray.com/touchlabpublic/kotlin' }
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }

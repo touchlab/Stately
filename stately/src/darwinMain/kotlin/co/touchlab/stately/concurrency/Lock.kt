@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately.collections
+package co.touchlab.stately.concurrency
 
-actual class MPWorker actual constructor() {
-  actual fun <T> runBackground(backJob: () -> T): MPFuture<T> = MPFuture(backJob())
-  actual fun requestTermination() {}
-}
+import platform.Foundation.NSRecursiveLock
 
-actual class MPFuture<T>(private val result: T) {
-  actual fun consume(): T = result
-}
+actual typealias  Lock = NSRecursiveLock
 
-actual fun sleep(time: Long) {}
+@Suppress("NOTHING_TO_INLINE")
+actual inline fun Lock.close(){}
