@@ -139,7 +139,8 @@ dependencies {
 
 ## Sample App
 
-The sample app is updated!!! It doesn't 
+The sample app is updated!!! It doesn't do much, but demos 
+several of the structures.
 
 License
 =======
