@@ -130,11 +130,21 @@ be frozen.
 
 ## Usage
 
+Stately is a Kotlin multiplatform library, and uses the standard multiplatform Gradle plugin.
+Adding dependencies to gradle looks like this. It can go in the common module, or
+the platform specific modules if desired.
+
 ```groovy
 dependencies {
     implementation "co.touchlab:stately:0.9.x"
     implementation "co.touchlab:stately-collections:0.9.x"
 }
+```
+
+Make sure your Gradle vesion is 5.3+, and that you have metadata enabled in `settings.gradle`
+
+```groovy
+enableFeaturePreview('GRADLE_METADATA')
 ```
 
 ## Sample App
