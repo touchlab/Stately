@@ -9,6 +9,18 @@ Kotlin/Native has a fairly different model of concurrency than what JVM develope
 different rules around sharing state. These rules are intended to reduce the likelihood of concurrency related issues.
 [Read this](https://medium.com/@kpgalligan/kotlin-native-stranger-threads-ep-2-208523d63c8f) for more info.
 
+## Maven
+
+```
+repositories {
+   mavenCentral()
+}
+
+dependencies {
+    implementation 'co.touchlab:stately:$statelyVersion'
+}
+```
+
 ## Functions/Extensions
 
 ### freeze()
