@@ -34,5 +34,4 @@ actual class AtomicLong actual constructor(initialValue: Long) {
   actual fun addAndGet(delta: Long): Long = atom.addAndGet(delta)
 
   actual fun compareAndSet(expected: Long, new: Long): Boolean = atom.compareAndSet(expected, new)
-
 }

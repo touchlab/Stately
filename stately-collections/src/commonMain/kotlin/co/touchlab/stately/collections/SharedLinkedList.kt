@@ -297,7 +297,7 @@ abstract class AbstractSharedLinkedList<T>(objectPoolSize:Int) : MutableList<T> 
 
   override fun isEmpty() = withLock(false) { sizeCount.value == 0 }
 
-  override fun remove(value: T): Boolean = withLock(true) { internalRemove(value) }
+  override fun remove(element: T): Boolean = withLock(true) { internalRemove(element) }
 
   override fun removeAll(elements: Collection<T>): Boolean = withLock(true) { elements.all { internalRemove(it) } }
 

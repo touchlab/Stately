@@ -87,10 +87,10 @@ class SharedLruCache<K, V>(
       cacheMap.put(key, CacheEntry(value, node))
 
       while (cacheList.size > maxCacheSize) {
-        val key = cacheList.removeAt(0)
-        val entry = cacheMap.remove(key)
+        val cacheKey = cacheList.removeAt(0)
+        val entry = cacheMap.remove(cacheKey)
         if (entry != null)
-          removeCollection.add(LruEntry(key, entry.v))
+          removeCollection.add(LruEntry(cacheKey, entry.v))
       }
 
       resultValue = result
@@ -151,9 +151,9 @@ class SharedLruCache<K, V>(
    * LRU list.
    */
   override fun get(key: K): V? = withLock {
-    val cacheEntry = cacheMap.get(key)
+    val cacheEntry = cacheMap[key]
     return if (cacheEntry != null) {
-      cacheEntry!!.node.readd()
+      cacheEntry.node.readd()
       cacheEntry.v
     } else {
       null
