@@ -152,6 +152,11 @@ enableFeaturePreview('GRADLE_METADATA')
 The sample app is updated!!! It doesn't do much, but demos 
 several of the structures.
 
+> ## **We're Hiring!**
+>
+> Touchlab is looking for Android-focused mobile engineers, experienced with Kotlin and 
+> looking to get involved with Kotlin Multiplatorm in the near future. [More info here](https://on.touchlab.co/2KNeYYN).
+
 License
 =======
 
