@@ -9,6 +9,11 @@ Kotlin/Native has a fairly different model of concurrency than what JVM develope
 different rules around sharing state. These rules are intended to reduce the likelihood of concurrency related issues.
 [Read this](https://medium.com/@kpgalligan/kotlin-native-stranger-threads-ep-2-208523d63c8f) for more info.
 
+> ## **We're Hiring!**
+>
+> Touchlab is looking for Android-focused mobile engineers, experienced with Kotlin and 
+> looking to get involved with Kotlin Multiplatorm in the near future. [More info here](https://on.touchlab.co/30sMEjR).
+
 ## Functions/Extensions
 
 ### freeze()
