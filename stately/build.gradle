@@ -30,7 +30,7 @@ configurations {
 }
 
 kotlin {
-//    macosX64("darwinMain")
+//    macosX64("nativeCommon")
     jvm()
     js() {
         nodejs()
@@ -65,7 +65,7 @@ kotlin {
             dependencies {
         		implementation 'org.jetbrains.kotlin:kotlin-test-common'
         		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
-            implementation 'co.touchlab:testhelp:0.2.6'
+            implementation 'co.touchlab:testhelp:0.2.7'
             }
         }
 

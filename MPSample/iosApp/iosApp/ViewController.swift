@@ -10,6 +10,7 @@ class ViewController: UIViewController, ViewUpdater {
     
     @IBAction func runStuff(_ sender: Any) {
         Collections().putSample(s: "Hello iOS")
+        Proxy.Companion().heyo()
     }
     
     override func viewDidLoad() {

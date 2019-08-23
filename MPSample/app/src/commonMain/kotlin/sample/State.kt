@@ -23,6 +23,7 @@ var viewUpdater:ViewUpdater = EmptyView
 var count = 0
 
 object Collections{
+
     val cowList = frozenCopyOnWriteList<SampleData>()
     val sharedList = frozenLinkedList<SampleData>()
     val sharedMap = frozenHashMap<String, SampleData>()
