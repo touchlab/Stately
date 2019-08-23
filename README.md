@@ -12,7 +12,7 @@ different rules around sharing state. These rules are intended to reduce the lik
 > ## **We're Hiring!**
 >
 > Touchlab is looking for Android-focused mobile engineers, experienced with Kotlin and 
-> looking to get involved with Kotlin Multiplatorm in the near future. [More info here](https://on.touchlab.co/2KNeYYN).
+> looking to get involved with Kotlin Multiplatorm in the near future. [More info here](https://on.touchlab.co/30sMEjR).
 
 ## Functions/Extensions
 
