@@ -45,8 +45,8 @@ Atomic value definitions for Int, Long, Boolean, and object references.
 ## Lock
 
 Mutex lock for various platforms. It is important to note that there is an extension method called `close()`. This only
-needs to be called if you are on a native platform other than an apple platform. So, if you're on Windows or Linux.
-JVM, JS, iOS, and MacOS can safely ignore `close`.
+needs to be called if you are on a non Apple native platform (Windows & Linux).
+You can safely ignore `close` on JVM, JS, iOS, and MacOS.
 
 ## Collections
 
