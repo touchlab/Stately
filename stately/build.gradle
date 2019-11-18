@@ -19,7 +19,7 @@ apply plugin: 'org.jetbrains.kotlin.multiplatform'
 repositories {
     mavenCentral()
     mavenLocal()
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+//    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
 }
 
 group = GROUP
@@ -65,7 +65,7 @@ kotlin {
             dependencies {
         		implementation 'org.jetbrains.kotlin:kotlin-test-common'
         		implementation 'org.jetbrains.kotlin:kotlin-test-annotations-common'
-            implementation 'co.touchlab:testhelp:0.2.7'
+            implementation 'co.touchlab:testhelp:0.2.8'
             }
         }
 
