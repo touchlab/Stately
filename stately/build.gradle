@@ -47,13 +47,18 @@ kotlin {
     iosArm32()
     iosArm64()
     iosX64()
+    watchosArm32()
+    watchosArm64()
+    watchosX86()
+    tvosArm64()
+    tvosX64()
     linuxX64()
     linuxArm32Hfp()
     linuxMips32()
 //    androidNativeArm32()
 //    androidNativeArm64()
     mingwX64()
-    
+
     sourceSets {
         commonMain {
             dependencies {
@@ -82,7 +87,7 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-test-junit'
             }
         }
-        
+
         jsMain {
             dependsOn commonMain
             dependencies {
@@ -119,6 +124,11 @@ kotlin {
         configure([targets.iosX64,
                    targets.iosArm32,
                    targets.iosArm64,
+                   targets.watchosArm32,
+                   targets.watchosArm64,
+                   targets.watchosX86,
+                   targets.tvosArm64,
+                   targets.tvosX64,
                    targets.macosX64]){
             compilations.main.source(sourceSets.darwinMain)
             compilations.test.source(sourceSets.nativeCommonTest)
