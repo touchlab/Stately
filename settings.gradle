@@ -15,6 +15,7 @@
  */
 include 'stately'
 include 'stately-collections'
+include 'stately-isolate'
 //include ':MPSample:app'
 //include 'memtest'
 
