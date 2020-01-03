@@ -40,7 +40,15 @@ class IsoStateTest {
         Unit
     }
 
-    @Test
+    class LeakyState: IsolateState<MutableList<String>>({ mutableListOf()}) {
+        suspend fun leak() = withContext(stateDispatcher) {
+            var l : MutableList<String>? = null
+            access { l = it }
+            l
+        }
+    }
+
+//    @Test
     fun freezeFail() = runBlocking {
         assertFails {
             returnState()
@@ -54,13 +62,7 @@ class IsoStateTest {
         sd
     }
 
-    class LeakyState: IsolateState<MutableList<String>>({ mutableListOf()}) {
-        suspend fun leak() = withContext(stateDispatcher) {
-            var l : MutableList<String>? = null
-            access { l = it }
-            l
-        }
-    }
+
 }
 
 data class SomeData(val s: String)
