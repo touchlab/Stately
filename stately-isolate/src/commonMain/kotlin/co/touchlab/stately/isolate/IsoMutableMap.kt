@@ -29,12 +29,10 @@ class IsoMutableMap<K, V> : IsolateState<MutableMap<K, V>>({ mutableMapOf() }), 
         }
     override val keys: MutableSet<K>
         get() =  runBlocking {
-            println("Keys")
             access { it.toMutableMap().keys }
         }
     override val values: MutableCollection<V>
         get() = runBlocking {
-            println("Values")
             access { it.toMutableMap().values }
         }
 
