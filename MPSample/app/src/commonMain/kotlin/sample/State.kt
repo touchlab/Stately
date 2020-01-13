@@ -4,8 +4,8 @@ import co.touchlab.stately.collections.*
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.close
-import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.concurrency.withLock
+import co.touchlab.stately.isolate.IsoMutableMap
 
 internal expect fun <B> backgroundTask(backJob: () -> B, mainJob: (B) -> Unit)
 
@@ -27,6 +27,7 @@ object Collections{
     val cowList = frozenCopyOnWriteList<SampleData>()
     val sharedList = frozenLinkedList<SampleData>()
     val sharedMap = frozenHashMap<String, SampleData>()
+    val isoMap = IsoMutableMap<String,SampleData>()
 
     val lruRemovedCount = AtomicInt(0)
     val lruCache = frozenLruCache<String, SampleData>(5) {
@@ -44,6 +45,7 @@ object Collections{
                 cowList.add(sample)
                 sharedList.add(sample)
                 sharedMap.put("key $workerCount - $s", sample)
+                isoMap.put("key $workerCount - $s", sample)
 
                 lock.withLock {
                     //This doesn't need to be locked, but that's how locks work
@@ -63,8 +65,10 @@ object Collections{
         sharedList.iterator().forEach { println(it) }
         println("--- sharedMap ---")
         sharedMap.entries.iterator().forEach { println(it) }
+        println("--- isoMap ---")
+        isoMap.entries.iterator().forEach { println(it) }
         println("--- lruCache ---")
-        println("Removed count: ${lruRemovedCount.value}")
+        //println("Removed count: ${lruRemovedCount.value}")
         lruCache.entries.iterator().forEach { println(it) }
     }
 
