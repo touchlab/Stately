@@ -19,7 +19,7 @@ internal actual fun <T> runBlocking(
  * Do not directly use this. You will have state issues. You can only interact with this class
  * from the state thread.
  */
-internal actual class StateHolder<T:Any> actual constructor(t: T) {
+actual class StateHolder<T:Any> actual constructor(t: T) {
     private val stableRef = StableRef.create(t)
     actual val myState: T
         get() = stableRef.get()

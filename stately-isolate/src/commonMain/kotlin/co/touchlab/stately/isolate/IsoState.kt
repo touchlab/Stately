@@ -17,19 +17,21 @@ internal expect fun <T> runBlocking(
     block: suspend CoroutineScope.() -> T
 ): T
 
-internal expect class StateHolder<T : Any>(t: T) {
+expect class StateHolder<T : Any>(t: T) {
     val myState: T
     fun remove()
 }
 
-open class IsolateState<T : Any>(producer: () -> T) {
-    private val stateHolder: StateHolder<T> = createStateBlocking(producer)
+open class IsolateState<T : Any> constructor(private val stateHolder: StateHolder<T>) {
+    constructor(producer: () -> T) : this(createStateBlocking(producer))
 
     internal suspend fun <R> access(block: (T) -> R): R = withContext(stateDispatcher) {
         block(stateHolder.myState)
     }
 
-    suspend fun remove() {
+    internal fun <R> blockingAccess(block: (T) -> R): R = runBlocking { access(block) }
+
+    suspend fun remove() = withContext(stateDispatcher) {
         stateHolder.remove()
     }
 }
@@ -38,8 +40,12 @@ internal fun <T : Any> createStateBlocking(producer: () -> T): StateHolder<T> = 
 
 internal suspend fun <T : Any> createState(producer: () -> T): StateHolder<T> = withContext(stateDispatcher) {
     val t = producer()
+    createStateDirect(t)
+}
+
+fun <T : Any> createStateDirect(t: T): StateHolder<T> {
     if (t.isFrozen())
         throw IllegalStateException("Mutable state shouldn't be frozen")
     t.ensureNeverFrozen()
-    StateHolder(t)
+    return StateHolder(t)
 }

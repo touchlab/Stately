@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertFails
 
 class IsoStateTest {
-    @Test
+//    @Test
     fun basicTest() = runBlocking {
         val map = IsoMap<String, SomeData>()
         repeat(100) { outer ->
@@ -23,7 +23,7 @@ class IsoStateTest {
         println("Added, total ${map.size()}")
     }
 
-    @Test
+//    @Test
     fun isolatedProducer() {
         assertFails {
             val map = mutableMapOf<String, String>()

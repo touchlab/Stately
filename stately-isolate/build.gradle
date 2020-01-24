@@ -61,6 +61,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
+                implementation 'co.touchlab:testhelp:0.2.10'
             }
         }
 
