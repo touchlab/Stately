@@ -1,91 +1,104 @@
 package co.touchlab.stately.isolate
 
-import co.touchlab.stately.ensureNeverFrozen
-import kotlinx.coroutines.withContext
+import co.touchlab.stately.freeze
+import co.touchlab.stately.isNative
+import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.printStackTrace
+
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class IsoStateTest {
-//    @Test
-    fun basicTest() = runBlocking {
-        val map = IsoMap<String, SomeData>()
-        repeat(100) { outer ->
-            val lmap = mutableMapOf<String, SomeData>()
-            val base = outer * 1_000
-            repeat(1_000) {
-                val num = it + base
-                lmap.put("key $num", SomeData("val $num"))
+    @Test
+    fun basicTest() {
+
+        val ops = ThreadOperations {}
+
+        val isoList = IsolateState { mutableListOf<SomeData>() }
+        repeat(100_000) { rcount ->
+            ops.exe {
+                isoList.access { l ->
+                    l.add(SomeData("arst ${rcount}"))
+                }
+            }
+        }
+
+        ops.run(4)
+
+        val lsize = isoList.access { l ->
+            l.size
+        }
+
+        assertEquals(100_000, lsize)
+    }
+
+    @Test
+    fun nativeStateHolderInitChecks() {
+        if(isNative){
+
+            assertFails {
+                StateHolder(SomeData("arst").freeze())
             }
 
-            map.putMap(lmap)
-        }
+            assertFails {
+                val someData = SomeData("arst")
+                StateHolder(someData)
+                someData.freeze()
+            }
 
-        println("Added, total ${map.size()}")
+            assertFails {
+                val iso = IsolateState {SomeData("aaa")}
+                val sd = iso.access { it }
+                println("Shouldn't get here $sd")
+            }
+
+        }
     }
 
-//    @Test
+    @Test
     fun isolatedProducer() {
-        assertFails {
-            val map = mutableMapOf<String, String>()
-            createStateBlocking { map }
+        if(isNative) {
+            assertFails {
+                val map = mutableMapOf<String, String>()
+                createState { map }
+            }
         }
     }
 
-//    @Test
-    fun noLeakingState():Unit = runBlocking {
-        val ls = LeakyState()
-        assertFails {
-            ls.leak()
+    @Test
+    fun noLeakingState() {
+        if(isNative) {
+            val ls = LeakyState()
+            assertFails {
+                ls.leak()
+            }
+            Unit
         }
-        Unit
+    }
+
+    @Test
+    fun throwExceptions(){
+        val iso = IsolateState { mutableListOf("a") }
+        try {
+            iso.access { throw IllegalStateException("arst") }
+            fail("Shouldn't be here")
+        } catch (e: Exception) {
+            println("Exception: $e")
+            e.printStackTrace()
+            assertTrue(e is IllegalStateException && e.message == "arst")
+        }
     }
 
     class LeakyState: IsolateState<MutableList<String>>({ mutableListOf()}) {
-        suspend fun leak() = withContext(stateDispatcher) {
+        fun leak() {
             var l : MutableList<String>? = null
             access { l = it }
             l
         }
     }
 
-//    @Test
-    fun freezeFail() = runBlocking {
-        assertFails {
-            returnState()
-        }
-        Unit
-    }
-
-    suspend fun returnState() = withContext(stateDispatcher) {
-        val sd = SomeData("arst")
-        sd.ensureNeverFrozen()
-        sd
-    }
-
-
-}
-
-data class SomeData(val s: String)
-
-class IsoMap<K, V>() : IsolateState<MutableMap<K, V>>({ mutableMapOf() }) {
-    suspend fun clear() = withContext(stateDispatcher) {
-
-        access { it.clear() }
-    }
-
-    suspend fun size() = withContext(stateDispatcher) {
-        access { it.size }
-    }
-
-    suspend fun get(mapKey: K): V? = withContext(stateDispatcher) {
-        access { it.get(mapKey) }
-    }
-
-    suspend fun put(mapKey: K, data: V) = withContext(stateDispatcher) {
-        access { it.put(mapKey, data) }
-    }
-
-    suspend fun putMap(map: Map<K, V>) = withContext(stateDispatcher) {
-        access { it.putAll(map) }
-    }
+    data class SomeData(val s: String)
 }

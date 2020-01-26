@@ -57,6 +57,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation project(":stately")
+                implementation project(":stately-isolate")
                 implementation kotlin('stdlib-common')
             }
         }

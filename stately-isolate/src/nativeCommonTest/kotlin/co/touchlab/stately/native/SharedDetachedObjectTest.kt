@@ -1,15 +1,7 @@
 package co.touchlab.stately.native
 
-import co.touchlab.stately.concurrency.Lock
-import co.touchlab.stately.concurrency.withLock
 import co.touchlab.stately.isolate.IsolateState
-import co.touchlab.stately.isolate.runBlocking
 import co.touchlab.testhelp.concurrency.ThreadOperations
-import kotlin.native.concurrent.AtomicReference
-import kotlin.native.concurrent.DetachedObjectGraph
-import kotlin.native.concurrent.TransferMode
-import kotlin.native.concurrent.attach
-import kotlin.native.concurrent.freeze
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 
@@ -20,10 +12,10 @@ class SharedDetachedObjectTest {
 
         val totalTime = measureTimeMillis {
             val ops = ThreadOperations {}
-            repeat(50_000) { rcount ->
+            repeat(1000) { rcount ->
                 ops.exe {
                     if (rcount % 1000 == 0)
-                        println("prepping $rcount")
+                        println("running $rcount")
 
                     detachedObject.access {
                         val element = "row $rcount"
@@ -39,35 +31,26 @@ class SharedDetachedObjectTest {
 
         println("totalTime dag: $totalTime")
         detachedObject.access {
-            println(it.size)
+            println("size dag: ${it.size}")
             it.size
         }
 
         detachedObject.clear()
     }
 
-    @Test
+//    @Test
     fun isoTest(){
-        val iso = IsolateState<MutableList<String>> { mutableListOf("a", "b") }
+        val iso = IsolateState { mutableListOf("a", "b") }
 
         val totalTime = measureTimeMillis {
             val ops = ThreadOperations {}
-            repeat(50_000) { rcount ->
+            repeat(1000) { rcount ->
                 ops.exe {
                     if (rcount % 1000 == 0)
-                        println("prepping $rcount")
-
-                    runBlocking {
-                        println("e 1")
+                        println("running $rcount")
 
                         iso.access {
-                            val element = "row $rcount"
-                            println("adding $element")
-                            it.add(element)
-                            element
-                        }
-
-                        println("e 2")
+                        it.add("row $rcount")
                     }
                 }
             }
@@ -77,14 +60,12 @@ class SharedDetachedObjectTest {
         }
 
         println("totalTime iso: $totalTime")
-        runBlocking {
             iso.access {
-                println(it.size)
+            println("size iso: ${it.size}")
                 it.size
             }
             iso.remove()
         }
-    }
 
     /*@Test
     fun detach(){

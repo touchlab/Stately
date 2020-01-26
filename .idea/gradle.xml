@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/stately" />
             <option value="$PROJECT_DIR$/stately-collections" />
+            <option value="$PROJECT_DIR$/stately-iso-collections" />
             <option value="$PROJECT_DIR$/stately-isolate" />
           </set>
         </option>
