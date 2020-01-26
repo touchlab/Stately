@@ -1,5 +1,6 @@
 package co.touchlab.stately.native
 
+import co.touchlab.kapture.FreezingBlockCall
 import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.withLock
 import kotlin.native.concurrent.AtomicReference
@@ -18,11 +19,12 @@ class SharedDetachedObject<T:Any>(producer: () -> T) {
         adog = AtomicReference(detachedObjectGraph.freeze())
     }
 
+    @FreezingBlockCall
     fun <R> access(block: (T) -> R): R = lock.withLock{
         val holder = FreezableAtomicReference<Any?>(null)
         val producer = { grabAccess(holder, block) as Any }
-        adog.value = DetachedObjectGraph(TransferMode.SAFE, producer).freeze()
-        val retult = holder.value!!
+        adog.value = DetachedObjectGraph(TransferMode.SAFE, producer.freeze()).freeze()
+        val retult = holder.value
         holder.value = null
         retult as R
     }
@@ -30,7 +32,7 @@ class SharedDetachedObject<T:Any>(producer: () -> T) {
     private fun <R> grabAccess(holder:FreezableAtomicReference<Any?>, block: (T) -> R):T{
         val attach = adog.value!!.attach()
         val t = attach as T
-        holder.value = block(t)
+        holder.value = block(t).freeze() //Escaping values must be frozen
         return t
     }
 

@@ -57,6 +57,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation project(":stately")
+                implementation 'co.touchlab:kapture-annotations:0.1.4'
                 implementation kotlin('stdlib-common')
             }
         }

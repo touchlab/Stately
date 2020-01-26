@@ -36,9 +36,9 @@ internal val stateWorker = Worker.start(errorReporting = false)
 internal actual fun <R> stateRun(block: () -> R): R {
     val result = stateWorker.execute(TransferMode.SAFE, { block.freeze() }, {
         try {
-            Ok(it())
+            Ok(it()).freeze()
         } catch (e: Throwable) {
-            Thrown(e)
+            Thrown(e).freeze()
         }
     }).result
     return when(result){

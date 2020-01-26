@@ -1,5 +1,7 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.kapture.FreezingBlockCall
+
 expect class StateHolder<out T : Any>(t: T) {
     val myState: T
     fun remove()
@@ -8,6 +10,7 @@ expect class StateHolder<out T : Any>(t: T) {
 open class IsolateState<T : Any> constructor(private val stateHolder: StateHolder<T>) {
     constructor(producer: () -> T) : this(createState(producer))
 
+    @FreezingBlockCall
     fun <R> access(block: (T) -> R): R = stateRun {
         block(stateHolder.myState)
     }

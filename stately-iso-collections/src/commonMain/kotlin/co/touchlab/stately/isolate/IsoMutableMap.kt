@@ -6,56 +6,36 @@ class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() })
         get() = access { it.size }
 
     override fun containsKey(key: K): Boolean = access { it.containsKey(key) }
-
     override fun containsValue(value: V): Boolean = access { it.containsValue(value) }
-
     override fun get(key: K): V? = access { it.get(key) }
-
     override fun isEmpty(): Boolean = access { it.isEmpty() }
-
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
         get() = access { IsoMutableSet(StateHolder(it.entries)) }
-
     override val keys: MutableSet<K>
         get() = access { IsoMutableSet(StateHolder(it.keys)) }
-
     override val values: MutableCollection<V>
         get() = access { IsoMutableCollection(StateHolder(it.values)) }
-
     override fun clear() = access { it.clear() }
-
     override fun put(key: K, value: V): V? = access { it.put(key, value) }
-
     override fun putAll(from: Map<out K, V>) = access { it.putAll(from) }
-
     override fun remove(key: K): V? = access { it.remove(key) }
 }
 
 open class IsoMutableCollection<T> internal constructor(stateHolder: StateHolder<MutableCollection<T>>) :
     IsolateState<MutableCollection<T>>(stateHolder), MutableCollection<T> {
     constructor(producer: () -> MutableCollection<T>) : this(createState(producer))
-
     override val size: Int
         get() = access { it.size }
 
     override fun contains(element: T): Boolean = access { it.contains(element) }
-
     override fun containsAll(elements: Collection<T>): Boolean = access { it.containsAll(elements) }
-
     override fun isEmpty(): Boolean = access { it.isEmpty() }
-
     override fun add(element: T): Boolean = access { it.add(element) }
-
     override fun addAll(elements: Collection<T>): Boolean = access { it.addAll(elements) }
-
     override fun clear() = access { it.clear() }
-
     override fun iterator(): MutableIterator<T> = access { IsoMutableIterator(StateHolder(it.iterator())) }
-
     override fun remove(element: T): Boolean = access { it.remove(element) }
-
     override fun removeAll(elements: Collection<T>): Boolean = access { it.removeAll(elements) }
-
     override fun retainAll(elements: Collection<T>): Boolean = access { it.retainAll(elements) }
 }
 
