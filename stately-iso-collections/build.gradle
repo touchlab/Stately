@@ -29,9 +29,9 @@ def ideaActive = System.getProperty('idea.active') == 'true'
 
 kotlin {
     jvm()
-    /*js() {
-        nodejs()
-    }*/
+    js() {
+//        nodejs()
+    }
 
     if (ideaActive) {
         macosX64("nativeCommon")
@@ -56,7 +56,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation project(":stately")
+                implementation project(":stately-common")
+                implementation project(":stately-concurrency")
                 implementation project(":stately-isolate")
                 implementation kotlin('stdlib-common')
             }
@@ -84,7 +85,7 @@ kotlin {
             }
         }
 
-        /*jsMain {
+        jsMain {
             dependsOn commonMain
             dependencies {
                 implementation kotlin('stdlib-js')
@@ -95,7 +96,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test-js')
             }
-        }*/
+        }
 
         nativeCommonMain {
             dependencies {

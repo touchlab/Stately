@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.ThreadRef
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -8,6 +9,10 @@ actual class StateHolder<out T : Any> actual constructor(t: T) {
 
     actual fun remove() {
     }
+
+    private val threadRef = ThreadRef()
+    actual val myThread: Boolean
+        get() = threadRef.same()
 }
 
 internal val stateExecutor = Executors.newSingleThreadExecutor()

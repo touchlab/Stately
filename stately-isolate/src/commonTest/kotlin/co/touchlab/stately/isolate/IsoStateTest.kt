@@ -1,8 +1,8 @@
 package co.touchlab.stately.isolate
 
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNative
 import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.isNative
 import co.touchlab.testhelp.printStackTrace
 
 import kotlin.test.Test

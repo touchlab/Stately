@@ -17,7 +17,6 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNativeFrozen
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import kotlin.test.Test
 import kotlin.test.assertEquals

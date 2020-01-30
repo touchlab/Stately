@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.collections.IsoMutableMap
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import kotlin.test.Test
 import kotlin.test.assertFails

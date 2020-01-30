@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.ThreadRef
 import kotlinx.cinterop.StableRef
 import kotlin.native.concurrent.SharedImmutable
 import kotlin.native.concurrent.TransferMode
@@ -28,6 +29,10 @@ actual class StateHolder<out T:Any> actual constructor(t: T) {
     actual fun remove() {
         stableRef.dispose()
     }
+
+    private val threadRef = ThreadRef()
+    actual val myThread: Boolean
+        get() = threadRef.same()
 }
 
 @SharedImmutable
