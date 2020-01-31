@@ -50,9 +50,9 @@ kotlin {
         }
     }
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation kotlin('stdlib-common')
+    commonMain {
+        dependencies {
+            implementation kotlin('stdlib-common')
                 implementation project(':stately')
                 implementation project(':stately-collections')
             }

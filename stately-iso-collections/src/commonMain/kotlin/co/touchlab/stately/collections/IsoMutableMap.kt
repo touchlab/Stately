@@ -4,8 +4,8 @@ import co.touchlab.stately.isolate.IsolateState
 import co.touchlab.stately.isolate.StateHolder
 import co.touchlab.stately.isolate.createState
 
-class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() })
-    : IsolateState<MutableMap<K, V>>(createState(producer)), MutableMap<K, V> {
+class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() }) :
+    IsolateState<MutableMap<K, V>>(createState(producer)), MutableMap<K, V> {
     override val size: Int
         get() = access { it.size }
 
@@ -14,11 +14,12 @@ class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() })
     override fun get(key: K): V? = access { it.get(key) }
     override fun isEmpty(): Boolean = access { it.isEmpty() }
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
-        get() = access { IsoMutableSet(StateHolder(it.entries)) }
+        get() = access { IsoMutableSet(fork(it.entries)) }
     override val keys: MutableSet<K>
-        get() = access { IsoMutableSet(StateHolder(it.keys)) }
+        get() = access { IsoMutableSet(fork(it.keys)) }
     override val values: MutableCollection<V>
-        get() = access { IsoMutableCollection(StateHolder(it.values)) }
+        get() = access { IsoMutableCollection(fork(it.values)) }
+
     override fun clear() = access { it.clear() }
     override fun put(key: K, value: V): V? = access { it.put(key, value) }
     override fun putAll(from: Map<out K, V>) = access { it.putAll(from) }
@@ -28,6 +29,7 @@ class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() })
 open class IsoMutableCollection<T> internal constructor(stateHolder: StateHolder<MutableCollection<T>>) :
     IsolateState<MutableCollection<T>>(stateHolder), MutableCollection<T> {
     constructor(producer: () -> MutableCollection<T>) : this(createState(producer))
+
     override val size: Int
         get() = access { it.size }
 
@@ -37,7 +39,7 @@ open class IsoMutableCollection<T> internal constructor(stateHolder: StateHolder
     override fun add(element: T): Boolean = access { it.add(element) }
     override fun addAll(elements: Collection<T>): Boolean = access { it.addAll(elements) }
     override fun clear() = access { it.clear() }
-    override fun iterator(): MutableIterator<T> = access { IsoMutableIterator(StateHolder(it.iterator())) }
+    override fun iterator(): MutableIterator<T> = access { IsoMutableIterator(fork(it.iterator())) }
     override fun remove(element: T): Boolean = access { it.remove(element) }
     override fun removeAll(elements: Collection<T>): Boolean = access { it.removeAll(elements) }
     override fun retainAll(elements: Collection<T>): Boolean = access { it.retainAll(elements) }
@@ -52,4 +54,5 @@ class IsoMutableIterator<T> internal constructor(stateHolder: StateHolder<Mutabl
     IsolateState<MutableIterator<T>>(stateHolder), MutableIterator<T> {
     override fun hasNext(): Boolean = access { it.hasNext() }
     override fun next(): T = access { it.next() }
+    override fun remove() = access { it.remove() }
 }

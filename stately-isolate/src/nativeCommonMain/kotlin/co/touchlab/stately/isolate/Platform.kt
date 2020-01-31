@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.GuardedStableRef
 import co.touchlab.stately.concurrency.ThreadRef
 import kotlinx.cinterop.StableRef
 import kotlin.native.concurrent.SharedImmutable
@@ -13,20 +14,20 @@ import kotlin.native.concurrent.isFrozen
  * Do not directly use this. You will have state issues. You can only interact with this class
  * from the state thread.
  */
-actual class StateHolder<out T:Any> actual constructor(t: T) {
-    private val stableRef :StableRef<T>
+actual class StateHolder<out T:Any> internal actual constructor(t: T, actual val stateRunner: StateRunner) {
+    private val stableRef :GuardedStableRef<T>
 
     init {
         if (t.isFrozen)
             throw IllegalStateException("Mutable state shouldn't be frozen")
         t.ensureNeverFrozen()
-        stableRef = StableRef.create(t)
+        stableRef = GuardedStableRef(t)
     }
 
     actual val myState: T
-        get() = stableRef.get()
+        get() = stableRef.state
 
-    actual fun remove() {
+    actual fun dispose() {
         stableRef.dispose()
     }
 
@@ -35,20 +36,4 @@ actual class StateHolder<out T:Any> actual constructor(t: T) {
         get() = threadRef.same()
 }
 
-@SharedImmutable
-internal val stateWorker = Worker.start(errorReporting = false)
-
-internal actual fun <R> stateRun(block: () -> R): R {
-    val result = stateWorker.execute(TransferMode.SAFE, { block.freeze() }, {
-        try {
-            Ok(it()).freeze()
-        } catch (e: Throwable) {
-            Thrown(e).freeze()
-        }
-    }).result
-    return when(result){
-        is Ok<*> -> result.result as R
-        is Thrown -> throw result.throwable
-    }
-}
-
+internal actual val defaultStateRunner: StateRunner = BackgroundStateRunner()

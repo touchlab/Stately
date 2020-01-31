@@ -18,13 +18,14 @@ class IsoMutableList<T> internal constructor(stateHolder: StateHolder<MutableLis
 
     override fun add(index: Int, element: T) = access { asMutableList(it).add(index, element) }
 
-    override fun addAll(index: Int, elements: Collection<T>): Boolean = access { asMutableList(it).addAll(index, elements) }
+    override fun addAll(index: Int, elements: Collection<T>): Boolean =
+        access { asMutableList(it).addAll(index, elements) }
 
     override fun listIterator(): MutableListIterator<T> =
-        access { IsoMutableListIterator(StateHolder(asMutableList(it).listIterator())) }
+        access { IsoMutableListIterator(fork(asMutableList(it).listIterator())) }
 
     override fun listIterator(index: Int): MutableListIterator<T> =
-        access { IsoMutableListIterator(StateHolder(asMutableList(it).listIterator(index))) }
+        access { IsoMutableListIterator(fork(asMutableList(it).listIterator(index))) }
 
     override fun removeAt(index: Int): T = access { asMutableList(it).removeAt(index) }
 
@@ -51,4 +52,6 @@ class IsoMutableListIterator<T> internal constructor(stateHolder: StateHolder<Mu
     override fun next(): T = access { it.next() }
 
     override fun set(element: T) = access { it.set(element) }
+
+    override fun remove() = access { it.remove() }
 }

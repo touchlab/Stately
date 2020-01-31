@@ -40,12 +40,12 @@ class IsoStateTest {
         if(isNative){
 
             assertFails {
-                StateHolder(SomeData("arst").freeze())
+                StateHolder(SomeData("arst").freeze(), defaultStateRunner)
             }
 
             assertFails {
                 val someData = SomeData("arst")
-                StateHolder(someData)
+                StateHolder(someData, defaultStateRunner)
                 someData.freeze()
             }
 
@@ -63,7 +63,7 @@ class IsoStateTest {
         if(isNative) {
             assertFails {
                 val map = mutableMapOf<String, String>()
-                createState { map }
+                createState ({ map }, defaultStateRunner)
             }
         }
     }
