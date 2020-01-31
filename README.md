@@ -2,7 +2,7 @@
 
 Stately is a state utility library to facilitate state management in Kotlin Multiplatform.
 
-Kotlin JVM has the same rules around concurrency and state that Java have. In essence, multiple threads can access shared state in an unrestricted fashion, and it is up to the developer to ensure safe concurrency. Kotlin/Native, on the other hand, introduces new restrictions around concurrent state access ([more](https://dev.to/touchlab/practical-kotlin-native-concurrency-ac7) [info](https://www.youtube.com/watch?v=oxQ6e1VeH4M)). Additionally, Kotlin/JS lives in the Javascript threading world, which means just the one thread.
+Kotlin JVM has the same rules around concurrency and state that Java has. In essence, multiple threads can access shared state in an unrestricted fashion, and it is up to the developer to ensure safe concurrency. Kotlin/Native, on the other hand, introduces new restrictions around concurrent state access ([more](https://dev.to/touchlab/practical-kotlin-native-concurrency-ac7) [info](https://www.youtube.com/watch?v=oxQ6e1VeH4M)). Additionally, Kotlin/JS lives in the Javascript threading world, which means just the one thread.
 
 Stately provides various modules to facilitate writing shared code within these different worlds.
 
@@ -28,9 +28,9 @@ commonMain {
 
 `stately-concurrency` includes some concurrency support classes. These include a set of `Atomicxxx` classes, a `Lock`, a `ThreadLocal` container, and a class `ThreadRef` that allows you to hold a thread id.
 
-Much of the functionality of this module is similar to [atomic-fu](https://github.com/Kotlin/kotlinx.atomicfu). We've decided that Stately's implementation is simpler, so there's still some value in having a separate version.
+Much of the functionality of this module is similar to [atomic-fu](https://github.com/Kotlin/kotlinx.atomicfu). They differ in some ways, so while they both cover much of the same ground, Stately's version still has some use.
 
-`ThreadRef` allows you to capture a reference to the id of the thread in which it was created, and ask if the current thread is the same. Just FYI, it does *not* keep a reference to the actual thread. Just an id. Usage looks like this:
+`ThreadRef` is unique to Stately. It allows you to capture a reference to the id of the thread in which it was created, and ask if the current thread is the same. Just FYI, it does *not* keep a reference to the actual thread. Just an id. Usage looks like this:
 
 ```kotlin
 fun useRef(){
@@ -44,7 +44,7 @@ fun useRef(){
 
 ### Config
 
-```gr
+```groovy
 commonMain {
     dependencies {
         implementation 'co.touchlab:stately-concurrency:1.0.x'
@@ -55,6 +55,8 @@ commonMain {
 ## stately-isolate
 
 `stately-isolate` creates mutable state in a special state thread, and restricts access to that state from the same thread. This allows the state held by an instance of `IsolateState` to remain mutable. State coming in and going out must be frozen, but the guarded state can change.
+
+> Read more about the design in [this blog post](https://dev.to/touchlab/kotlin-native-isolated-state-50l1).
 
 The obvious use case is for collections. Example usage:
 
@@ -69,7 +71,7 @@ fun usage(){
 }
 ```
 
-The `cacheMap` above can be called from multiple threads. The lambda passed to the `access` method will be called on the same thread that the state was created on. Because it is a single thread, access is serialized and thread-safe.
+The `cacheMap` above can be called from multiple threads. The lambda passed to the `access` method will be invoked on the same thread that the state was created on. Because it is a single thread, access is serialized and thread-safe.
 
 You can create other instances of `IsolateState` by forking the parent instance.
 
@@ -143,7 +145,7 @@ commonMain {
 
 A set of collections that can be shared and accessed between threads. This is pretty much deprecated, but we have no plans to remove it as some production apps use it.
 
-However, ***we would strongly suggest you use `stately-isolate` and `stately-iso-collections` instead.*** 
+However, ***we would strongly suggest you use `stately-isolate` and `stately-iso-collections` instead.*** Collections implemented with `stately-isolate` are far more flexible and absolutely CRUSH the original `stately-collections` in performance benchmarks. See [blog post](https://dev.to/touchlab/kotlin-native-isolated-state-50l1).
 
 ## Usage
 
