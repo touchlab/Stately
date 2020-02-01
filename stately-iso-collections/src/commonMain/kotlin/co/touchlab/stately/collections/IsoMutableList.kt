@@ -4,7 +4,7 @@ import co.touchlab.stately.isolate.IsolateState
 import co.touchlab.stately.isolate.StateHolder
 import co.touchlab.stately.isolate.createState
 
-class IsoMutableList<T> internal constructor(stateHolder: StateHolder<MutableList<T>>) :
+open class IsoMutableList<T> internal constructor(stateHolder: StateHolder<MutableList<T>>) :
     IsoMutableCollection<T>(stateHolder), MutableList<T> {
     constructor(producer: () -> MutableList<T> = { mutableListOf() }) : this(createState(producer))
 
