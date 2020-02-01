@@ -64,7 +64,7 @@ class SharedDetachedObjectTest {
             println("size iso: ${it.size}")
                 it.size
             }
-            iso.remove()
+            iso.dispose()
         }
 
     /*@Test

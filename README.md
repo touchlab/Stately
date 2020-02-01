@@ -125,11 +125,11 @@ commonMain {
 
 ## stately-iso-collections
 
-This is a set of mutable collections implemented with `IsolateState`. 
+This is a set of mutable collections implemented with `IsolateState`. The set currently includes a MutableSet, MutableList, 
+and MutableMap.
 
-Because `IsolateState` allows you to use standard mutable classes, we can wrap standard collections relatively easily, but because it's easy, creating a complete set of collections is of limited value. You can wrap mutable state yourself and implement whatever methods you need.
-
-***This module is still being defined, and new collection types will be added over time. Feedback appreciated.***
+`IsolateState` is quite flexible, so implementing a large collections module is of limited value as you can easily wrap mutable
+state and implement other data structures on your own. Use these collections as a quide.
 
 ### Config
 
@@ -140,6 +140,10 @@ commonMain {
     }
 }
 ```
+
+## stately-iso-experimental
+
+
 
 ## stately-collections
 
