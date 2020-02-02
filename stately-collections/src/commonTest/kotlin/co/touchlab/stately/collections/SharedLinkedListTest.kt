@@ -18,8 +18,8 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNativeFrozen
 import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -39,7 +39,7 @@ class LinkedListTest {
 
   @Test
   fun testInitFrozen() {
-    assertTrue(SharedLinkedList<ListData>().isNativeFrozen())
+    assertTrue(SharedLinkedList<ListData>().isNativeFrozen)
   }
 
   @Test

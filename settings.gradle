@@ -15,12 +15,11 @@
  */
 include 'stately-common'
 include 'stately-concurrency'
-//include 'stately-collections'
+include 'stately-collections'
 include 'stately-isolate'
 include 'stately-iso-collections'
 include 'stately-iso-experimental'
-//include ':MPSample:app'
-//include 'memtest'
+include ':Sample:app'
 
 enableFeaturePreview('GRADLE_METADATA')
 enableFeaturePreview('STABLE_PUBLISHING')

@@ -19,10 +19,10 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNativeFrozen
 import co.touchlab.testhelp.concurrency.MPWorker
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.currentTimeMillis
+import co.touchlab.testhelp.isNativeFrozen
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -144,7 +144,7 @@ class SharedHashMapTest {
 
   @Test
   fun testInitFrozen() {
-    assertTrue(SharedHashMap<String, MapData>().isNativeFrozen())
+    assertTrue(SharedHashMap<String, MapData>().isNativeFrozen)
   }
 
   @Test

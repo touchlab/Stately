@@ -42,25 +42,19 @@ kotlin {
     android()
     // This is for iPhone emulator
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
-    iosX64("ios") {
-        binaries {
-            framework {
-                freeCompilerArgs.add("-Xobjc-generics")
-            }
-        }
-    }
+    ios()
     sourceSets {
-    commonMain {
-        dependencies {
-            implementation kotlin('stdlib-common')
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-common')
                 implementation project(':stately')
                 implementation project(':stately-collections')
             }
         }
         commonTest {
             dependencies {
-        		implementation kotlin('test-common')
-        		implementation kotlin('test-annotations-common')
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
             }
         }
         androidMain {

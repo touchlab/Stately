@@ -4,8 +4,6 @@
     <bytecodeTargetLevel>
       <module name="co.touchlab.library.jvmMain" target="1.6" />
       <module name="co.touchlab.library.jvmTest" target="1.6" />
-      <module name="co.touchlab.stately-collections.jvmMain" target="1.6" />
-      <module name="co.touchlab.stately-collections.jvmTest" target="1.6" />
       <module name="co.touchlab.stately.jvmMain" target="1.6" />
       <module name="co.touchlab.stately.jvmTest" target="1.6" />
     </bytecodeTargetLevel>

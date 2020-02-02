@@ -6,7 +6,6 @@ import co.touchlab.stately.concurrency.Lock
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.concurrency.withLock
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNativeFrozen
 
 class ObjectPool<T>(
   private val maxSize: Int,
@@ -25,8 +24,7 @@ class ObjectPool<T>(
   private val lock = Lock()
 
   fun push(t: T): Boolean = lock.withLock {
-    if (!t.isNativeFrozen())
-      throw IllegalStateException("Object pool entries must be frozen")
+
 
     if(maxSize == 0){
       cleanupBlock?.invoke(t)

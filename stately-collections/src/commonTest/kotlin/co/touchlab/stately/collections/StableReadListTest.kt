@@ -18,6 +18,7 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -51,7 +52,7 @@ abstract class AbstractStableReadListTest<T> {
 
   @Test
   fun testInitFrozen() {
-    assertTrue(createList<ListData>().isNativeFrozen())
+    assertTrue(createList<ListData>().isNativeFrozen)
   }
 
   @Test

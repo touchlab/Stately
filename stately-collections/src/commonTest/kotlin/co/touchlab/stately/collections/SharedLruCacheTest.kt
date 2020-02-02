@@ -19,11 +19,11 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNative
-import co.touchlab.stately.isNativeFrozen
 import co.touchlab.testhelp.concurrency.MPWorker
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.currentTimeMillis
+import co.touchlab.testhelp.isNative
+import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -34,7 +34,7 @@ class SharedLruCacheTest {
 
   @Test
   fun testInitFrozen() {
-    assertTrue(SharedLruCache<String, MapData>(4).isNativeFrozen())
+    assertTrue(SharedLruCache<String, MapData>(4).isNativeFrozen)
   }
 
   @Test
