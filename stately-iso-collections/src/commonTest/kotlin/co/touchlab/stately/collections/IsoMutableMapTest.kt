@@ -71,7 +71,7 @@ class IsoMutableMapTest {
         assertFalse(map.isEmpty())
     }
 
-    @Test
+//    @Test
     fun entries() {
         if (!isNative)
             return

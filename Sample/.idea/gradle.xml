@@ -8,15 +8,11 @@
         <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="1.8" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/stately-collections" />
-            <option value="$PROJECT_DIR$/stately-common" />
-            <option value="$PROJECT_DIR$/stately-concurrency" />
-            <option value="$PROJECT_DIR$/stately-iso-collections" />
-            <option value="$PROJECT_DIR$/stately-iso-experimental" />
-            <option value="$PROJECT_DIR$/stately-isolate" />
+            <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

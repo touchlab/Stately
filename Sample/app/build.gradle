@@ -3,7 +3,11 @@ repositories {
     jcenter()
     mavenCentral()
     mavenLocal()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
+
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
@@ -11,7 +15,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId 'org.jetbrains.kotlin.mpp_app_android'
+        applicationId 'co.touchlab.statelysample'
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
@@ -37,7 +41,7 @@ dependencies {
 }
 
 kotlin {
-    android("android")
+    android()
     // This is for iPhone emulator
     // Switch here to iosArm64 (or iosArm32) to build library for iPhone device
     iosX64("ios") {
@@ -49,23 +53,23 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.3-native-mt"
-                implementation project(':stately-common')
-                implementation project(':stately-collections')
-//                implementation project(':stately-isolate')
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$COROUTINES_VERSION"
+                implementation "co.touchlab:stately-common:$STATELY_VERSION_NAME"
+                implementation "co.touchlab:stately-collections:$STATELY_VERSION_NAME"
+                implementation "co.touchlab:stately-isolate:$STATELY_VERSION_NAME"
             }
         }
         commonTest {
             dependencies {
-        		implementation kotlin('test-common')
-        		implementation kotlin('test-annotations-common')
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
             }
         }
         androidMain {
             dependencies {
                 implementation kotlin('stdlib')
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3-native-mt"
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3-native-mt"
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$COROUTINES_VERSION"
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
             }
         }
         androidTest {
@@ -76,7 +80,7 @@ kotlin {
         }
         iosMain {
             dependencies {
-                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:1.3.3-native-mt"
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$COROUTINES_VERSION"
             }
         }
         iosTest {
