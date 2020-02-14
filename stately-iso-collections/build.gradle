@@ -52,7 +52,7 @@ kotlin {
                 implementation project(":stately-common")
                 implementation project(":stately-concurrency")
                 implementation project(":stately-isolate")
-                implementation "co.touchlab:kapture-annotations:$KAPTURE_VERSION"
+//                implementation "co.touchlab:kapture-annotations:$KAPTURE_VERSION"
 
                 implementation kotlin('stdlib-common')
             }

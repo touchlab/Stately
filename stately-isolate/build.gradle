@@ -51,7 +51,7 @@ kotlin {
             dependencies {
                 implementation project(":stately-common")
                 implementation project(":stately-concurrency")
-                implementation "co.touchlab:kapture-annotations:$KAPTURE_VERSION"
+//                implementation "co.touchlab:kapture-annotations:$KAPTURE_VERSION"
                 implementation kotlin('stdlib-common')
             }
         }
