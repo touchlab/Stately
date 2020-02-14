@@ -273,7 +273,7 @@ class SharedLruCacheTest {
       assertTrue(sc.isNativeFrozen())
   }*/
 
-  @Test
+ /* @Test
   fun stress() {
     val MAX_CACHE_SIZE = 4
     val sc = SharedLruCache<String, MapData>(MAX_CACHE_SIZE).freeze()
@@ -308,7 +308,7 @@ class SharedLruCacheTest {
       }
       assertEquals(4, sc.size)
     }
-  }
+  }*/
 
   @Test
   fun mtPutStress() {

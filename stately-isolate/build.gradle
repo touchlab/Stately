@@ -16,13 +16,6 @@
 
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
-    maven { url "https://kotlin.bintray.com/kotlinx" }
-}
-
 group = GROUP
 version = VERSION_NAME
 def ideaActive = System.getProperty('idea.active') == 'true'
@@ -58,7 +51,7 @@ kotlin {
             dependencies {
                 implementation project(":stately-common")
                 implementation project(":stately-concurrency")
-                implementation 'co.touchlab:kapture-annotations:0.1.4'
+                implementation "co.touchlab:kapture-annotations:$KAPTURE_VERSION"
                 implementation kotlin('stdlib-common')
             }
         }

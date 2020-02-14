@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class IsoMutableListTest : IsoMutableCollectionTest() {
+open class IsoMutableListTest : IsoMutableCollectionTest() {
     override fun defaultCollection(): IsoMutableCollection<SomeData> = IsoMutableList()
 
     @Test

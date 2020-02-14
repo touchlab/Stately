@@ -268,12 +268,13 @@ class IsoLruCacheTest {
         sc.put("key 3", MapData("a"))
         sc.put("key 4", MapData("a"))
 
-        val stopTime = currentTimeMillis() + (7 * 1000)
+        val stopTime = currentTimeMillis() + (3 * 1000)
 
         val worker = MPWorker()
         val worker2 = MPWorker()
         val worker3 = MPWorker()
 
+        throw IllegalStateException("Fuck shit")
         worker.runBackground {
             var count = 5
             while (currentTimeMillis() < stopTime) {

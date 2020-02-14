@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/stately-common" />
             <option value="$PROJECT_DIR$/stately-concurrency" />
             <option value="$PROJECT_DIR$/stately-iso-collections" />
-            <option value="$PROJECT_DIR$/stately-iso-experimental" />
             <option value="$PROJECT_DIR$/stately-isolate" />
           </set>
         </option>

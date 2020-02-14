@@ -136,7 +136,7 @@ class SharedHashMapTest {
     val m = SharedHashMap<String, MapData>()
 
     val random = Random
-    for (i in 0 until 100_000) {
+    for (i in 0 until 1_000) {
       val rand = random.nextInt()
       assertEquals(m.rehash(rand), m.rehash(rand))
     }
@@ -149,7 +149,7 @@ class SharedHashMapTest {
 
   @Test
   fun mtAddRemove() {
-    val LOOPS = 10_000
+    val LOOPS = 1_000
     val ops = ThreadOperations { SharedHashMap<String, MapData>() }
     val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
     val m = SharedHashMap<String, MapData>()

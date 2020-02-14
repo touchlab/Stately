@@ -1,7 +1,5 @@
 package co.touchlab.stately.isolate
 
-import co.touchlab.kapture.FreezingBlockCall
-
 expect class StateHolder<out T : Any> internal constructor(t: T, stateRunner: StateRunner) {
     val myThread: Boolean
     val stateRunner: StateRunner
@@ -18,7 +16,6 @@ open class IsolateState<T : Any> constructor(private val stateHolder: StateHolde
         throw IllegalStateException("Must fork state from the state thread")
     }
 
-    @FreezingBlockCall
     fun <R> access(block: (T) -> R): R {
         return if (stateHolder.myThread) {
             block(stateHolder.myState)
