@@ -18,6 +18,5 @@ include 'stately-concurrency'
 include 'stately-collections'
 include 'stately-isolate'
 include 'stately-iso-collections'
-//include 'stately-iso-experimental'
 
 enableFeaturePreview('GRADLE_METADATA')

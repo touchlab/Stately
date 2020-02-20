@@ -30,15 +30,18 @@ abstract class IsoMutableCollectionTest {
 
     @Test
     fun stress() {
-        val set = IsoMutableSet<SomeData>()
+        val set = defaultCollection()
 
         val ops = ThreadOperations {}
-        repeat(30_000) { i ->
+        val times = 30_000
+        repeat(times) { i ->
             ops.exe { set.add(SomeData("key $i")) }
             ops.test { assertTrue(set.contains(SomeData("key $i"))) }
         }
 
         ops.run(4)
+
+        assertEquals(set.size, times)
     }
 
     @Test
@@ -67,7 +70,7 @@ abstract class IsoMutableCollectionTest {
 
     @Test
     fun isEmpty() {
-        val set = IsoMutableSet<SomeData>()
+        val set = defaultCollection()
         assertTrue(set.isEmpty())
         addABunch(set)
         assertFalse(set.isEmpty())
