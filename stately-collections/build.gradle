@@ -32,7 +32,7 @@ configurations {
 kotlin {
 //    macosX64("nativeCommon")
     jvm()
-//    js()
+    js()
     macosX64()
     iosArm32()
     iosArm64()
@@ -80,7 +80,7 @@ kotlin {
         }
         
         //Disabling js till we sort out some testing
-        /*jsMain {
+        jsMain {
             dependsOn commonMain
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-js'
@@ -91,7 +91,7 @@ kotlin {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-test-js'
             }
-        }*/
+        }
 
         nativeCommonMain {
             dependsOn commonMain

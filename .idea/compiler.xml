@@ -4,6 +4,14 @@
     <bytecodeTargetLevel>
       <module name="co.touchlab.library.jvmMain" target="1.6" />
       <module name="co.touchlab.library.jvmTest" target="1.6" />
+      <module name="co.touchlab.stately-common.jvmMain" target="1.6" />
+      <module name="co.touchlab.stately-common.jvmTest" target="1.6" />
+      <module name="co.touchlab.stately-concurrency.jvmMain" target="1.6" />
+      <module name="co.touchlab.stately-concurrency.jvmTest" target="1.6" />
+      <module name="co.touchlab.stately-iso-collections.jvmMain" target="1.6" />
+      <module name="co.touchlab.stately-iso-collections.jvmTest" target="1.6" />
+      <module name="co.touchlab.stately-isolate.jvmMain" target="1.6" />
+      <module name="co.touchlab.stately-isolate.jvmTest" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>
