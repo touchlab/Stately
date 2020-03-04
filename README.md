@@ -125,11 +125,10 @@ commonMain {
 
 ## stately-iso-collections
 
-This is a set of mutable collections implemented with `IsolateState`. The set currently includes a MutableSet, MutableList, 
-and MutableMap.
+This is a set of mutable collections implemented with `IsolateState`. The set currently includes a `MutableSet`, `MutableList`, 
+ `MutableMap`, and an implementation of `ArrayDeque` that is being added to the Kotlin stdlib in 1.3.70.
 
-`IsolateState` is quite flexible, so implementing a large collections module is of limited value as you can easily wrap mutable
-state and implement other data structures on your own. Use these collections as a quide.
+
 
 ### Config
 
@@ -140,10 +139,6 @@ commonMain {
     }
 }
 ```
-
-## stately-iso-experimental
-
-
 
 ## stately-collections
 
