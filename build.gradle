@@ -37,7 +37,9 @@ allprojects {
         jcenter()
 //        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
+}
 
+subprojects {
     tasks.register('publishMac') {
         dependsOn 'publishIosArm32PublicationToMavenRepository'
         dependsOn 'publishIosArm64PublicationToMavenRepository'
