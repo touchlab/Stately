@@ -37,4 +37,30 @@ allprojects {
         jcenter()
 //        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
+
+    tasks.register('publishMac') {
+        dependsOn 'publishIosArm32PublicationToMavenRepository'
+        dependsOn 'publishIosArm64PublicationToMavenRepository'
+        dependsOn 'publishIosX64PublicationToMavenRepository'
+        dependsOn 'publishMacosX64PublicationToMavenRepository'
+
+        dependsOn 'publishTvosArm64PublicationToMavenRepository'
+        dependsOn 'publishTvosX64PublicationToMavenRepository'
+        dependsOn 'publishWatchosArm32PublicationToMavenRepository'
+        dependsOn 'publishWatchosArm64PublicationToMavenRepository'
+        dependsOn 'publishWatchosX86PublicationToMavenRepository'
+
+        dependsOn 'publishJvmPublicationToMavenRepository'
+        dependsOn 'publishJsPublicationToMavenRepository'
+
+        dependsOn 'publishMetadataPublicationToMavenRepository'
+        dependsOn 'publishKotlinMultiplatformPublicationToMavenRepository'
+
+        dependsOn 'publishLinuxX64PublicationToMavenRepository'
+        dependsOn 'publishLinuxArm32HfpPublicationToMavenRepository'
+    }
+
+    tasks.register('publishWindows') {
+        dependsOn 'publishMingwX64PublicationToMavenRepository'
+    }
 }
