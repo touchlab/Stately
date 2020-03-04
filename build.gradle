@@ -16,6 +16,7 @@
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         google()
         gradlePluginPortal()
@@ -25,5 +26,15 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath 'com.android.tools.build:gradle:3.5.1'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        jcenter()
+//        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
 }

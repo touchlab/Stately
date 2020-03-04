@@ -19,10 +19,10 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNativeFrozen
 import co.touchlab.testhelp.concurrency.MPWorker
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.currentTimeMillis
+import co.touchlab.testhelp.isNativeFrozen
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -136,7 +136,7 @@ class SharedHashMapTest {
     val m = SharedHashMap<String, MapData>()
 
     val random = Random
-    for (i in 0 until 100_000) {
+    for (i in 0 until 1_000) {
       val rand = random.nextInt()
       assertEquals(m.rehash(rand), m.rehash(rand))
     }
@@ -144,12 +144,12 @@ class SharedHashMapTest {
 
   @Test
   fun testInitFrozen() {
-    assertTrue(SharedHashMap<String, MapData>().isNativeFrozen())
+    assertTrue(SharedHashMap<String, MapData>().isNativeFrozen)
   }
 
   @Test
   fun mtAddRemove() {
-    val LOOPS = 10_000
+    val LOOPS = 1_000
     val ops = ThreadOperations { SharedHashMap<String, MapData>() }
     val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
     val m = SharedHashMap<String, MapData>()

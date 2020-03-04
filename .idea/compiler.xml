@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="co.touchlab.library.jvmMain" target="1.6" />
       <module name="co.touchlab.library.jvmTest" target="1.6" />
-      <module name="co.touchlab.stately-common.jvmMain" target="1.6" />
-      <module name="co.touchlab.stately-common.jvmTest" target="1.6" />
-      <module name="co.touchlab.stately-concurrency.jvmMain" target="1.6" />
-      <module name="co.touchlab.stately-concurrency.jvmTest" target="1.6" />
-      <module name="co.touchlab.stately-iso-collections.jvmMain" target="1.6" />
-      <module name="co.touchlab.stately-iso-collections.jvmTest" target="1.6" />
-      <module name="co.touchlab.stately-isolate.jvmMain" target="1.6" />
-      <module name="co.touchlab.stately-isolate.jvmTest" target="1.6" />
+      <module name="co.touchlab.stately-iso-experimental.jvmMain" target="1.6" />
+      <module name="co.touchlab.stately-iso-experimental.jvmTest" target="1.6" />
+      <module name="co.touchlab.stately.jvmMain" target="1.6" />
+      <module name="co.touchlab.stately.jvmTest" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

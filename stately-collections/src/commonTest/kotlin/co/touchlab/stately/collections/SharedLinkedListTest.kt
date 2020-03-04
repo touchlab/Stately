@@ -18,8 +18,8 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
-import co.touchlab.stately.isNativeFrozen
 import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -39,7 +39,7 @@ class LinkedListTest {
 
   @Test
   fun testInitFrozen() {
-    assertTrue(SharedLinkedList<ListData>().isNativeFrozen())
+    assertTrue(SharedLinkedList<ListData>().isNativeFrozen)
   }
 
   @Test
@@ -312,7 +312,7 @@ class LinkedListTest {
 
   @Test
   fun mtNodeAdd() {
-    val LOOPS = 1_000
+    val LOOPS = 100
     val DOOPS = 100
     val ll = SharedLinkedList<ListData>().freeze()
     val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
@@ -369,7 +369,7 @@ class LinkedListTest {
    */
   @Test
   fun mtNodeRemove() {
-    val LOOPS = 20_000
+    val LOOPS = 2_000
     val ll = SharedLinkedList<ListData>().freeze()
     val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
     for (i in 0 until LOOPS) {

@@ -16,12 +16,6 @@
 
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-}
-
 group = GROUP
 version = VERSION_NAME
 
@@ -53,7 +47,8 @@ kotlin {
         commonMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
-                implementation project(":stately")
+                implementation project(":stately-common")
+                implementation project(":stately-concurrency")
             }
         }
 

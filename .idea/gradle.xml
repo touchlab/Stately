@@ -11,8 +11,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/stately" />
             <option value="$PROJECT_DIR$/stately-collections" />
+            <option value="$PROJECT_DIR$/stately-common" />
+            <option value="$PROJECT_DIR$/stately-concurrency" />
+            <option value="$PROJECT_DIR$/stately-iso-collections" />
+            <option value="$PROJECT_DIR$/stately-isolate" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

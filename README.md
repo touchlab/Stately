@@ -2,172 +2,169 @@
 
 Stately is a state utility library to facilitate state management in Kotlin Multiplatform.
 
-The core library consists primarily of some useful expect/actual definitions, Atomics, and Locks. There is also a library
-with a set of multithreaded collection classes that will allow multithreaded mutation in Kotlin/Native.
+Kotlin JVM has the same rules around concurrency and state that Java has. In essence, multiple threads can access shared state in an unrestricted fashion, and it is up to the developer to ensure safe concurrency. Kotlin/Native, on the other hand, introduces new restrictions around concurrent state access ([more](https://dev.to/touchlab/practical-kotlin-native-concurrency-ac7) [info](https://www.youtube.com/watch?v=oxQ6e1VeH4M)). Additionally, Kotlin/JS lives in the Javascript threading world, which means just the one thread.
 
-Kotlin/Native has a fairly different model of concurrency than what JVM developers are used to. This includes very 
-different rules around sharing state. These rules are intended to reduce the likelihood of concurrency related issues.
-[Read this](https://medium.com/@kpgalligan/kotlin-native-stranger-threads-ep-2-208523d63c8f) for more info.
+Stately provides various modules to facilitate writing shared code within these different worlds.
 
-> ## **We're Hiring!**
->
-> Touchlab is looking for Android-focused mobile engineers, experienced with Kotlin and 
-> looking to get involved with Kotlin Multiplatorm in the near future. [More info here](https://on.touchlab.co/30sMEjR).
+## stately-common
 
-## Functions/Extensions
+Kotlin/Native state adds some concepts that don't exist in either the JVM or JS, as well as the annotation @Throws.
 
-### freeze()
+ `stately-common` is very simple. It includes common definitions for `freeze()`, `isFrozen`, and `ensureNeverFrozen()`, and as mentioned `@Throws`. These definitions, 2 functions, a val, and an annotation, are often source-copied into other libraries. `stately-common`'s sole purpose is to define these as minimally as possible, to be included in apps or other libraries.
 
-Multiplatform definition for Kotlin/Native 'freeze'.
+On native, these values delegate or are typealiased to their platform definitions. In JS and the JVM, they do nothing.
 
-### isFrozen()
+### Config
 
-Call on any object to find out if it's frozen.
-
-### isNativeFrozen()
-
-Will return true on non-native platforms. On native, will return true if frozen. Usually you're trying to figure out if
-an instance can be shared among threads. Because the rules are different, the answer is always "true" on JVM and JS. This
-method makes that logic simpler.
-
-### isNative (val)
-
-Simple way to find out if we're in a native context.
-
-### Iterator.toList()
-
-Converts an Iterator to a List. This is an extension function that works on any Iterator. Mostly useful for testing.
-
-## Atomics
-
-Atomic value definitions for Int, Long, Boolean, and object references.
-
-## Lock
-
-Mutex lock for various platforms. It is important to note that there is an extension method called `close()`. This only
-needs to be called if you are on a non Apple native platform (Windows & Linux).
-You can safely ignore `close` on JVM, JS, iOS, and MacOS.
-
-## Collections
-
-Collections allow mutable collections in frozen code. They've been moved to a separate package as the current form will 
-likely be removed in the future. Either a faster version will be created, or "relaxed mode" for Kotlin/Native will make
-them relatively useless. However, they do work and are available.
-
-## Important note for all collections!!!
-
-AtomicReference can leak memory in Kotlin Native. To avoid leaking memory, you should call `clear()`
-on any collection when done using it.
-
-### Copy On Write List
-
-A MutableList that updates a stable copy on each edit. When you get an iterator, that iterator remains stable regardless
-of operations happening on the list. The JVM version is actually [https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/CopyOnWriteArrayList.html](CopyOnWriteArrayList.java). 
-The Native version updates a frozen ArrayList internally by copying and replacing on edits.
-
-```kotlin
-val list:MutableList<SampleData> = frozenCopyOnWriteList<SampleData>()
-```
-
-### Shared Linked List
-
-Rather than copying the full list on each edit, this structure uses atomic references in the nodes to allow modification
-that is reasonably performant relative to the Copy On Write list in situations that may have larger lists and/or frequent updates.
-
-It's important to note, performance is OK *relative* to copying the list on each edit. The list locks aggressively to 
-achieve consistency. There are lockless algorithms for linked lists that may be explored in the future.
-
-There are two versions.
-
-### SharedLinkedList
-
-Iterators reflect changes to the underlying list. If values are added/removed while iterating, your iterator will
-see them.
-
-```kotlin
-val list:MutableList<SampleData> = frozenLinkedList<SampleData>()
-
-```
-
-### CopyOnIterateLinkedList
-
-Iterators are stable. Calling iterator creates an internal copy of the list which the iterator uses. Underlying changes
-to the source list are NOT reflected in the iterator. This will trigger a lock and copy on calling iterator, which 
-may be a performance consideration with large lists.
-
-Similar to CopyOnWriteList, and likely to perform better in general cases. It is a linked list, however, so indexed 
-access requires a scan.
-
-```kotlin
-val list:MutableList<SampleData> = frozenLinkedList<SampleData>(stableIterator = true)
-
-```
-
-### Hash Map
-
-A standard hash map architected as a simple Java-like implementation. Optionally pass in initial capacity and load factor.
-Will grow as needed. This also locks on most operations, so from a performance perspective I would expect it 
-to fall pretty far behind the standard single threaded implementation, but from an order of operations perspective, it should be similar.
-
-One note. In Java 8 (not sure about kotlin native), in buckets, after length 8, a tree is used instead of a linked list.
-Worst case performance then flattens out to lgN (ish). Java 7, and our implementation, do not, so expect worst case to
-be N. Try to use good hashes.
-
-```kotlin
-val sharedMap:MutableMap<String, SampleData> = frozenHashMap<String, SampleData>()
-```
-
-### LRU Cache
-
-Hash map and linked list combined into an LRU cache implementation.
-
-You can supply a callback to be notified when an entry is removed.
-
-```kotlin
-val lruRemovedCount = AtomicInt(0)
-val lruCache = frozenLruCache<String, SampleData>(5) {
-    lruRemovedCount.increment()
+```groovy
+commonMain {
+    dependencies {
+        implementation 'co.touchlab:stately-common:1.0.x'
+    }
 }
 ```
 
-Note that the lambda for onRemove is optional. However, since it is multithreaded, be aware that anything in there will
-be frozen.
+## stately-concurrency
+
+`stately-concurrency` includes some concurrency support classes. These include a set of `Atomicxxx` classes, a `Lock`, a `ThreadLocal` container, and a class `ThreadRef` that allows you to hold a thread id.
+
+Much of the functionality of this module is similar to [atomic-fu](https://github.com/Kotlin/kotlinx.atomicfu). They differ in some ways, so while they both cover much of the same ground, Stately's version still has some use.
+
+`ThreadRef` is unique to Stately. It allows you to capture a reference to the id of the thread in which it was created, and ask if the current thread is the same. Just FYI, it does *not* keep a reference to the actual thread. Just an id. Usage looks like this:
+
+```kotlin
+fun useRef(){
+  val threadRef = ThreadRef()
+  threadRef.same() // <- true
+  backgrundThread {
+    threadRef.same() // <- false
+  }
+}
+```
+
+### Config
+
+```groovy
+commonMain {
+    dependencies {
+        implementation 'co.touchlab:stately-concurrency:1.0.x'
+    }
+}
+```
+
+## stately-isolate
+
+`stately-isolate` creates mutable state in a special state thread, and restricts access to that state from the same thread. This allows the state held by an instance of `IsolateState` to remain mutable. State coming in and going out must be frozen, but the guarded state can change.
+
+> Read more about the design in [this blog post](https://dev.to/touchlab/kotlin-native-isolated-state-50l1).
+
+The obvious use case is for collections. Example usage:
+
+```kotlin
+fun usage(){
+    val cacheMap = IsolateState { mutableMapOf<String, String>() }
+    val key = "abc"
+    val value = "123"
+    cacheMap.access { it.put(key, value) }
+    val valueString = cacheMap.access { it.get(key) }
+    println(valueString) // <- will print '123'
+}
+```
+
+The `cacheMap` above can be called from multiple threads. The lambda passed to the `access` method will be invoked on the same thread that the state was created on. Because it is a single thread, access is serialized and thread-safe.
+
+You can create other instances of `IsolateState` by forking the parent instance.
+
+```kotlin
+fun usage(){
+    val cacheMap = IsolateState { mutableMapOf<String, String>() }
+    val key = "abc"
+    val value = "123"
+    cacheMap.access { it.put(key, value) }
+    
+    //Fork state
+    val entrySet = cacheMap.access { map -> 
+        IsolateState(cacheMap.fork(map.entries)) 
+    }
+    
+    val valueString = entrySet.access { entries -> entries.first().value }
+    println(valueString) // <- will print '123'
+}
+```
+
+You can create a class that extends `IsolateState`  and provides for simpler access.
+
+```kotlin
+class SimpleMap<K, V>: IsolateState<MutableMap<K, V>>({ mutableMapOf()})
+{
+    fun put(key:K, value:V):V? = access { it.put(key, value) }
+    fun get(key: K):V? = access { it.get(key) }
+}
+```
+
+`stately-iso-collections` implements collections by extending `IsolateState` in this manner.
+
+You must dispose of `IsolateState` instances to avoid memory leaks.
+
+```kotlin
+fun usage(){
+    val cacheMap = IsolateState { mutableMapOf<String, String>() }
+    cacheMap.dispose()
+}
+```
+
+### Config
+
+```kotlin
+commonMain {
+    dependencies {
+        implementation 'co.touchlab:stately-isolate:1.0.x'
+    }
+}
+```
+
+## stately-iso-collections
+
+This is a set of mutable collections implemented with `IsolateState`. The set currently includes a `MutableSet`, `MutableList`, 
+ `MutableMap`, and an implementation of `ArrayDeque` that is being added to the Kotlin stdlib in 1.3.70.
+
+
+
+### Config
+
+```kotlin
+commonMain {
+    dependencies {
+        implementation 'co.touchlab:stately-iso-collections:1.0.x'
+    }
+}
+```
+
+## stately-collections
+
+A set of collections that can be shared and accessed between threads. This is pretty much deprecated, but we have no plans to remove it as some production apps use it.
+
+However, ***we would strongly suggest you use `stately-isolate` and `stately-iso-collections` instead.*** Collections implemented with `stately-isolate` are far more flexible and absolutely CRUSH the original `stately-collections` in performance benchmarks. See [blog post](https://dev.to/touchlab/kotlin-native-isolated-state-50l1).
 
 ## Usage
 
-Stately is a Kotlin multiplatform library, and uses the standard multiplatform Gradle plugin.
-Adding dependencies to gradle looks like this. It can go in the common module, or
-the platform specific modules if desired.
-
-```groovy
-dependencies {
-    implementation "co.touchlab:stately:0.9.x"
-    implementation "co.touchlab:stately-collections:0.9.x"
-}
-```
-
-Make sure your Gradle vesion is 5.3+, and that you have metadata enabled in `settings.gradle`
+Dependencies can be specified in the common source set, as shown above, if you have Gradle metadata enabled in `settings.gradle`.
 
 ```groovy
 enableFeaturePreview('GRADLE_METADATA')
 ```
 
-## Sample App
-
-The sample app is updated!!! It doesn't do much, but demos 
-several of the structures.
-
 License
 =======
 
-    Copyright 2018 Touchlab, Inc.
-
+    Copyright 2020 Touchlab, Inc.
+    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-
+    
        http://www.apache.org/licenses/LICENSE-2.0
-
+    
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
