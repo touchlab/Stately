@@ -2,6 +2,7 @@ package co.touchlab.stately.isolate
 
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
+import co.touchlab.testhelp.concurrency.background
 import co.touchlab.testhelp.isNative
 import co.touchlab.testhelp.printStackTrace
 
@@ -101,4 +102,18 @@ class IsoStateTest {
     }
 
     data class SomeData(val s: String)
+
+    @Test
+    fun testNonMainThread() {
+        val bar = background {
+            val foo = IsolateState { mutableListOf<String>() }
+            val s = "arst"
+            foo.access {
+                it.add(s)
+            }
+            foo
+        }
+
+        assertEquals(bar.access { it.get(0) }, "arst")
+    }
 }

@@ -54,9 +54,9 @@ kotlin {
       dependencies {
         implementation kotlin('stdlib-common')
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$COROUTINES_VERSION"
-        implementation "co.touchlab:stately-common:$STATELY_VERSION_NAME"
-        implementation "co.touchlab:stately-isolate:$STATELY_VERSION_NAME"
-        implementation "co.touchlab:stately-iso-collections:$STATELY_VERSION_NAME"
+        implementation "co.touchlab:stately-common:$VERSION_NAME"
+        implementation "co.touchlab:stately-isolate:$VERSION_NAME"
+        implementation "co.touchlab:stately-iso-collections:$VERSION_NAME"
       }
     }
     commonTest {
