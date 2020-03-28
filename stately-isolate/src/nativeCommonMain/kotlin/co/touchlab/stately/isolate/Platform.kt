@@ -36,4 +36,5 @@ actual class StateHolder<out T:Any> internal actual constructor(t: T, actual val
         get() = threadRef.same()
 }
 
+@SharedImmutable
 internal actual val defaultStateRunner: StateRunner = BackgroundStateRunner()
