@@ -17,7 +17,7 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 group = GROUP
-version = VERSION_NAME
+version = VERSION_NAME_NEWSTUFF
 def ideaActive = System.getProperty('idea.active') == 'true'
 
 kotlin {
