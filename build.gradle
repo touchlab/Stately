@@ -39,30 +39,34 @@ allprojects {
     }
 }
 
-subprojects {
+allprojects {
     tasks.register('publishMac') {
-        dependsOn 'publishIosArm32PublicationToMavenRepository'
-        dependsOn 'publishIosArm64PublicationToMavenRepository'
-        dependsOn 'publishIosX64PublicationToMavenRepository'
-        dependsOn 'publishMacosX64PublicationToMavenRepository'
+        if(project.tasks.findByName('publish')) {
+            dependsOn 'publishIosArm32PublicationToMavenRepository'
+            dependsOn 'publishIosArm64PublicationToMavenRepository'
+            dependsOn 'publishIosX64PublicationToMavenRepository'
+            dependsOn 'publishMacosX64PublicationToMavenRepository'
 
-        dependsOn 'publishTvosArm64PublicationToMavenRepository'
-        dependsOn 'publishTvosX64PublicationToMavenRepository'
-        dependsOn 'publishWatchosArm32PublicationToMavenRepository'
-        dependsOn 'publishWatchosArm64PublicationToMavenRepository'
-        dependsOn 'publishWatchosX86PublicationToMavenRepository'
+            dependsOn 'publishTvosArm64PublicationToMavenRepository'
+            dependsOn 'publishTvosX64PublicationToMavenRepository'
+            dependsOn 'publishWatchosArm32PublicationToMavenRepository'
+            dependsOn 'publishWatchosArm64PublicationToMavenRepository'
+            dependsOn 'publishWatchosX86PublicationToMavenRepository'
 
-        dependsOn 'publishJvmPublicationToMavenRepository'
-        dependsOn 'publishJsPublicationToMavenRepository'
+            dependsOn 'publishJvmPublicationToMavenRepository'
+            dependsOn 'publishJsPublicationToMavenRepository'
 
-        dependsOn 'publishMetadataPublicationToMavenRepository'
-        dependsOn 'publishKotlinMultiplatformPublicationToMavenRepository'
+            dependsOn 'publishMetadataPublicationToMavenRepository'
+            dependsOn 'publishKotlinMultiplatformPublicationToMavenRepository'
 
-        dependsOn 'publishLinuxX64PublicationToMavenRepository'
-        dependsOn 'publishLinuxArm32HfpPublicationToMavenRepository'
+            dependsOn 'publishLinuxX64PublicationToMavenRepository'
+            dependsOn 'publishLinuxArm32HfpPublicationToMavenRepository'
+        }
     }
 
     tasks.register('publishWindows') {
-        dependsOn 'publishMingwX64PublicationToMavenRepository'
+        if(project.tasks.findByName('publish')) {
+            dependsOn 'publishMingwX64PublicationToMavenRepository'
+        }
     }
 }
