@@ -11,8 +11,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/Sample" />
-            <option value="$PROJECT_DIR$/Sample/app" />
             <option value="$PROJECT_DIR$/stately-collections" />
             <option value="$PROJECT_DIR$/stately-common" />
             <option value="$PROJECT_DIR$/stately-concurrency" />

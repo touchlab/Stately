@@ -38,7 +38,7 @@ class Atomics {
 
   @Test
   fun atomicReference() {
-    val ref = AtomicReference(ATData("asdf"))
+    val ref = AtomicReference(ATData("asdf")).freeze()
     assertEquals(ref.value, ATData("asdf"))
     val actualData = ATData("qwert")
     ref.value = actualData
@@ -131,11 +131,7 @@ class Atomics {
 
 }
 
-data class ATData(val s: String) {
-  init {
-    freeze()
-  }
-}
+data class ATData(val s: String)
 
 data class CycleData(var b: CycleData3?)
 data class CycleData2(val b: CycleData)

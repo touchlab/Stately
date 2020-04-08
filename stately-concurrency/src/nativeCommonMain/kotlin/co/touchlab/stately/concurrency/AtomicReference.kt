@@ -32,6 +32,6 @@ actual class AtomicReference<V> actual constructor(initialValue: V) {
    * Compare current value with expected and set to new if they're the same. Note, 'compare' is checking
    * the actual object id, not 'equals'.
    */
-  actual fun compareAndSet(expected: V, new: V): Boolean = atom.compareAndSet(expected, new)
+  actual fun compareAndSet(expected: V, new: V): Boolean = atom.compareAndSet(expected, new.freeze())
 }
 
