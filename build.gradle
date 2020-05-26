@@ -69,4 +69,10 @@ allprojects {
             dependsOn 'publishMingwX64PublicationToMavenRepository'
         }
     }
+
+    tasks.register('publishLinux') {
+        if(project.tasks.findByName('publish')) {
+            dependsOn 'publishLinuxMips32PublicationToMavenRepository'
+        }
+    }
 }
