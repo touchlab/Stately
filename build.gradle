@@ -20,7 +20,7 @@ buildscript {
         jcenter()
         google()
         gradlePluginPortal()
-//        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
 
     dependencies {
@@ -35,7 +35,7 @@ allprojects {
         mavenCentral()
         google()
         jcenter()
-//        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
 }
 
