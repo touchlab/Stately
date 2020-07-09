@@ -26,7 +26,10 @@ configurations {
 kotlin {
 //    macosX64("nativeCommon")
     jvm()
-    js()
+    js {
+        nodejs()
+        browser()
+    }
     macosX64()
     iosArm32()
     iosArm64()

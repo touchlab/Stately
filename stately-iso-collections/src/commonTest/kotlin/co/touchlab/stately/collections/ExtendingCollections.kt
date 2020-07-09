@@ -8,6 +8,7 @@ import kotlin.test.assertTrue
 
 class ExtendingCollections {
     @Test
+    @JsIgnore
     fun atomicAdd() {
         fun IsoMutableMap<String, SomeData>.sizeAdd(sd: SomeData) = access {
             val s = size

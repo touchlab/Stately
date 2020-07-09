@@ -27,10 +27,10 @@ configurations {
 kotlin {
 //    macosX64("nativeCommon")
     jvm()
-    js() {
-//        nodejs()
-        /*browser()
-        configure([compilations.main, compilations.test]) {
+    js {
+        nodejs()
+        browser()
+        /*configure([compilations.main, compilations.test]) {
             tasks.getByName(compileKotlinTaskName).kotlinOptions {
                 metaInfo = true
                 sourceMap = true

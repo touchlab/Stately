@@ -16,6 +16,4 @@
 
 package co.touchlab.stately.annotation
 
-import kotlin.native.Throws
-
-actual typealias Throws = Throws
+actual typealias Throws = kotlin.Throws

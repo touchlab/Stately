@@ -19,7 +19,7 @@ class IsoMutableSetTest : IsoMutableCollectionTest(){
     }
 
     @Test
-    fun equals(){
+    fun equalsTest() {
         val set = addABunch()
         val set2 = addABunch()
         assertTrue(set.equals(set2))
