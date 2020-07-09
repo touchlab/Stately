@@ -18,10 +18,7 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
-import co.touchlab.stately.freeze
-import co.touchlab.testhelp.concurrency.MPWorker
 import co.touchlab.testhelp.concurrency.ThreadOperations
-import co.touchlab.testhelp.concurrency.currentTimeMillis
 import co.touchlab.testhelp.isNative
 import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
@@ -32,240 +29,240 @@ import kotlin.test.assertTrue
 
 class SharedLruCacheTest {
 
-  @Test
-  fun testInitFrozen() {
-    assertTrue(SharedLruCache<String, MapData>(4).isNativeFrozen)
-  }
-
-  @Test
-  fun sanityCheck() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+    @Test
+    fun testInitFrozen() {
+        assertTrue(SharedLruCache<String, MapData>(4).isNativeFrozen)
     }
 
-    addEntries(6, sc)
+    @Test
+    fun sanityCheck() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    checkResults(collect, MapData("Value: 0"), MapData("Value: 1"))
+        addEntries(6, sc)
 
-    sc.get("Key: 2")
+        checkResults(collect, MapData("Value: 0"), MapData("Value: 1"))
 
-    sc.put("Asdf", MapData("Query"))
+        sc.get("Key: 2")
 
-    //Key: 2 Should've been bumped to the front...
-    assertEquals(collect.get(2), MapData("Value: 3"))
-  }
+        sc.put("Asdf", MapData("Query"))
 
-  @Test
-  fun put() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+        // Key: 2 Should've been bumped to the front...
+        assertEquals(collect.get(2), MapData("Value: 3"))
     }
 
-    addEntries(4, sc)
+    @Test
+    fun put() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    assertEquals(collect.size, 0)
+        addEntries(4, sc)
 
-    //One more than capacity
-    addEntries(1, sc, 4)
+        assertEquals(collect.size, 0)
 
-    assertEquals(collect.size, 1)
-    checkResults(collect, MapData("Value: 0"))
+        // One more than capacity
+        addEntries(1, sc, 4)
 
-    //Adding duplicate value removes nothing, but bumps '1' to top of book
-    val refreshResult = sc.put("Key: 1", MapData("Value: 1"))
-    assertNull(refreshResult)
-    assertEquals(collect.size, 1)
-    checkResults(collect, MapData("Value: 0"))
+        assertEquals(collect.size, 1)
+        checkResults(collect, MapData("Value: 0"))
 
-    addEntries(1, sc, 5)
+        // Adding duplicate value removes nothing, but bumps '1' to top of book
+        val refreshResult = sc.put("Key: 1", MapData("Value: 1"))
+        assertNull(refreshResult)
+        assertEquals(collect.size, 1)
+        checkResults(collect, MapData("Value: 0"))
 
-    checkResults(collect, MapData("Value: 0"), MapData("Value: 2"))
-  }
+        addEntries(1, sc, 5)
 
-  @Test
-  fun remove() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+        checkResults(collect, MapData("Value: 0"), MapData("Value: 2"))
     }
 
-    addEntries(4, sc)
+    @Test
+    fun remove() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    sc.remove("Key: 2")
-    sc.remove("Key: 0")
-    sc.remove("Key: 5")
+        addEntries(4, sc)
 
-    checkResults(collect, MapData("Value: 2"), MapData("Value: 0"))
+        sc.remove("Key: 2")
+        sc.remove("Key: 0")
+        sc.remove("Key: 5")
 
-    assertEquals(sc.size, 2)
-    sc.remove("Key: 1")
-    sc.remove("Key: 3")
+        checkResults(collect, MapData("Value: 2"), MapData("Value: 0"))
 
-    checkResults(
-      collect,
-      MapData("Value: 2"),
-      MapData("Value: 0"),
-      MapData("Value: 1"),
-      MapData("Value: 3")
-    )
+        assertEquals(sc.size, 2)
+        sc.remove("Key: 1")
+        sc.remove("Key: 3")
 
-    assertEquals(sc.size, 0)
-  }
+        checkResults(
+            collect,
+            MapData("Value: 2"),
+            MapData("Value: 0"),
+            MapData("Value: 1"),
+            MapData("Value: 3")
+        )
 
-  @Test
-  fun removeSkip() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+        assertEquals(sc.size, 0)
     }
 
-    addEntries(4, sc)
+    @Test
+    fun removeSkip() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    assertEquals(MapData("Value: 2"), sc.remove("Key: 2", skipCallback = true))
-    assertEquals(MapData("Value: 0"), sc.remove("Key: 0", skipCallback = false))
-    assertNull(sc.remove("Key: 5", skipCallback = true))
+        addEntries(4, sc)
 
-    assertEquals(1, collect.size)
-  }
+        assertEquals(MapData("Value: 2"), sc.remove("Key: 2", skipCallback = true))
+        assertEquals(MapData("Value: 0"), sc.remove("Key: 0", skipCallback = false))
+        assertNull(sc.remove("Key: 5", skipCallback = true))
 
-  @Test
-  fun entries() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+        assertEquals(1, collect.size)
     }
 
-    addEntries(4, sc)
+    @Test
+    fun entries() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    checkSetEntries(
-      sc.entries,
-      MapData("Value: 0"),
-      MapData("Value: 1"),
-      MapData("Value: 2"),
-      MapData("Value: 3")
-    )
+        addEntries(4, sc)
 
-    sc.remove("Key: 1")
-    sc.remove("Key: 123")
+        checkSetEntries(
+            sc.entries,
+            MapData("Value: 0"),
+            MapData("Value: 1"),
+            MapData("Value: 2"),
+            MapData("Value: 3")
+        )
 
-    sc.get("Key: 2")
-    sc.get("Key: 0")
-    sc.put("a", MapData("1"))
+        sc.remove("Key: 1")
+        sc.remove("Key: 123")
 
-    checkSetEntries(
-      sc.entries,
-      MapData("Value: 3"),
-      MapData("Value: 2"),
-      MapData("Value: 0"),
-      MapData("1")
-    )
+        sc.get("Key: 2")
+        sc.get("Key: 0")
+        sc.put("a", MapData("1"))
 
-    sc.put("b", MapData("2"))
+        checkSetEntries(
+            sc.entries,
+            MapData("Value: 3"),
+            MapData("Value: 2"),
+            MapData("Value: 0"),
+            MapData("1")
+        )
 
-    checkSetEntries(
-      sc.entries,
-      MapData("Value: 2"),
-      MapData("Value: 0"),
-      MapData("1"),
-      MapData("2")
-    )
-  }
+        sc.put("b", MapData("2"))
 
-  @Test
-  fun removeAll() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+        checkSetEntries(
+            sc.entries,
+            MapData("Value: 2"),
+            MapData("Value: 0"),
+            MapData("1"),
+            MapData("2")
+        )
     }
 
-    addEntries(4, sc)
+    @Test
+    fun removeAll() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    sc.removeAll()
+        addEntries(4, sc)
 
-    assertEquals(sc.size, 0)
-    assertEquals(collect.size, 4)
+        sc.removeAll()
 
-    addEntries(4, sc)
+        assertEquals(sc.size, 0)
+        assertEquals(collect.size, 4)
 
-    assertEquals(sc.size, 4)
-    collect.clear()
-    assertEquals(collect.size, 0)
+        addEntries(4, sc)
 
-    sc.removeAll(skipCallback = true)
-    assertEquals(sc.size, 0)
-    assertEquals(collect.size, 0)
-  }
+        assertEquals(sc.size, 4)
+        collect.clear()
+        assertEquals(collect.size, 0)
 
-  @Test
-  fun get() {
-    val collect = SharedLinkedList<MapData>()
-    val sc = SharedLruCache<String, MapData>(4) {
-      collect.add(it.value)
+        sc.removeAll(skipCallback = true)
+        assertEquals(sc.size, 0)
+        assertEquals(collect.size, 0)
     }
 
-    addEntries(4, sc)
+    @Test
+    fun get() {
+        val collect = SharedLinkedList<MapData>()
+        val sc = SharedLruCache<String, MapData>(4) {
+            collect.add(it.value)
+        }
 
-    assertEquals(collect.size, 0)
+        addEntries(4, sc)
 
-    sc.put("a", MapData("1"))
-    assertEquals(collect.size, 1)
+        assertEquals(collect.size, 0)
 
-    assertEquals(sc.get("Key: 1"), MapData("Value: 1"))
-    assertNull(sc.get("Key: 11"))
+        sc.put("a", MapData("1"))
+        assertEquals(collect.size, 1)
 
-    sc.put("b", MapData("2"))
+        assertEquals(sc.get("Key: 1"), MapData("Value: 1"))
+        assertNull(sc.get("Key: 11"))
 
-    checkResults(collect, MapData("Value: 0"), MapData("Value: 2"))
-  }
+        sc.put("b", MapData("2"))
 
-  /**
-   * onRemove can be called from any thread, so the callback must be frozen
-   */
-  @Test
-  fun onRemoveCanFreeze() {
-    //Native only issue
-    if (!isNative)
-      return
-
-    val collect = ArrayList<MapData>()
-    val sc = SharedLruCache<String, MapData>(2) {
-      collect.add(it.value)
+        checkResults(collect, MapData("Value: 0"), MapData("Value: 2"))
     }
 
-    sc.put("a", MapData("1"))
-    sc.put("b", MapData("1"))
-    assertFails {
-      sc.put("c", MapData("1"))
+    /**
+     * onRemove can be called from any thread, so the callback must be frozen
+     */
+    @Test
+    fun onRemoveCanFreeze() {
+        // Native only issue
+        if (!isNative) {
+            return
+        }
+
+        val collect = ArrayList<MapData>()
+        val sc = SharedLruCache<String, MapData>(2) {
+            collect.add(it.value)
+        }
+
+        sc.put("a", MapData("1"))
+        sc.put("b", MapData("1"))
+        assertFails {
+            sc.put("c", MapData("1"))
+        }
     }
 
-  }
+    @Test
+    fun exists() {
+        val sc = SharedLruCache<String, MapData>(4)
+        addEntries(4, sc)
 
-  @Test
-  fun exists() {
-    val sc = SharedLruCache<String, MapData>(4)
-    addEntries(4, sc)
+        checkExists(sc, "Key: 0", "Key: 1", "Key: 2", "Key: 3")
 
-    checkExists(sc, "Key: 0", "Key: 1", "Key: 2", "Key: 3")
+        sc.put("1", MapData("a"))
 
-    sc.put("1", MapData("a"))
+        checkExists(sc, "Key: 1", "Key: 2", "Key: 3", "1")
 
-    checkExists(sc, "Key: 1", "Key: 2", "Key: 3", "1")
+        sc.get("Key: 1")
+        sc.put("2", MapData("b"))
 
-    sc.get("Key: 1")
-    sc.put("2", MapData("b"))
+        checkExists(sc, "Key: 1", "Key: 3", "1", "2")
 
-    checkExists(sc, "Key: 1", "Key: 3", "1", "2")
+        sc.remove("Key: 3")
 
-    sc.remove("Key: 3")
+        checkExists(sc, "Key: 1", "1", "2")
 
-    checkExists(sc, "Key: 1", "1", "2")
+        sc.removeAll(skipCallback = true)
 
-    sc.removeAll(skipCallback = true)
-
-    checkExists(sc)
-  }
+        checkExists(sc)
+    }
 
   /*@Test
   fun initFrozen(){
@@ -310,54 +307,53 @@ class SharedLruCacheTest {
     }
   }*/
 
-  @Test
-  fun mtPutStress() {
-    val CACHE_SIZE = 100
-    val LOOPS = 5000
+    @Test
+    fun mtPutStress() {
+        val CACHE_SIZE = 100
+        val LOOPS = 5000
 
-    val count = AtomicInt(0)
-    val ops = ThreadOperations<SharedLruCache<String, MapData>> {
-      SharedLruCache(CACHE_SIZE) { count.incrementAndGet() }
+        val count = AtomicInt(0)
+        val ops = ThreadOperations<SharedLruCache<String, MapData>> {
+            SharedLruCache(CACHE_SIZE) { count.incrementAndGet() }
+        }
+
+        for (i in 0 until LOOPS) {
+            ops.exe {
+                it.put("key $i", MapData("data $i"))
+            }
+        }
+
+        val lru = ops.run(threads = 8, randomize = true)
+        assertEquals(CACHE_SIZE, lru.size)
+        assertEquals(LOOPS - CACHE_SIZE, count.value)
     }
 
-    for (i in 0 until LOOPS) {
-      ops.exe {
-        it.put("key $i", MapData("data $i"))
-      }
+    private fun checkExists(lru: LruCache<String, MapData>, vararg keys: String) {
+        keys.forEach { assertTrue { lru.exists(it) } }
+        assertEquals(lru.size, keys.size)
     }
 
-    val lru = ops.run(threads = 8, randomize = true)
-    assertEquals(CACHE_SIZE, lru.size)
-    assertEquals(LOOPS - CACHE_SIZE, count.value)
-  }
-
-  private fun checkExists(lru: LruCache<String, MapData>, vararg keys: String) {
-    keys.forEach { assertTrue { lru.exists(it) } }
-    assertEquals(lru.size, keys.size)
-  }
-
-  private fun checkSetEntries(c: Set<MutableMap.MutableEntry<String, MapData>>, vararg elems: MapData) {
-    val checkSet = HashSet<MapData>()
-    c.forEach { checkSet.add(it.value) }
-    for (i in 0 until elems.size) {
-      assertTrue(checkSet.contains(elems[i]))
-    }
-    assertEquals(c.size, elems.size)
-  }
-
-  private fun addEntries(count: Int, cache: SharedLruCache<String, MapData>, startAt: Int = 0) {
-
-    for (i in 0 until count) {
-      val insertIndex = i + startAt
-      cache.put("Key: $insertIndex", MapData("Value: $insertIndex"))
-    }
-  }
-
-  private fun checkResults(c: List<Any>, vararg elems: Any) {
-    for (i in 0 until c.size) {
-      assertEquals(c.get(i), elems[i])
+    private fun checkSetEntries(c: Set<MutableMap.MutableEntry<String, MapData>>, vararg elems: MapData) {
+        val checkSet = HashSet<MapData>()
+        c.forEach { checkSet.add(it.value) }
+        for (i in 0 until elems.size) {
+            assertTrue(checkSet.contains(elems[i]))
+        }
+        assertEquals(c.size, elems.size)
     }
 
-    assertEquals(c.size, elems.size)
-  }
+    private fun addEntries(count: Int, cache: SharedLruCache<String, MapData>, startAt: Int = 0) {
+        for (i in 0 until count) {
+            val insertIndex = i + startAt
+            cache.put("Key: $insertIndex", MapData("Value: $insertIndex"))
+        }
+    }
+
+    private fun checkResults(c: List<Any>, vararg elems: Any) {
+        for (i in 0 until c.size) {
+            assertEquals(c.get(i), elems[i])
+        }
+
+        assertEquals(c.size, elems.size)
+    }
 }

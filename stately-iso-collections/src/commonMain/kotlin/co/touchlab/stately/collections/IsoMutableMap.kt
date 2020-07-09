@@ -1,7 +1,6 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.isolate.IsolateState
-import co.touchlab.stately.isolate.StateHolder
 import co.touchlab.stately.isolate.createState
 
 open class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() }) :
@@ -16,7 +15,7 @@ open class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf
     override val entries: MutableSet<MutableMap.MutableEntry<K, V>>
         get() {
             throw UnsupportedOperationException("Can't leak mutable reference")
-            //access { IsoMutableSet(fork(it.entries)) }
+            // access { IsoMutableSet(fork(it.entries)) }
         }
     override val keys: MutableSet<K>
         get() = access { IsoMutableSet(fork(it.keys)) }

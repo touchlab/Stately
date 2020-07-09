@@ -45,7 +45,8 @@ open class IsoMutableListTest : IsoMutableCollectionTest() {
     fun subList() {
         val list = addABunch(threads = 1) as IsoMutableList<SomeData>
         assertEquals(
-            list.subList(234, 237), listOf(
+            list.subList(234, 237),
+            listOf(
                 SomeData("key 234"),
                 SomeData("key 235"),
                 SomeData("key 236")
@@ -79,9 +80,9 @@ open class IsoMutableListTest : IsoMutableCollectionTest() {
 
     @Test
     fun equals() {
-        fun makeSome():IsoMutableList<SomeData>{
+        fun makeSome(): IsoMutableList<SomeData> {
             val l = IsoMutableList<SomeData>()
-            repeat(20){
+            repeat(20) {
                 l.add(SomeData("key $it"))
             }
             return l

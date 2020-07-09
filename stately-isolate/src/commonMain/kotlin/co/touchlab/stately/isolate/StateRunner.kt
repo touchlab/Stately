@@ -4,6 +4,6 @@ interface StateRunner {
     fun <R> stateRun(block: () -> R): R
 }
 
-expect class BackgroundStateRunner: StateRunner{
+expect class BackgroundStateRunner : StateRunner {
     override fun <R> stateRun(block: () -> R): R
 }

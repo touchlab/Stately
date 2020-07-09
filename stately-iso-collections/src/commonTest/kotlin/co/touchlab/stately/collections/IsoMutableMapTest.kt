@@ -73,8 +73,9 @@ class IsoMutableMapTest {
 
 //    @Test
     fun entries() {
-        if (!isNative)
+        if (!isNative) {
             return
+        }
 
         val map = testMap()
         val entries = map.entries
@@ -94,8 +95,9 @@ class IsoMutableMapTest {
         assertEquals(500, map.size)
         val r = mutableListOf<String>()
         keys.forEachIndexed { index, s ->
-            if (index % 10 == 0)
+            if (index % 10 == 0) {
                 r.add(s)
+            }
         }
 
         r.forEach { keys.remove(it) }
@@ -128,12 +130,14 @@ class IsoMutableMapTest {
         val map = testMap()
         assertEquals(500, map.size)
 
-        map.putAll(mapOf(
-            Pair("a", SomeData("a")),
-            Pair("b", SomeData("b")),
-            Pair("c", SomeData("c")),
-            Pair("a", SomeData("a"))
-        ))
+        map.putAll(
+            mapOf(
+                Pair("a", SomeData("a")),
+                Pair("b", SomeData("b")),
+                Pair("c", SomeData("c")),
+                Pair("a", SomeData("a"))
+            )
+        )
 
         assertEquals(503, map.size)
     }

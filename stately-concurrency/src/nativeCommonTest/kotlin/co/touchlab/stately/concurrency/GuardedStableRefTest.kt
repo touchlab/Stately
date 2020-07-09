@@ -29,8 +29,9 @@ class GuardedStableRefTest {
     @AfterTest
     fun tearDown() {
         w.execute(TransferMode.SAFE, { g }) {
-            if (!it.disposed.value)
+            if (!it.disposed.value) {
                 it.dispose()
+            }
         }
         w.requestTermination().result
     }

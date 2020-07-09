@@ -20,10 +20,10 @@ package co.touchlab.stately.concurrency
  * Reentrant locks aren't super exciting in a single threaded world.
  */
 actual class Lock actual constructor() {
-  actual fun lock() {}
-  actual fun unlock() {}
-  actual fun tryLock(): Boolean = true
+    actual fun lock() {}
+    actual fun unlock() {}
+    actual fun tryLock(): Boolean = true
 }
 
 @Suppress("NOTHING_TO_INLINE")
-actual inline fun Lock.close(){}
+actual inline fun Lock.close() {}

@@ -22,41 +22,43 @@ import kotlin.test.assertFails
 import kotlin.test.assertFalse
 
 class HelpersTest {
-  @Test
-  fun ensureNeverFrozenNoFreezeChild() {
-    if (!isNative)
-      return
+    @Test
+    fun ensureNeverFrozenNoFreezeChild() {
+        if (!isNative) {
+            return
+        }
 
-    val noFreeze = Hi("qwert")
-    noFreeze.ensureNeverFrozen()
+        val noFreeze = Hi("qwert")
+        noFreeze.ensureNeverFrozen()
 
-    val nested = Nested(noFreeze)
-    assertFails { nested.freeze() }
-  }
+        val nested = Nested(noFreeze)
+        assertFails { nested.freeze() }
+    }
 
-  @Test
-  fun ensureNeverFrozenFailsTarget() {
-    if (!isNative)
-      return
+    @Test
+    fun ensureNeverFrozenFailsTarget() {
+        if (!isNative) {
+            return
+        }
 
-    val noFreeze = Hi("qwert")
-    noFreeze.ensureNeverFrozen()
+        val noFreeze = Hi("qwert")
+        noFreeze.ensureNeverFrozen()
 
-    assertFalse(noFreeze.isFrozen)
-    assertFails { noFreeze.freeze() }
-    assertFalse(noFreeze.isFrozen)
-  }
+        assertFalse(noFreeze.isFrozen)
+        assertFails { noFreeze.freeze() }
+        assertFalse(noFreeze.isFrozen)
+    }
 
-  @Test
-  fun ensureNeverFrozenFailOnFrozen() {
-    if (!isNative)
-      return
+    @Test
+    fun ensureNeverFrozenFailOnFrozen() {
+        if (!isNative) {
+            return
+        }
 
-    val wasFrozen = Hi("qwert").freeze()
-    assertFails { wasFrozen.ensureNeverFrozen() }
-  }
+        val wasFrozen = Hi("qwert").freeze()
+        assertFails { wasFrozen.ensureNeverFrozen() }
+    }
 
-  data class Hi(val s: String)
-  data class Nested(val hi: Hi)
+    data class Hi(val s: String)
+    data class Nested(val hi: Hi)
 }
-

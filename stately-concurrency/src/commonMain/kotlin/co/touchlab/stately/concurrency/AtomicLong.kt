@@ -21,17 +21,17 @@ package co.touchlab.stately.concurrency
  */
 expect class AtomicLong(initialValue: Long) {
 
-  fun get(): Long
-  fun set(newValue: Long)
-  fun incrementAndGet(): Long
-  fun decrementAndGet(): Long
+    fun get(): Long
+    fun set(newValue: Long)
+    fun incrementAndGet(): Long
+    fun decrementAndGet(): Long
 
-  fun addAndGet(delta: Long): Long
-  fun compareAndSet(expected: Long, new: Long): Boolean
+    fun addAndGet(delta: Long): Long
+    fun compareAndSet(expected: Long, new: Long): Boolean
 }
 
 var AtomicLong.value
-  get() = get()
-  set(value) {
-    set(value)
-  }
+    get() = get()
+    set(value) {
+        set(value)
+    }

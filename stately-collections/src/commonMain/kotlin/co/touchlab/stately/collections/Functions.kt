@@ -23,45 +23,48 @@ package co.touchlab.stately.collections
  */
 expect fun <T> frozenCopyOnWriteList(collection: Collection<T>? = null): MutableList<T>
 
-@Deprecated(message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
-  replaceWith = ReplaceWith(
-     "sharedMutableListOf()",
-     "co.touchlab.stately.collections.sharedMutableListOf"
-  )
+@Deprecated(
+    message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
+    replaceWith = ReplaceWith(
+        "sharedMutableListOf()",
+        "co.touchlab.stately.collections.sharedMutableListOf"
+    )
 )
 fun <T> frozenLinkedList(stableIterator: Boolean = false): MutableList<T> = if (stableIterator) {
-  CopyOnIterateLinkedList()
+    CopyOnIterateLinkedList()
 } else {
-  SharedLinkedList()
+    SharedLinkedList()
 }
 
-@Deprecated(message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
-  replaceWith = ReplaceWith(
-    "sharedMutableMapOf()",
-    "co.touchlab.stately.collections.sharedMutableMapOf"
-  )
+@Deprecated(
+    message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
+    replaceWith = ReplaceWith(
+        "sharedMutableMapOf()",
+        "co.touchlab.stately.collections.sharedMutableMapOf"
+    )
 )
 fun <K, V> frozenHashMap(initialCapacity: Int = 16, loadFactor: Float = 0.75.toFloat()): MutableMap<K, V> =
-  SharedHashMap(initialCapacity, loadFactor)
+    SharedHashMap(initialCapacity, loadFactor)
 
-@Deprecated(message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
-  replaceWith = ReplaceWith(
-    "sharedMutableSetOf()",
-    "co.touchlab.stately.collections.sharedMutableSetOf"
-  )
+@Deprecated(
+    message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
+    replaceWith = ReplaceWith(
+        "sharedMutableSetOf()",
+        "co.touchlab.stately.collections.sharedMutableSetOf"
+    )
 )
 fun <T> frozenHashSet(): MutableSet<T> = SharedSet()
 
 fun <K, V> frozenLruCache(maxCacheSize: Int, onRemove: (MutableMap.MutableEntry<K, V>) -> Unit = {}): LruCache<K, V> =
-  SharedLruCache(maxCacheSize, onRemove)
+    SharedLruCache(maxCacheSize, onRemove)
 
 /**
  * Creates a list from an Iterator.
  */
 fun <T> Iterator<T>.toList(): List<T> {
-  val result = mutableListOf<T>()
-  while (hasNext()) {
-    result.add(next())
-  }
-  return result
+    val result = mutableListOf<T>()
+    while (hasNext()) {
+        result.add(next())
+    }
+    return result
 }

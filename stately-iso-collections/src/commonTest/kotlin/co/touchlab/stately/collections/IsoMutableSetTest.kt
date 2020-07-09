@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class IsoMutableSetTest : IsoMutableCollectionTest(){
+class IsoMutableSetTest : IsoMutableCollectionTest() {
     override fun defaultCollection(): IsoMutableCollection<SomeData> = IsoMutableSet()
 
     @Test
@@ -19,7 +19,7 @@ class IsoMutableSetTest : IsoMutableCollectionTest(){
     }
 
     @Test
-    fun equals(){
+    fun equals() {
         val set = addABunch()
         val set2 = addABunch()
         assertTrue(set.equals(set2))
@@ -58,11 +58,12 @@ abstract class IsoMutableCollectionTest {
 
         val checkList = mutableListOf<SomeData>()
         repeat(500) { i ->
-            if (Random.nextDouble() > .8)
+            if (Random.nextDouble() > .8) {
                 checkList.add(SomeData("key $i"))
+            }
         }
 
-        //In theory, this will fail occasionally, but pretty rare
+        // In theory, this will fail occasionally, but pretty rare
         assertTrue(checkList.size > 0)
 
         assertTrue(set.containsAll(checkList))
@@ -78,10 +79,8 @@ abstract class IsoMutableCollectionTest {
 
     @Test
     fun add() {
-        contains() //Contains really covers this
+        contains() // Contains really covers this
     }
-
-
 
     @Test
     fun clear() {
@@ -180,9 +179,9 @@ abstract class IsoMutableCollectionTest {
         assertEquals(2, set.size)
     }
 
-    abstract fun defaultCollection():IsoMutableCollection<SomeData>
+    abstract fun defaultCollection(): IsoMutableCollection<SomeData>
 
-    internal fun addABunch(set: IsoMutableCollection<SomeData> = defaultCollection(), threads:Int = 4): IsoMutableCollection<SomeData> {
+    internal fun addABunch(set: IsoMutableCollection<SomeData> = defaultCollection(), threads: Int = 4): IsoMutableCollection<SomeData> {
         val ops = ThreadOperations {}
         repeat(500) { i ->
             ops.exe { set.add(SomeData("key $i")) }
@@ -193,4 +192,3 @@ abstract class IsoMutableCollectionTest {
         return set
     }
 }
-
