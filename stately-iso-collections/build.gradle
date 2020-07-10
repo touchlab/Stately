@@ -28,7 +28,7 @@ kotlin {
             testTask {
                 useMocha {
                     // Override default timeout (needed for stress tests)
-                    timeout = "60s"
+                    timeout = "120s"
                 }
             }
         }
