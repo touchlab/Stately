@@ -9,12 +9,11 @@ jobs:
         inputs:
           workingDirectory: ''
           gradleWrapperFile: 'gradlew'
+          options: '-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000'
           gradleOptions: '-Xmx3072m'
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: '1.8'
           jdkArchitectureOption: 'x64'
-          publishJUnitResults: true
-          testResultsFiles: '**/TEST-*.xml'
           tasks: 'publishMac'
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: $(sonatype_user)
@@ -29,12 +28,11 @@ jobs:
         inputs:
           workingDirectory: ''
           gradleWrapperFile: 'gradlew'
+          options: '-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000'
           gradleOptions: '-Xmx3072m'
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: '1.8'
           jdkArchitectureOption: 'x64'
-          publishJUnitResults: true
-          testResultsFiles: '**/TEST-*.xml'
           tasks: 'publishLinux'
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: $(sonatype_user)
@@ -49,12 +47,11 @@ jobs:
         inputs:
           workingDirectory: ''
           gradleWrapperFile: 'gradlew'
+          options: '-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000'
           gradleOptions: '-Xmx3072m'
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: '1.8'
           jdkArchitectureOption: 'x64'
-          publishJUnitResults: true
-          testResultsFiles: '**/TEST-*.xml'
           tasks: 'publishWindows'
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: $(sonatype_user)
