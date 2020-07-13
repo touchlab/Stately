@@ -7,7 +7,11 @@ local.properties
 *.iws
 *.ipr
 *.iml
-.idea/
+.idea/**/*
+!.idea/inspectionProfiles/
+!.idea/inspectionProfiles/**
+!.idea/codeStyles/
+!.idea/codeStyles/**
 
 # Built application files
 *.apk
