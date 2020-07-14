@@ -5,4 +5,5 @@ config.set({
       "timeout": 120000
     },
   },
+  "browserDisconnectTimeout": 120000
 });
