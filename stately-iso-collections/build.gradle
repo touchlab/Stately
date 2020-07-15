@@ -22,8 +22,16 @@ def ideaActive = System.getProperty('idea.active') == 'true'
 
 kotlin {
     jvm()
-    js() {
-//        nodejs()
+    js {
+        browser()
+        nodejs {
+            testTask {
+                useMocha {
+                    // Override default timeout (needed for stress tests)
+                    timeout = "120s"
+                }
+            }
+        }
     }
 
     if (ideaActive) {

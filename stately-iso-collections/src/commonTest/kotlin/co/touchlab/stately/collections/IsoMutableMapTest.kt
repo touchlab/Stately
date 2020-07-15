@@ -153,7 +153,7 @@ class IsoMutableMapTest {
     }
 
     @Test
-    fun equals() {
+    fun equalsTest() {
         val isomap = testMap()
         val map = mutableMapOf<String, SomeData>()
         repeat(500) { i ->

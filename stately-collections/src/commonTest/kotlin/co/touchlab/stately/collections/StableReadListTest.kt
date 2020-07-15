@@ -33,6 +33,8 @@ do not affect the iterator.
 These implementations should function identically except for 'subList'. See test below.
  */
 
+// Ignored on JS because frozenCopyOnWriteList() is not implemented
+@JsIgnore
 class CopyOnWriteListTest<T>() : AbstractStableReadListTest<T>() {
     override val supportsSublist: Boolean = true
 

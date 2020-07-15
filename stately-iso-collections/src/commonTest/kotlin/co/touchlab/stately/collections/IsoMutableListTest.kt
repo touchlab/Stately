@@ -79,7 +79,7 @@ open class IsoMutableListTest : IsoMutableCollectionTest() {
     }
 
     @Test
-    fun equals() {
+    fun equalsTest() {
         fun makeSome(): IsoMutableList<SomeData> {
             val l = IsoMutableList<SomeData>()
             repeat(20) {
@@ -87,6 +87,7 @@ open class IsoMutableListTest : IsoMutableCollectionTest() {
             }
             return l
         }
+
         val l1 = makeSome()
         val l2 = makeSome()
         assertTrue(l1.equals(l2))
