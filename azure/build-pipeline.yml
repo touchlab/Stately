@@ -34,7 +34,7 @@ jobs:
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
-          tasks: 'build'
+          tasks: 'publishLinuxMips32PublicationToMavenLocal linuxX64Test'
 
   - job: "Windows"
     pool:
@@ -50,4 +50,4 @@ jobs:
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
-          tasks: 'build'
+          tasks: 'mingwX64Test'
