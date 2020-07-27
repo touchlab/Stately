@@ -7,19 +7,20 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ThreadRefTest {
-  @Test
-  fun threadRefTest() {
-    //Don't care about JS
-    if(!isMultithreaded)
-      return
+    @Test
+    fun threadRefTest() {
+        // Don't care about JS
+        if (!isMultithreaded) {
+            return
+        }
 
-    val ref = ThreadRef()
-    assertTrue(ref.same())
-    val ops = ThreadOperations { }
-    ops.exe {
-      assertFalse(ref.same())
+        val ref = ThreadRef()
+        assertTrue(ref.same())
+        val ops = ThreadOperations { }
+        ops.exe {
+            assertFalse(ref.same())
+        }
+
+        ops.run(1)
     }
-
-    ops.run(1)
-  }
 }

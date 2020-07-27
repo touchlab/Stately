@@ -20,4 +20,4 @@ package co.touchlab.stately.concurrency
 actual typealias Lock = java.util.concurrent.locks.ReentrantLock
 
 @Suppress("NOTHING_TO_INLINE")
-actual inline fun Lock.close(){}
+actual inline fun Lock.close() {}

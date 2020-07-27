@@ -1,3 +1,4 @@
+// ktlint-disable filename
 /*
  * Copyright (C) 2018 Touchlab, Inc.
  *
@@ -17,33 +18,35 @@
 package co.touchlab.stately.concurrency
 
 actual open class ThreadLocalRef<T> actual constructor() {
-  private val threadLocalId = ThreadLocalIdCounter.nextThreadLocalId()
+    private val threadLocalId = ThreadLocalIdCounter.nextThreadLocalId()
 
-  actual fun remove() {
-    ThreadLocalState.threadLocalMap.remove(threadLocalId)
-  }
+    actual fun remove() {
+        ThreadLocalState.threadLocalMap.remove(threadLocalId)
+    }
 
-  actual fun get(): T? {
-    return if (ThreadLocalState.threadLocalMap.containsKey(threadLocalId))
-      ThreadLocalState.threadLocalMap.get(threadLocalId) as T
-    else
-      null
-  }
+    actual fun get(): T? {
+        return if (ThreadLocalState.threadLocalMap.containsKey(threadLocalId)) {
+            ThreadLocalState.threadLocalMap.get(threadLocalId) as T
+        } else {
+            null
+        }
+    }
 
-  actual fun set(value: T?) {
-    if (value == null)
-      remove()
-    else
-      ThreadLocalState.threadLocalMap.put(threadLocalId, value)
-  }
+    actual fun set(value: T?) {
+        if (value == null) {
+            remove()
+        } else {
+            ThreadLocalState.threadLocalMap.put(threadLocalId, value)
+        }
+    }
 }
 
 @ThreadLocal
 private object ThreadLocalState {
-  val threadLocalMap = HashMap<Int, Any>()
+    val threadLocalMap = HashMap<Int, Any>()
 }
 
 private object ThreadLocalIdCounter {
-  val threadLocalId = AtomicInt(0)
-  fun nextThreadLocalId(): Int = threadLocalId.addAndGet(1)
+    val threadLocalId = AtomicInt(0)
+    fun nextThreadLocalId(): Int = threadLocalId.addAndGet(1)
 }

@@ -6,16 +6,17 @@ import co.touchlab.testhelp.isMultithreaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class LockTest{
+class LockTest {
 
     /**
      * Just making sure locks are created. Not really testing the locks.
      */
     @Test
-    fun lockWorks(){
-        //Don't care about JS
-        if(!isMultithreaded)
+    fun lockWorks() {
+        // Don't care about JS
+        if (!isMultithreaded) {
             return
+        }
 
         val lock = Lock()
         val aint = AtomicInt(0)
@@ -45,10 +46,11 @@ class LockTest{
     }
 
     @Test
-    fun lockReentrant(){
-        //Don't care about JS
-        if(!isMultithreaded)
+    fun lockReentrant() {
+        // Don't care about JS
+        if (!isMultithreaded) {
             return
+        }
 
         val lock = Lock()
 

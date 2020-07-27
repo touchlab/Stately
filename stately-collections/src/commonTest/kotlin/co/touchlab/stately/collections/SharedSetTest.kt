@@ -21,21 +21,21 @@ import kotlin.test.assertEquals
 
 class SharedSetTest {
 
-  @Test
-  fun dataClassEquals() {
-    val set = frozenHashSet<CollectionValues>()
-    assertEquals(0, set.size)
-    set.add(CollectionValues("asdf", 123))
-    assertEquals(1, set.size)
+    @Test
+    fun dataClassEquals() {
+        val set = frozenHashSet<CollectionValues>()
+        assertEquals(0, set.size)
+        set.add(CollectionValues("asdf", 123))
+        assertEquals(1, set.size)
 
-    set.add(CollectionValues("asdf", 123))
-    assertEquals(1, set.size)
+        set.add(CollectionValues("asdf", 123))
+        assertEquals(1, set.size)
 
-    set.add(CollectionValues("asdf", 124))
-    assertEquals(2, set.size)
-  }
+        set.add(CollectionValues("asdf", 124))
+        assertEquals(2, set.size)
+    }
 
-  data class CollectionValues(val a: String, val b: Int)
+    data class CollectionValues(val a: String, val b: Int)
 
   /*@Test
   fun testLambdas(){
