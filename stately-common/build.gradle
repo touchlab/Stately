@@ -22,8 +22,9 @@ def ideaActive = System.getProperty('idea.active') == 'true'
 
 kotlin {
     jvm()
-    js() {
+    js {
         nodejs()
+        browser()
     }
 
     if (ideaActive) {

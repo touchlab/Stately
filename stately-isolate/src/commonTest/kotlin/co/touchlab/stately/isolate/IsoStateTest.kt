@@ -5,7 +5,6 @@ import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.background
 import co.touchlab.testhelp.isNative
 import co.touchlab.testhelp.printStackTrace
-
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -15,14 +14,13 @@ import kotlin.test.fail
 class IsoStateTest {
     @Test
     fun basicTest() {
-
         val ops = ThreadOperations {}
 
         val isoList = IsolateState { mutableListOf<SomeData>() }
         repeat(100_000) { rcount ->
             ops.exe {
                 isoList.access { l ->
-                    l.add(SomeData("arst ${rcount}"))
+                    l.add(SomeData("arst $rcount"))
                 }
             }
         }
@@ -38,8 +36,7 @@ class IsoStateTest {
 
     @Test
     fun nativeStateHolderInitChecks() {
-        if(isNative){
-
+        if (isNative) {
             assertFails {
                 StateHolder(SomeData("arst").freeze(), defaultStateRunner)
             }
@@ -51,27 +48,26 @@ class IsoStateTest {
             }
 
             assertFails {
-                val iso = IsolateState {SomeData("aaa")}
+                val iso = IsolateState { SomeData("aaa") }
                 val sd = iso.access { it }
                 println("Shouldn't get here $sd")
             }
-
         }
     }
 
     @Test
     fun isolatedProducer() {
-        if(isNative) {
+        if (isNative) {
             assertFails {
                 val map = mutableMapOf<String, String>()
-                createState ({ map }, defaultStateRunner)
+                createState({ map }, defaultStateRunner)
             }
         }
     }
 
     @Test
     fun noLeakingState() {
-        if(isNative) {
+        if (isNative) {
             val ls = LeakyState()
             assertFails {
                 ls.leak()
@@ -81,7 +77,7 @@ class IsoStateTest {
     }
 
     @Test
-    fun throwExceptions(){
+    fun throwExceptions() {
         val iso = IsolateState { mutableListOf("a") }
         try {
             iso.access { throw IllegalStateException("arst") }
@@ -93,9 +89,9 @@ class IsoStateTest {
         }
     }
 
-    class LeakyState: IsolateState<MutableList<String>>({ mutableListOf()}) {
+    class LeakyState : IsolateState<MutableList<String>>({ mutableListOf() }) {
         fun leak() {
-            var l : MutableList<String>? = null
+            var l: MutableList<String>? = null
             access { l = it }
             l
         }

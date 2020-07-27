@@ -7,15 +7,17 @@ actual class BackgroundStateRunner : StateRunner {
     internal val stateExecutor = Executors.newSingleThreadExecutor()
 
     actual override fun <R> stateRun(block: () -> R): R {
-        val result = stateExecutor.submit(Callable<RunResult> {
-            try {
-                Ok(block())
-            } catch (e: Throwable) {
-                Thrown(e)
+        val result = stateExecutor.submit(
+            Callable<RunResult> {
+                try {
+                    Ok(block())
+                } catch (e: Throwable) {
+                    Thrown(e)
+                }
             }
-        }).get()
+        ).get()
 
-        return when(result){
+        return when (result) {
             is Ok<*> -> result.result as R
             is Thrown -> throw result.throwable
         }

@@ -42,7 +42,7 @@ actual class Lock actual constructor() {
 
     actual fun tryLock(): Boolean = pthread_mutex_trylock(mutex.ptr) == 0
 
-    fun internalClose(){
+    fun internalClose() {
         pthread_mutex_destroy(mutex.ptr)
         pthread_mutexattr_destroy(attr.ptr)
         arena.clear()

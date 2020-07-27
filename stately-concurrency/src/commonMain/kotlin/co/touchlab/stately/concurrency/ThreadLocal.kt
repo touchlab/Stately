@@ -1,3 +1,4 @@
+// ktlint-disable filename
 /*
  * Copyright (C) 2018 Touchlab, Inc.
  *
@@ -17,14 +18,13 @@
 package co.touchlab.stately.concurrency
 
 expect open class ThreadLocalRef<T>() {
-  fun get(): T?
-  fun set(value: T?)
-  fun remove()
+    fun get(): T?
+    fun set(value: T?)
+    fun remove()
 }
 
 var <T> ThreadLocalRef<T>.value: T?
-  get() = get()
-  set(value) {
-    set(value)
-  }
-
+    get() = get()
+    set(value) {
+        set(value)
+    }

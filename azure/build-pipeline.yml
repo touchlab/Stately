@@ -1,5 +1,7 @@
-trigger: none
-pr: none
+trigger:
+  - master
+pr:
+  - master
 
 jobs:
   - job: "macOS"
@@ -16,11 +18,7 @@ jobs:
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
-          tasks: 'publishMac'
-        env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: $(sonatype_user)
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: $(sonatype_password)
-          ORG_GRADLE_PROJECT_PGP_SIGNING_KEY: $(secret_key)
+          tasks: 'build'
 
   - job: "Linux"
     pool:
@@ -36,11 +34,7 @@ jobs:
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
-          tasks: 'publishLinux'
-        env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: $(sonatype_user)
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: $(sonatype_password)
-          ORG_GRADLE_PROJECT_PGP_SIGNING_KEY: $(secret_key)
+          tasks: 'publishLinuxMips32PublicationToMavenLocal linuxX64Test'
 
   - job: "Windows"
     pool:
@@ -56,8 +50,4 @@ jobs:
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
-          tasks: 'publishWindows'
-        env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: $(sonatype_user)
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: $(sonatype_password)
-          ORG_GRADLE_PROJECT_PGP_SIGNING_KEY: $(secret_key)
+          tasks: 'mingwX64Test'

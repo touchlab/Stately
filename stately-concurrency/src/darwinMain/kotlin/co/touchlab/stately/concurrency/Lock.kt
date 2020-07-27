@@ -18,7 +18,7 @@ package co.touchlab.stately.concurrency
 
 import platform.Foundation.NSRecursiveLock
 
-actual typealias  Lock = NSRecursiveLock
+actual typealias Lock = NSRecursiveLock
 
 @Suppress("NOTHING_TO_INLINE")
-actual inline fun Lock.close(){}
+actual inline fun Lock.close() {}
