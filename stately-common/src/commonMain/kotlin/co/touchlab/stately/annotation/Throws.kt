@@ -18,6 +18,7 @@ package co.touchlab.stately.annotation
 
 import kotlin.reflect.KClass
 
+@Deprecated("Since Kotlin 1.4 a common Throws annotation is included in the standard library")
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
 @Retention(AnnotationRetention.SOURCE)
 expect annotation class Throws(vararg val exceptionClasses: KClass<out Throwable>)

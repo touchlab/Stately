@@ -17,6 +17,5 @@
 
 package co.touchlab.stately.annotation
 
-import kotlin.native.Throws
-
-actual typealias Throws = Throws
+@Deprecated("Since Kotlin 1.4 a common Throws annotation is included in the standard library")
+actual typealias Throws = kotlin.Throws
