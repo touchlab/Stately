@@ -162,6 +162,10 @@ Dependencies can be specified in the common source set, as shown above, if you h
 enableFeaturePreview('GRADLE_METADATA')
 ```
 
+## We're Hiring!
+
+Touchlab is looking for a Mobile Developer, with Android/Kotlin experience, who is eager to dive into Kotlin Multiplatform Mobile (KMM) development. Come join the remote-first team putting KMM in production. [More info here](https://go.touchlab.co/careers-gh).
+
 License
 =======
 
