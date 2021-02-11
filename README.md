@@ -166,6 +166,14 @@ enableFeaturePreview('GRADLE_METADATA')
 
 Touchlab is looking for a Mobile Developer, with Android/Kotlin experience, who is eager to dive into Kotlin Multiplatform Mobile (KMM) development. Come join the remote-first team putting KMM in production. [More info here](https://go.touchlab.co/careers-gh).
 
+## Primary Maintainer
+
+[Kevin Galligan](https://github.com/kpgalligan/)
+
+![Image of Kevin](https://avatars.githubusercontent.com/u/68384?s=140&v=4)
+
+*Ping me on twitter [@kpgalligan](https://twitter.com/kpgalligan/) if you don't get a timely reply!* -Kevin
+
 License
 =======
 
