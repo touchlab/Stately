@@ -40,6 +40,13 @@ internal expect val defaultStateRunner: StateRunner
 fun <T : Any> createState(producer: () -> T, stateRunner: StateRunner = defaultStateRunner): StateHolder<T> =
     stateRunner.stateRun { StateHolder(producer(), stateRunner) }
 
+/**
+ * Hook to shutdown iso-state default runtime
+ */
+fun shutdownIsoRunner() {
+    defaultStateRunner.stop()
+}
+
 internal sealed class RunResult
 internal data class Ok<T>(val result: T) : RunResult()
 internal data class Thrown(val throwable: Throwable) : RunResult()
