@@ -22,4 +22,8 @@ actual class BackgroundStateRunner : StateRunner {
             is Thrown -> throw result.throwable
         }
     }
+
+    actual override fun stop() {
+        stateExecutor.shutdown()
+    }
 }
