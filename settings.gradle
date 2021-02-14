@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 include ':stately-common'
-//include ':stately-concurrency'
+include ':stately-concurrency'
 //include ':stately-collections'
 //include ':stately-isolate'
 //include ':stately-iso-collections'
