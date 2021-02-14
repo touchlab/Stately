@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 include ':stately-common'
-include ':stately-concurrency'
-include ':stately-collections'
-include ':stately-isolate'
-include ':stately-iso-collections'
+//include ':stately-concurrency'
+//include ':stately-collections'
+//include ':stately-isolate'
+//include ':stately-iso-collections'
 //include ':Sample:app'
 
 enableFeaturePreview('GRADLE_METADATA')
