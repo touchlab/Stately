@@ -4,7 +4,6 @@ import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.background
 import co.touchlab.testhelp.isNative
-import co.touchlab.testhelp.printStackTrace
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails

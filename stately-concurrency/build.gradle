@@ -44,25 +44,6 @@ kotlin {
     linuxX64()
     linuxArm32Hfp()
     linuxMips32()
-//    if (ideaActive) {
-//        macosX64("nativeCommon")
-//    } else {
-//        macosX64()
-//        iosArm32()
-//        iosArm64()
-//        iosX64()
-//        linuxX64()
-//        linuxArm32Hfp()
-//        linuxMips32()
-//        watchosArm32()
-//        watchosArm64()
-//        watchosX86()
-//        tvosArm64()
-//        tvosX64()
-//        //    androidNativeArm32()
-//        //    androidNativeArm64()
-//        mingwX64()
-//    }
 
     sourceSets {
         commonMain {
@@ -116,9 +97,18 @@ kotlin {
         darwinMain {
             dependsOn nativeCommonMain
         }
-        darwinTest {
-            dependsOn nativeCommonTest
+//        darwinTest {
+//            dependsOn nativeCommonTest
+//        }
+
+        pthreadMain {
+            dependsOn nativeCommonMain
         }
+
+//        pthreadTest {
+//            dependsOn nativeCommonTest
+//        }
+
         macosX64Main {
             dependsOn darwinMain
         }
@@ -153,20 +143,13 @@ kotlin {
         mingwMain {
             dependsOn nativeCommonMain
         }
-        mingwTest {
-            dependsOn nativeCommonTest
-        }
+//        mingwTest {
+//            dependsOn nativeCommonTest
+//        }
 
         mingwX64Main {
             dependsOn mingwMain
         }
-
-        pthreadMain {
-            dependsOn nativeCommonMain
-        }
-//        nativeLinuxTest {
-//            dependsOn nativeCommonTest
-//        }
 
         linuxX64Main {
             dependsOn pthreadMain
