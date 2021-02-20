@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 group = GROUP
 version = VERSION_NAME
-def ideaActive = System.getProperty('idea.active') == 'true'
 
 kotlin {
     jvm()
@@ -37,6 +35,7 @@ kotlin {
     tvosArm64()
     tvosX64()
     mingwX64()
+    mingwX86()
     linuxX64()
     linuxArm32Hfp()
     linuxMips32()
@@ -122,6 +121,9 @@ kotlin {
         }
 
         mingwX64Main {
+            dependsOn nativeCommonMain
+        }
+        mingwX86Main {
             dependsOn nativeCommonMain
         }
 

@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 group = GROUP
 version = VERSION_NAME_NEWSTUFF
-def ideaActive = System.getProperty('idea.active') == 'true'
 
 kotlin {
     jvm()
@@ -37,28 +35,10 @@ kotlin {
     tvosArm64()
     tvosX64()
     mingwX64()
+    mingwX86()
     linuxX64()
     linuxArm32Hfp()
     linuxMips32()
-//    if (ideaActive) {
-//        macosX64("nativeCommon")
-//    } else {
-//        macosX64()
-//        iosArm32()
-//        iosArm64()
-//        iosX64()
-//        linuxX64()
-//        linuxArm32Hfp()
-//        linuxMips32()
-//        watchosArm32()
-//        watchosArm64()
-//        watchosX86()
-//        tvosArm64()
-//        tvosX64()
-//        //    androidNativeArm32()
-//        //    androidNativeArm64()
-//        mingwX64()
-//    }
 
     sourceSets {
         commonMain {
@@ -110,12 +90,7 @@ kotlin {
         nativeCommonTest {
             dependsOn commonTest
         }
-//        nativeDarwinMain {
-//            dependsOn nativeCommonMain
-//        }
-//        nativeDarwinTest {
-//            dependsOn nativeCommonTest
-//        }
+
         macosX64Main {
             dependsOn nativeCommonMain
         }
@@ -150,6 +125,9 @@ kotlin {
         mingwX64Main {
             dependsOn nativeCommonMain
         }
+        mingwX86Main {
+            dependsOn nativeCommonMain
+        }
 
         linuxX64Main {
             dependsOn nativeCommonMain
@@ -162,107 +140,6 @@ kotlin {
         }
     }
 }
-
-//kotlin {
-//    jvm()
-//    js {
-//        nodejs()
-//        browser()
-//    }
-//
-//    if (ideaActive) {
-//        macosX64("nativeCommon")
-//    } else {
-//        macosX64()
-//        iosArm32()
-//        iosArm64()
-//        iosX64()
-//        linuxX64()
-//        linuxArm32Hfp()
-//        linuxMips32()
-//        watchosArm32()
-//        watchosArm64()
-//        watchosX86()
-//        tvosArm64()
-//        tvosX64()
-//        //    androidNativeArm32()
-//        //    androidNativeArm64()
-//        mingwX64()
-//    }
-//
-//    sourceSets {
-//        commonMain {
-//            dependencies {
-//                implementation project(":stately-common")
-//                implementation project(":stately-concurrency")
-////                implementation "co.touchlab:kapture-annotations:$KAPTURE_VERSION"
-//                implementation kotlin('stdlib-common')
-//            }
-//        }
-//
-//        commonTest {
-//            dependencies {
-//                implementation kotlin('test-common')
-//                implementation kotlin('test-annotations-common')
-//                implementation "co.touchlab:testhelp:$TESTHELP_VERSION"
-//            }
-//        }
-//
-//        jvmMain {
-//            dependsOn commonMain
-//            dependencies {
-//                implementation kotlin('stdlib-jdk8')
-//            }
-//        }
-//        jvmTest {
-//            dependsOn commonTest
-//            dependencies {
-//                implementation kotlin('test')
-//                implementation kotlin('test-junit')
-//            }
-//        }
-//
-//        jsMain {
-//            dependsOn commonMain
-//            dependencies {
-//                implementation kotlin('stdlib-js')
-//            }
-//        }
-//        jsTest {
-//            dependsOn commonTest
-//            dependencies {
-//                implementation kotlin('test-js')
-//            }
-//        }
-//
-//        nativeCommonMain {
-//            dependencies {
-//            }
-//        }
-//
-//        nativeCommonTest {
-//        }
-//
-//        if (!ideaActive) {
-//            configure([targets.iosX64,
-//                       targets.iosArm32,
-//                       targets.iosArm64,
-//                       targets.macosX64,
-//                       targets.watchosArm32,
-//                       targets.watchosArm64,
-//                       targets.watchosX86,
-//                       targets.tvosArm64,
-//                       targets.tvosX64,
-//                       targets.linuxX64,
-//                       targets.linuxArm32Hfp,
-//                       targets.linuxMips32,
-//                       targets.mingwX64]) {
-//                compilations.main.source(sourceSets.nativeCommonMain)
-//                compilations.test.source(sourceSets.nativeCommonTest)
-//            }
-//        }
-//    }
-//}
 
 configurations {
     compileClasspath
