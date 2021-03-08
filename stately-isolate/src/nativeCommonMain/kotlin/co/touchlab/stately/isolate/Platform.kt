@@ -31,6 +31,9 @@ actual class StateHolder<out T : Any> internal actual constructor(t: T, actual v
     private val threadRef = ThreadRef()
     actual val myThread: Boolean
         get() = threadRef.same()
+
+    actual val isDisposed: Boolean
+        get() = stableRef.isDisposed
 }
 
 @SharedImmutable
