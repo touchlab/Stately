@@ -6,6 +6,10 @@ class GuardedStableRef<T : Any>(t: T) {
     private val stableRef: StableRef<T> = StableRef.create(t)
     private val threadRef = ThreadRef()
     internal val disposed = AtomicBoolean(false)
+
+    public val isDisposed
+        get() = disposed.value
+
     val state: T
         get() {
             checkStateAccessValid()

@@ -1,6 +1,7 @@
 package co.touchlab.stately.isolate
 
 expect class StateHolder<out T : Any> internal constructor(t: T, stateRunner: StateRunner) {
+    val isDisposed: Boolean
     val myThread: Boolean
     val stateRunner: StateRunner
     val myState: T
@@ -9,6 +10,9 @@ expect class StateHolder<out T : Any> internal constructor(t: T, stateRunner: St
 
 open class IsolateState<T : Any> constructor(private val stateHolder: StateHolder<T>) {
     constructor(producer: () -> T) : this(createState(producer))
+
+    val isDisposed: Boolean
+        get() = stateHolder.isDisposed
 
     fun <R : Any> fork(r: R): StateHolder<R> = if (stateHolder.myThread) {
         StateHolder(r, stateHolder.stateRunner)
