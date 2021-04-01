@@ -45,8 +45,8 @@ open class IsolateState<T : Any> constructor(private val stateHolder: StateHolde
 internal val defaultStateRunner: BackgroundStateRunner = BackgroundStateRunner()
 
 fun <T : Any> createState(producer: () -> T, stateRunner: StateRunner?): StateHolder<T> {
-    val holder = stateRunner ?: defaultStateRunner
-    return holder.stateRun { StateHolder(producer(), holder) }
+    val runner = stateRunner ?: defaultStateRunner
+    return runner.stateRun { StateHolder(producer(), runner) }
 }
 
 /**
