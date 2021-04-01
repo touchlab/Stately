@@ -2,11 +2,12 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.isolate.IsolateState
 import co.touchlab.stately.isolate.StateHolder
+import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 open class IsoMutableCollection<T> internal constructor(stateHolder: StateHolder<MutableCollection<T>>) :
     IsolateState<MutableCollection<T>>(stateHolder), MutableCollection<T> {
-    constructor(producer: () -> MutableCollection<T>) : this(createState(producer))
+    constructor(producer: () -> MutableCollection<T>, stateRunner: StateRunner? = null) : this(createState(producer, stateRunner))
 
     override fun equals(other: Any?): Boolean {
         return access { it == other }

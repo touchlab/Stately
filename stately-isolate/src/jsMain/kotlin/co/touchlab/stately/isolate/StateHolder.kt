@@ -1,6 +1,6 @@
 package co.touchlab.stately.isolate
 
-actual class StateHolder<out T : Any> internal actual constructor(t: T, actual val stateRunner: StateRunner) {
+actual class StateHolder<out T : Any> actual constructor(t: T, actual val stateRunner: StateRunner) {
     actual val myState: T = t
 
     private var _isDisposed: Boolean = false
@@ -14,5 +14,3 @@ actual class StateHolder<out T : Any> internal actual constructor(t: T, actual v
 
     actual val myThread: Boolean = true
 }
-
-internal actual val defaultStateRunner: StateRunner = BackgroundStateRunner()

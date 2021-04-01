@@ -10,7 +10,7 @@ import kotlin.native.concurrent.isFrozen
  * Do not directly use this. You will have state issues. You can only interact with this class
  * from the state thread.
  */
-actual class StateHolder<out T : Any> internal actual constructor(t: T, actual val stateRunner: StateRunner) {
+actual class StateHolder<out T : Any> actual constructor(t: T, actual val stateRunner: StateRunner) {
     private val stableRef: GuardedStableRef<T>
 
     init {
@@ -35,6 +35,3 @@ actual class StateHolder<out T : Any> internal actual constructor(t: T, actual v
     actual val isDisposed: Boolean
         get() = stableRef.isDisposed
 }
-
-@SharedImmutable
-internal actual val defaultStateRunner: StateRunner = BackgroundStateRunner()

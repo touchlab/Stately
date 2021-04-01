@@ -4,7 +4,7 @@ import kotlin.native.concurrent.TransferMode
 import kotlin.native.concurrent.Worker
 import kotlin.native.concurrent.freeze
 
-actual class BackgroundStateRunner : StateRunner {
+actual class BackgroundStateRunner actual constructor() : StateRunner {
     internal val stateWorker = Worker.start(errorReporting = false)
 
     actual override fun <R> stateRun(block: () -> R): R {
