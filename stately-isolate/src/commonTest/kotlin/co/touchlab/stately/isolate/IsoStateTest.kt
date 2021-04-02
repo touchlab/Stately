@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.ThreadRef
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.background
@@ -7,6 +8,7 @@ import co.touchlab.testhelp.isNative
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -110,5 +112,27 @@ class IsoStateTest {
         }
 
         assertEquals(bar.access { it.get(0) }, "arst")
+    }
+
+    @Test
+    fun stateRunsOnSameThreadByDefault() {
+        val first = IsolateState({ mutableListOf<String>() })
+        val second = IsolateState({ mutableListOf<String>() })
+
+        val firstThread = first.access { ThreadRef() }
+        val isSame = second.access { firstThread.same() }
+
+        assertTrue { isSame }
+    }
+
+    @Test
+    fun independentBackgroundStateRunnersRunOnDifferentThreads() {
+        val first = IsolateState({ mutableListOf<String>() }, BackgroundStateRunner())
+        val second = IsolateState({ mutableListOf<String>() }, BackgroundStateRunner())
+
+        val firstThread = first.access { ThreadRef() }
+        val isSame = second.access { firstThread.same() }
+
+        assertFalse { isSame }
     }
 }
