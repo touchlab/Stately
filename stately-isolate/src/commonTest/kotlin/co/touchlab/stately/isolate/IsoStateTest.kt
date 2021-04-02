@@ -8,7 +8,6 @@ import co.touchlab.testhelp.isNative
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -123,16 +122,5 @@ class IsoStateTest {
         val isSame = second.access { firstThread.same() }
 
         assertTrue { isSame }
-    }
-
-    @Test
-    fun independentBackgroundStateRunnersRunOnDifferentThreads() {
-        val first = IsolateState({ mutableListOf<String>() }, BackgroundStateRunner())
-        val second = IsolateState({ mutableListOf<String>() }, BackgroundStateRunner())
-
-        val firstThread = first.access { ThreadRef() }
-        val isSame = second.access { firstThread.same() }
-
-        assertFalse { isSame }
     }
 }
