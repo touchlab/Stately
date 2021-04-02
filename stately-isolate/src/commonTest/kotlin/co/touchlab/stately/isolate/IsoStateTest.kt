@@ -15,7 +15,7 @@ class IsoStateTest {
     fun basicTest() {
         val ops = ThreadOperations {}
 
-        val isoList = IsolateState { mutableListOf<SomeData>() }
+        val isoList = IsolateState({ mutableListOf<SomeData>() })
         repeat(100_000) { rcount ->
             ops.exe {
                 isoList.access { l ->
@@ -47,7 +47,7 @@ class IsoStateTest {
             }
 
             assertFails {
-                val iso = IsolateState { SomeData("aaa") }
+                val iso = IsolateState({ SomeData("aaa") })
                 val sd = iso.access { it }
                 println("Shouldn't get here $sd")
             }
@@ -77,7 +77,7 @@ class IsoStateTest {
 
     @Test
     fun throwExceptions() {
-        val iso = IsolateState { mutableListOf("a") }
+        val iso = IsolateState({ mutableListOf("a") })
         try {
             iso.access { throw IllegalStateException("arst") }
             fail("Shouldn't be here")
@@ -101,7 +101,7 @@ class IsoStateTest {
     @Test
     fun testNonMainThread() {
         val bar = background {
-            val foo = IsolateState { mutableListOf<String>() }
+            val foo = IsolateState({ mutableListOf<String>() })
             val s = "arst"
             foo.access {
                 it.add(s)
