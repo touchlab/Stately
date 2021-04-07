@@ -8,7 +8,7 @@ import co.touchlab.stately.isolate.createState
 open class IsoArrayDeque<E>
 internal constructor(stateHolder: StateHolder<ArrayDeque<E>>) :
     IsoMutableList<E>(stateHolder) {
-    constructor(producer: () -> ArrayDeque<E> = { ArrayDeque() }, stateRunner: StateRunner? = null) : this(createState(producer, stateRunner))
+    constructor(stateRunner: StateRunner? = null, producer: () -> ArrayDeque<E> = { ArrayDeque() }) : this(createState(stateRunner, producer))
 
     /**
      * Returns the first element, or throws [NoSuchElementException] if this deque is empty.

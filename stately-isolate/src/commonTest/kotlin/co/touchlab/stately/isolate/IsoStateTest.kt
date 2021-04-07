@@ -16,7 +16,7 @@ class IsoStateTest {
     fun basicTest() {
         val ops = ThreadOperations {}
 
-        val isoList = IsolateState({ mutableListOf<SomeData>() })
+        val isoList = IsolateState { mutableListOf<SomeData>() }
         repeat(100_000) { rcount ->
             ops.exe {
                 isoList.access { l ->
@@ -48,7 +48,7 @@ class IsoStateTest {
             }
 
             assertFails {
-                val iso = IsolateState({ SomeData("aaa") })
+                val iso = IsolateState { SomeData("aaa") }
                 val sd = iso.access { it }
                 println("Shouldn't get here $sd")
             }
@@ -60,7 +60,7 @@ class IsoStateTest {
         if (isNative) {
             assertFails {
                 val map = mutableMapOf<String, String>()
-                createState({ map }, defaultStateRunner)
+                createState(defaultStateRunner) { map }
             }
         }
     }
@@ -78,7 +78,7 @@ class IsoStateTest {
 
     @Test
     fun throwExceptions() {
-        val iso = IsolateState({ mutableListOf("a") })
+        val iso = IsolateState { mutableListOf("a") }
         try {
             iso.access { throw IllegalStateException("arst") }
             fail("Shouldn't be here")
@@ -89,7 +89,7 @@ class IsoStateTest {
         }
     }
 
-    class LeakyState : IsolateState<MutableList<String>>({ mutableListOf() }) {
+    class LeakyState : IsolateState<MutableList<String>>(producer = { mutableListOf() }) {
         fun leak() {
             var l: MutableList<String>? = null
             access { l = it }
@@ -102,7 +102,7 @@ class IsoStateTest {
     @Test
     fun testNonMainThread() {
         val bar = background {
-            val foo = IsolateState({ mutableListOf<String>() })
+            val foo = IsolateState { mutableListOf<String>() }
             val s = "arst"
             foo.access {
                 it.add(s)
@@ -115,8 +115,8 @@ class IsoStateTest {
 
     @Test
     fun stateRunsOnSameThreadByDefault() {
-        val first = IsolateState({ mutableListOf<String>() })
-        val second = IsolateState({ mutableListOf<String>() })
+        val first = IsolateState { mutableListOf<String>() }
+        val second = IsolateState { mutableListOf<String>() }
 
         val firstThread = first.access { ThreadRef() }
         val isSame = second.access { firstThread.same() }
