@@ -7,7 +7,7 @@ import co.touchlab.stately.isolate.createState
 
 open class IsoMutableList<T> internal constructor(stateHolder: StateHolder<MutableList<T>>) :
     IsoMutableCollection<T>(stateHolder), MutableList<T> {
-    constructor(producer: () -> MutableList<T> = { mutableListOf() }, stateRunner: StateRunner? = null) : this(createState(producer, stateRunner))
+    constructor(stateRunner: StateRunner? = null, producer: () -> MutableList<T> = { mutableListOf() }) : this(createState(stateRunner, producer))
 
     override fun get(index: Int): T = asAccess { it.get(index) }
     override fun indexOf(element: T): Int = asAccess { it.indexOf(element) }

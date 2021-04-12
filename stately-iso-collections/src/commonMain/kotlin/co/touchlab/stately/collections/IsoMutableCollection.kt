@@ -7,7 +7,7 @@ import co.touchlab.stately.isolate.createState
 
 open class IsoMutableCollection<T> internal constructor(stateHolder: StateHolder<MutableCollection<T>>) :
     IsolateState<MutableCollection<T>>(stateHolder), MutableCollection<T> {
-    constructor(producer: () -> MutableCollection<T>, stateRunner: StateRunner? = null) : this(createState(producer, stateRunner))
+    constructor(stateRunner: StateRunner? = null, producer: () -> MutableCollection<T>) : this(createState(stateRunner, producer))
 
     override fun equals(other: Any?): Boolean {
         return access { it == other }

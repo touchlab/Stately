@@ -11,7 +11,7 @@ expect class StateHolder<out T : Any> internal constructor(t: T, stateRunner: St
 }
 
 open class IsolateState<T : Any> constructor(private val stateHolder: StateHolder<T>) {
-    constructor(producer: () -> T, stateRunner: StateRunner? = null) : this(createState(producer, stateRunner))
+    constructor(stateRunner: StateRunner? = null, producer: () -> T) : this(createState(stateRunner, producer))
 
     val isDisposed: Boolean
         get() = stateHolder.isDisposed
@@ -44,7 +44,7 @@ open class IsolateState<T : Any> constructor(private val stateHolder: StateHolde
 @SharedImmutable
 internal val defaultStateRunner: BackgroundStateRunner = BackgroundStateRunner()
 
-fun <T : Any> createState(producer: () -> T, stateRunner: StateRunner?): StateHolder<T> {
+fun <T : Any> createState(stateRunner: StateRunner?, producer: () -> T): StateHolder<T> {
     val runner = stateRunner ?: defaultStateRunner
     return runner.stateRun { StateHolder(producer(), runner) }
 }
