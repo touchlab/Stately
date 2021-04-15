@@ -1,5 +1,7 @@
 package co.touchlab.stately.isolate
 
+import kotlin.native.concurrent.SharedImmutable
+
 expect class StateHolder<out T : Any> internal constructor(t: T, stateRunner: StateRunner) {
     val isDisposed: Boolean
     val myThread: Boolean
@@ -9,7 +11,7 @@ expect class StateHolder<out T : Any> internal constructor(t: T, stateRunner: St
 }
 
 open class IsolateState<T : Any> constructor(private val stateHolder: StateHolder<T>) {
-    constructor(producer: () -> T) : this(createState(producer))
+    constructor(stateRunner: StateRunner? = null, producer: () -> T) : this(createState(stateRunner, producer))
 
     val isDisposed: Boolean
         get() = stateHolder.isDisposed
@@ -39,10 +41,13 @@ open class IsolateState<T : Any> constructor(private val stateHolder: StateHolde
     }
 }
 
-internal expect val defaultStateRunner: StateRunner
+@SharedImmutable
+internal val defaultStateRunner: BackgroundStateRunner = BackgroundStateRunner()
 
-fun <T : Any> createState(producer: () -> T, stateRunner: StateRunner = defaultStateRunner): StateHolder<T> =
-    stateRunner.stateRun { StateHolder(producer(), stateRunner) }
+fun <T : Any> createState(stateRunner: StateRunner?, producer: () -> T): StateHolder<T> {
+    val runner = stateRunner ?: defaultStateRunner
+    return runner.stateRun { StateHolder(producer(), runner) }
+}
 
 /**
  * Hook to shutdown iso-state default runtime

@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.ThreadRef
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.background
@@ -59,7 +60,7 @@ class IsoStateTest {
         if (isNative) {
             assertFails {
                 val map = mutableMapOf<String, String>()
-                createState({ map }, defaultStateRunner)
+                createState(defaultStateRunner) { map }
             }
         }
     }
@@ -88,7 +89,7 @@ class IsoStateTest {
         }
     }
 
-    class LeakyState : IsolateState<MutableList<String>>({ mutableListOf() }) {
+    class LeakyState : IsolateState<MutableList<String>>(producer = { mutableListOf() }) {
         fun leak() {
             var l: MutableList<String>? = null
             access { l = it }
@@ -110,5 +111,16 @@ class IsoStateTest {
         }
 
         assertEquals(bar.access { it.get(0) }, "arst")
+    }
+
+    @Test
+    fun stateRunsOnSameThreadByDefault() {
+        val first = IsolateState { mutableListOf<String>() }
+        val second = IsolateState { mutableListOf<String>() }
+
+        val firstThread = first.access { ThreadRef() }
+        val isSame = second.access { firstThread.same() }
+
+        assertTrue { isSame }
     }
 }

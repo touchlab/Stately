@@ -1,10 +1,11 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.isolate.IsolateState
+import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
-open class IsoMutableMap<K, V>(producer: () -> MutableMap<K, V> = { mutableMapOf() }) :
-    IsolateState<MutableMap<K, V>>(createState(producer)), MutableMap<K, V> {
+open class IsoMutableMap<K, V>(stateRunner: StateRunner? = null, producer: () -> MutableMap<K, V> = { mutableMapOf() }) :
+    IsolateState<MutableMap<K, V>>(createState(stateRunner, producer)), MutableMap<K, V> {
     override val size: Int
         get() = access { it.size }
 

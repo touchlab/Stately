@@ -3,7 +3,7 @@ package co.touchlab.stately.isolate
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
-actual class BackgroundStateRunner : StateRunner {
+actual class BackgroundStateRunner actual constructor() : StateRunner {
     internal val stateExecutor = Executors.newSingleThreadExecutor()
 
     actual override fun <R> stateRun(block: () -> R): R {

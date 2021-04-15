@@ -1,13 +1,14 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.isolate.StateHolder
+import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 @ExperimentalStdlibApi
 open class IsoArrayDeque<E>
 internal constructor(stateHolder: StateHolder<ArrayDeque<E>>) :
     IsoMutableList<E>(stateHolder) {
-    constructor(producer: () -> ArrayDeque<E> = { ArrayDeque() }) : this(createState(producer))
+    constructor(stateRunner: StateRunner? = null, producer: () -> ArrayDeque<E> = { ArrayDeque() }) : this(createState(stateRunner, producer))
 
     /**
      * Returns the first element, or throws [NoSuchElementException] if this deque is empty.

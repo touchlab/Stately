@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+def runKtLint = false
 
 buildscript {
     repositories {
@@ -53,19 +54,21 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: "org.jlleitschuh.gradle.ktlint"
-    ktlint {
-        version.set("0.37.2")
-        enableExperimentalRules.set(true)
-        verbose.set(true)
-        filter {
-            exclude { it.file.path.contains("build/") }
+    if(runKtLint) {
+        apply plugin: "org.jlleitschuh.gradle.ktlint"
+        ktlint {
+            version.set("0.37.2")
+            enableExperimentalRules.set(true)
+            verbose.set(true)
+            filter {
+                exclude { it.file.path.contains("build/") }
+            }
         }
-    }
 
-    afterEvaluate {
-        tasks.named("check").configure {
-            dependsOn(tasks.getByName("ktlintCheck"))
+        afterEvaluate {
+            tasks.named("check").configure {
+                dependsOn(tasks.getByName("ktlintCheck"))
+            }
         }
     }
 }

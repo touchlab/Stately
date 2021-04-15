@@ -5,7 +5,7 @@ interface StateRunner {
     fun stop()
 }
 
-expect class BackgroundStateRunner : StateRunner {
+expect class BackgroundStateRunner constructor() : StateRunner {
     override fun <R> stateRun(block: () -> R): R
     override fun stop()
 }

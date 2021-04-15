@@ -2,11 +2,12 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.isolate.IsolateState
 import co.touchlab.stately.isolate.StateHolder
+import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 open class IsoMutableList<T> internal constructor(stateHolder: StateHolder<MutableList<T>>) :
     IsoMutableCollection<T>(stateHolder), MutableList<T> {
-    constructor(producer: () -> MutableList<T> = { mutableListOf() }) : this(createState(producer))
+    constructor(stateRunner: StateRunner? = null, producer: () -> MutableList<T> = { mutableListOf() }) : this(createState(stateRunner, producer))
 
     override fun get(index: Int): T = asAccess { it.get(index) }
     override fun indexOf(element: T): Int = asAccess { it.indexOf(element) }
