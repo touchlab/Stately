@@ -4,7 +4,9 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
 actual class BackgroundStateRunner actual constructor() : StateRunner {
-    internal val stateExecutor = Executors.newSingleThreadExecutor()
+    private val stateExecutor = Executors.newSingleThreadExecutor { r ->
+        Executors.defaultThreadFactory().newThread(r).also { it.isDaemon = true }
+    }
 
     actual override fun <R> stateRun(block: () -> R): R {
         val result = stateExecutor.submit(
