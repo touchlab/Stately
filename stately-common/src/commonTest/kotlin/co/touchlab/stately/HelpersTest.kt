@@ -16,49 +16,45 @@
 
 package co.touchlab.stately
 
-import co.touchlab.testhelp.isNative
-import kotlin.test.Test
-import kotlin.test.assertFails
-import kotlin.test.assertFalse
 
 class HelpersTest {
-    @Test
-    fun ensureNeverFrozenNoFreezeChild() {
-        if (!isNative) {
-            return
-        }
-
-        val noFreeze = Hi("qwert")
-        noFreeze.ensureNeverFrozen()
-
-        val nested = Nested(noFreeze)
-        assertFails { nested.freeze() }
-    }
-
-    @Test
-    fun ensureNeverFrozenFailsTarget() {
-        if (!isNative) {
-            return
-        }
-
-        val noFreeze = Hi("qwert")
-        noFreeze.ensureNeverFrozen()
-
-        assertFalse(noFreeze.isFrozen)
-        assertFails { noFreeze.freeze() }
-        assertFalse(noFreeze.isFrozen)
-    }
-
-    @Test
-    fun ensureNeverFrozenFailOnFrozen() {
-        if (!isNative) {
-            return
-        }
-
-        val wasFrozen = Hi("qwert").freeze()
-        assertFails { wasFrozen.ensureNeverFrozen() }
-    }
-
-    data class Hi(val s: String)
-    data class Nested(val hi: Hi)
+    // @Test
+    // fun ensureNeverFrozenNoFreezeChild() {
+    //     if (!isNative) {
+    //         return
+    //     }
+    //
+    //     val noFreeze = Hi("qwert")
+    //     noFreeze.ensureNeverFrozen()
+    //
+    //     val nested = Nested(noFreeze)
+    //     assertFails { nested.freeze() }
+    // }
+    //
+    // @Test
+    // fun ensureNeverFrozenFailsTarget() {
+    //     if (!isNative) {
+    //         return
+    //     }
+    //
+    //     val noFreeze = Hi("qwert")
+    //     noFreeze.ensureNeverFrozen()
+    //
+    //     assertFalse(noFreeze.isFrozen)
+    //     assertFails { noFreeze.freeze() }
+    //     assertFalse(noFreeze.isFrozen)
+    // }
+    //
+    // @Test
+    // fun ensureNeverFrozenFailOnFrozen() {
+    //     if (!isNative) {
+    //         return
+    //     }
+    //
+    //     val wasFrozen = Hi("qwert").freeze()
+    //     assertFails { wasFrozen.ensureNeverFrozen() }
+    // }
+    //
+    // data class Hi(val s: String)
+    // data class Nested(val hi: Hi)
 }
