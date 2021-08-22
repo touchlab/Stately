@@ -42,7 +42,7 @@ allprojects {
 allprojects {
     tasks.register('publishWindows') {
         if(project.tasks.findByName('publish')) {
-            dependsOn 'publishMingwX64PublicationToMavenRepository'
+            dependsOn 'publishMingwX64PublicationToMavenRepository', 'publishMingwX86PublicationToMavenRepository'
         }
     }
 
