@@ -44,6 +44,11 @@ kotlin {
     linuxArm32Hfp()
     linuxMips32()
 
+    macosArm64()
+    iosSimulatorArm64()
+    watchosSimulatorArm64()
+    tvosSimulatorArm64()
+
     sourceSets {
         commonMain {
             dependencies {
@@ -123,6 +128,19 @@ kotlin {
             dependsOn nativeCommonMain
         }
         tvosX64Main {
+            dependsOn nativeCommonMain
+        }
+
+        macosArm64Main {
+            dependsOn nativeCommonMain
+        }
+        iosSimulatorArm64Main {
+            dependsOn nativeCommonMain
+        }
+        watchosSimulatorArm64Main {
+            dependsOn nativeCommonMain
+        }
+        tvosSimulatorArm64Main {
             dependsOn nativeCommonMain
         }
 
