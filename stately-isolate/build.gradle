@@ -16,7 +16,7 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 
 group = GROUP
-version = VERSION_NAME_NEWSTUFF
+version = VERSION_NAME
 
 kotlin {
     jvm()
