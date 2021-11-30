@@ -27,7 +27,7 @@ On native, these values delegate or are typealiased to their platform definition
 ```groovy
 commonMain {
     dependencies {
-        implementation 'co.touchlab:stately-common:1.1.4'
+        implementation 'co.touchlab:stately-common:1.2.0'
     }
 }
 ```
@@ -55,7 +55,7 @@ fun useRef(){
 ```groovy
 commonMain {
     dependencies {
-        implementation 'co.touchlab:stately-concurrency:1.1.4'
+        implementation 'co.touchlab:stately-concurrency:1.2.0'
     }
 }
 ```
@@ -126,7 +126,7 @@ fun usage(){
 ```kotlin
 commonMain {
     dependencies {
-        implementation 'co.touchlab:stately-isolate:1.1.4-a1'
+        implementation 'co.touchlab:stately-isolate:1.2.0'
     }
 }
 ```
@@ -143,7 +143,7 @@ This is a set of mutable collections implemented with `IsolateState`. The set cu
 ```kotlin
 commonMain {
     dependencies {
-        implementation 'co.touchlab:stately-iso-collections:1.1.4-a1'
+        implementation 'co.touchlab:stately-iso-collections:1.2.0'
     }
 }
 ```
