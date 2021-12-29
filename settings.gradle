@@ -15,7 +15,4 @@
  */
 include ':stately-common'
 include ':stately-concurrency'
-include ':stately-collections'
-include ':stately-isolate'
-include ':stately-iso-collections'
-//include ':Sample:app'
+include ':stately-concurrent-collections'

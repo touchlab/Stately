@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Touchlab, Inc.
+ * Copyright (C) 2021 Touchlab, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,6 @@
 package co.touchlab.stately
 
 /**
- * Method to freeze state. Calls the platform implementation of 'freeze' on native, and is a noop on other platforms.
- */
-expect fun <T> T.freeze(): T
-
-/**
- * Determine if object is frozen. Will return false on non-native platforms.
- */
-expect val <T> T.isFrozen: Boolean
-
-/**
  * Call on an object which should never be frozen. Will help debug when something inadvertently is.
  */
-expect fun Any.ensureNeverFrozen()
+expect inline fun Any.ensureNeverFrozen()

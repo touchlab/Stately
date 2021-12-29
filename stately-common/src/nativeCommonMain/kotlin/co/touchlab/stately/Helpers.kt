@@ -17,12 +17,5 @@
 package co.touchlab.stately
 
 import kotlin.native.concurrent.ensureNeverFrozen
-import kotlin.native.concurrent.freeze
-import kotlin.native.concurrent.isFrozen
 
-actual fun <T> T.freeze(): T = this.freeze()
-
-actual val <T> T.isFrozen: Boolean
-    get() = this.isFrozen
-
-actual fun Any.ensureNeverFrozen() = this.ensureNeverFrozen()
+actual inline fun Any.ensureNeverFrozen() = this.ensureNeverFrozen()
