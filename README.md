@@ -2,165 +2,53 @@
 
 Stately is a state utility library to facilitate state management in Kotlin Multiplatform.
 
-Kotlin JVM has the same rules around concurrency and state that Java has. In essence, multiple threads can access shared state in an unrestricted fashion, and it is up to the developer to ensure safe concurrency. Kotlin/Native, on the other hand, introduces new restrictions around concurrent state access ([more](https://dev.to/touchlab/practical-kotlin-native-concurrency-ac7) [info](https://www.youtube.com/watch?v=oxQ6e1VeH4M)). Additionally, Kotlin/JS lives in the Javascript threading world, which means just the one thread.
+Stately originally provided support in common code for some of the features specific to the Kotlin/Native strict
+memory model. That memory model is being replaced with a new memory model that shares memory across threads unrestricted,
+more like the JVM and Objc/Swift (and others like C/C++, etc).
 
-We publish all of our libraries to `mavenCentral()`, so make sure to add that repository.
+## Status as of Kotlin 1.6.10
 
-```groovy
-repositories {
-   mavenCentral()
-}
-```
+We are developing and publishing a new version of Stately that will only support the newer memory model. 
+Several Stately modules that primarily made sense in the original Kotlin/Native world have been removed. These include
+stately-collections (mutable collections implemented with atomics), and stately-isolate/stately-iso-collections (thread-confined
+mutable state). `stately-common` has had most of it's code removed and is now `stately-strict`.
 
-Stately provides various modules to facilitate writing shared code within these different worlds.
+The changes are in flux and will likely go through multiple rounds. The library itself may eventually go away as more 
+official libraries emerge, but we'll see how that evolves over 2022/23.
 
-## stately-common
-
-Kotlin/Native state adds some concepts that don't exist in either the JVM or JS, as well as the annotation @Throws.
-
- `stately-common` is very simple. It includes common definitions for `freeze()`, `isFrozen`, and `ensureNeverFrozen()`, and as mentioned `@Throws`. These definitions, 2 functions, a val, and an annotation, are often source-copied into other libraries. `stately-common`'s sole purpose is to define these as minimally as possible, to be included in apps or other libraries.
-
-On native, these values delegate or are typealiased to their platform definitions. In JS and the JVM, they do nothing.
-
-### Config
-
-```groovy
-commonMain {
-    dependencies {
-        implementation 'co.touchlab:stately-common:1.2.0'
-    }
-}
-```
+# Modules
 
 ## stately-concurrency
 
-`stately-concurrency` includes some concurrency support classes. These include a set of `Atomicxxx` classes, a `Lock`, a `ThreadLocal` container, and a class `ThreadRef` that allows you to hold a thread id.
+This module contains atomics and locks, which will be needed to implement concurrent code in common Kotlin. Much of this
+also exists in [kotlinx.atomicfu](https://github.com/Kotlin/kotlinx.atomicfu), but we find setup of that library to be 
+relatively complex, so we'll continue to publish Stately's version. That may change if AtomicFu becomes a little more
+"user friendly". However, this module is relatively lightweight, so we may simply continue to publish it.
 
-Much of the functionality of this module is similar to [atomic-fu](https://github.com/Kotlin/kotlinx.atomicfu). They differ in some ways, so while they both cover much of the same ground, Stately's version still has some use.
+## stately-concurrent-collections
 
-`ThreadRef` is unique to Stately. It allows you to capture a reference to the id of the thread in which it was created, and ask if the current thread is the same. Just FYI, it does *not* keep a reference to the actual thread. Just an id. Usage looks like this:
-
-```kotlin
-fun useRef(){
-  val threadRef = ThreadRef()
-  threadRef.same() // <- true
-  backgrundThread {
-    threadRef.same() // <- false
-  }
-}
-```
-
-### Config
-
-```groovy
-commonMain {
-    dependencies {
-        implementation 'co.touchlab:stately-concurrency:1.2.0'
-    }
-}
-```
-
-## stately-isolate
-
-`stately-isolate` creates mutable state in a special state thread, and restricts access to that state from the same thread. This allows the state held by an instance of `IsolateState` to remain mutable. State coming in and going out must be frozen, but the guarded state can change.
-
-> Read more about the design in [this blog post](https://dev.to/touchlab/kotlin-native-isolated-state-50l1).
-
-The obvious use case is for collections. Example usage:
+This is a relatively simple implementation of concurrent-safe Mutable collections. It includes a Set, Map, and a List 
+implementation. All of these delegate internally to Kotlin's std MutableSet, MutableMap, and MutableList respectively.
 
 ```kotlin
-fun usage(){
-    val cacheMap = IsolateState { mutableMapOf<String, String>() }
-    val key = "abc"
-    val value = "123"
-    cacheMap.access { it.put(key, value) }
-    val valueString = cacheMap.access { it.get(key) }
-    println(valueString) // <- will print '123'
+val l = ConcurrentMutableList<SomeData>()
+l.add(SomeData("a"))
+async(Dispatchers.Default) {
+ //Different Thread!
+ l.add(SomeData("b"))
 }
 ```
 
-The `cacheMap` above can be called from multiple threads. The lambda passed to the `access` method will be invoked on the same thread that the state was created on. Because it is a single thread, access is serialized and thread-safe.
+## stately-strict
 
-You can create other instances of `IsolateState` by forking the parent instance.
+Stately common previously had common definitions that helped code to the Kotlin/Native strict memory model. When moving
+to the new memory model, it is likely you'll need to interact with libraries that were written with the old strict memory
+model in mind, and there may be times where you need to debug these. `stately-strict` will get a handful of definitions
+that may be helpful to do that.
 
-```kotlin
-fun usage(){
-    val cacheMap = IsolateState { mutableMapOf<String, String>() }
-    val key = "abc"
-    val value = "123"
-    cacheMap.access { it.put(key, value) }
-    
-    //Fork state
-    val entrySet = cacheMap.access { map -> 
-        IsolateState(cacheMap.fork(map.entries)) 
-    }
-    
-    val valueString = entrySet.access { entries -> entries.first().value }
-    println(valueString) // <- will print '123'
-}
-```
-
-You can create a class that extends `IsolateState`  and provides for simpler access.
-
-```kotlin
-class SimpleMap<K, V>: IsolateState<MutableMap<K, V>>({ mutableMapOf()})
-{
-    fun put(key:K, value:V):V? = access { it.put(key, value) }
-    fun get(key: K):V? = access { it.get(key) }
-}
-```
-
-`stately-iso-collections` implements collections by extending `IsolateState` in this manner.
-
-You must dispose of `IsolateState` instances to avoid memory leaks.
-
-```kotlin
-fun usage(){
-    val cacheMap = IsolateState { mutableMapOf<String, String>() }
-    cacheMap.dispose()
-}
-```
-
-### Config
-
-```kotlin
-commonMain {
-    dependencies {
-        implementation 'co.touchlab:stately-isolate:1.2.0'
-    }
-}
-```
-
-## stately-iso-collections
-
-This is a set of mutable collections implemented with `IsolateState`. The set currently includes a `MutableSet`, `MutableList`, 
- `MutableMap`, and an implementation of `ArrayDeque` that is being added to the Kotlin stdlib in 1.3.70.
-
-
-
-### Config
-
-```kotlin
-commonMain {
-    dependencies {
-        implementation 'co.touchlab:stately-iso-collections:1.2.0'
-    }
-}
-```
-
-## stately-collections
-
-A set of collections that can be shared and accessed between threads. This is pretty much deprecated, but we have no plans to remove it as some production apps use it.
-
-However, ***we would strongly suggest you use `stately-isolate` and `stately-iso-collections` instead.*** Collections implemented with `stately-isolate` are far more flexible and absolutely CRUSH the original `stately-collections` in performance benchmarks. See [blog post](https://dev.to/touchlab/kotlin-native-isolated-state-50l1).
-
-## Usage
-
-Dependencies can be specified in the common source set, as shown above, if you have Gradle metadata enabled in `settings.gradle`.
-
-```groovy
-enableFeaturePreview('GRADLE_METADATA')
-```
+Currently the only thing defined in the module is `Any.ensureNeverFrozen()`. A library may freeze some of your code
+and you can use this to help figure out where that is happening. However, you can also disable freezing altogether,
+so we'll have to see if this kind of support has any value going forward.
 
 ## We're Hiring!
 
