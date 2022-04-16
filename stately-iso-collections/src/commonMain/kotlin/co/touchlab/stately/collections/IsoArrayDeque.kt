@@ -4,7 +4,6 @@ import co.touchlab.stately.isolate.StateHolder
 import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
-@ExperimentalStdlibApi
 open class IsoArrayDeque<E>
 internal constructor(stateHolder: StateHolder<ArrayDeque<E>>) :
     IsoMutableList<E>(stateHolder) {
