@@ -7,7 +7,7 @@ import platform.posix.PTHREAD_MUTEX_RECURSIVE
 import platform.posix.pthread_mutex_destroy
 import platform.posix.pthread_mutex_init
 import platform.posix.pthread_mutex_lock
-import platform.posix.pthread_mutex_tVar
+import platform.posix.pthread_mutex_t
 import platform.posix.pthread_mutex_trylock
 import platform.posix.pthread_mutex_unlock
 import platform.posix.pthread_mutexattr_destroy
@@ -23,7 +23,7 @@ import kotlin.native.concurrent.freeze
 actual class Lock actual constructor() {
     private val arena = Arena()
     private val attr = arena.alloc<pthread_mutexattr_tVar>()
-    private val mutex = arena.alloc<pthread_mutex_tVar>()
+    private val mutex = arena.alloc<pthread_mutex_t>()
 
     init {
         pthread_mutexattr_init(attr.ptr)

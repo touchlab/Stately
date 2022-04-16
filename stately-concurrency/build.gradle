@@ -50,6 +50,11 @@ kotlin {
     linuxArm32Hfp()
     linuxMips32()
 
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
+
     sourceSets {
         commonMain {
             dependencies {
@@ -104,6 +109,10 @@ kotlin {
         }
 
         pthreadMain {
+            dependsOn nativeCommonMain
+        }
+
+        pthreadAndroidMain {
             dependsOn nativeCommonMain
         }
 
@@ -170,6 +179,19 @@ kotlin {
         }
         linuxMips32Main {
             dependsOn pthreadMain
+        }
+
+        androidNativeArm32Main {
+            dependsOn pthreadAndroidMain
+        }
+        androidNativeArm64Main {
+            dependsOn pthreadAndroidMain
+        }
+        androidNativeX86Main {
+            dependsOn pthreadAndroidMain
+        }
+        androidNativeX64Main {
+            dependsOn pthreadAndroidMain
         }
     }
 }
