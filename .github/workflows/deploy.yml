@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macOS-11, ubuntu-latest]
+        os: [macOS-latest, ubuntu-latest]
     runs-on: ${{matrix.os}}
     steps:
       - name: Checkout the repo
@@ -34,7 +34,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Publish Mac/Windows Artifacts
-        if: matrix.os == 'macOS-11'
+        if: matrix.os == 'macOS-latest'
         run: ./gradlew publish --no-daemon --stacktrace
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
