@@ -35,14 +35,14 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Publish Mac/Windows Artifacts
         if: matrix.os == 'macOS-latest'
-        run: ./gradlew publish --no-daemon --stacktrace
+        run: ./gradlew publish -x check --no-daemon --stacktrace
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
           ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       - name: Publish Linux Artifacts
         if: matrix.os == 'ubuntu-latest'
-        run: ./gradlew publishLinux --no-daemon --stacktrace
+        run: ./gradlew publishLinux -x check --no-daemon --stacktrace
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
