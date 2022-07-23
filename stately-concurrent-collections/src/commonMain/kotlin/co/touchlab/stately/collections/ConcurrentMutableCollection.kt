@@ -3,16 +3,7 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.Synchronizable
 import co.touchlab.stately.concurrency.synchronize
 
-class MyMutableData(private var count: Int = 0) : Synchronizable() {
-    fun add() {
-        synchronize { count++ }
-    }
-
-    val myCount: Int
-        get() = synchronize { count }
-}
-
-open class ConcurrentMutableCollection<E>(rootArg: Synchronizable? = null, private val del: MutableCollection<E>) :
+open class ConcurrentMutableCollection<E> internal constructor(rootArg: Synchronizable? = null, private val del: MutableCollection<E>) :
     Synchronizable(),
     MutableCollection<E> {
 
@@ -47,7 +38,7 @@ open class ConcurrentMutableCollection<E>(rootArg: Synchronizable? = null, priva
     fun <R> blockCollection(f: (MutableCollection<E>) -> R): R = syncTarget.synchronize {
         val wrapper = MutableCollectionWrapper(del)
         val result = f(wrapper)
-        wrapper.coll = mutableSetOf()
+        wrapper._coll = null
         result
     }
 }
@@ -67,7 +58,12 @@ internal open class ConcurrentMutableIterator<E>(
     }
 }
 
-internal open class MutableCollectionWrapper<E>(internal var coll: MutableCollection<E>) : MutableCollection<E> {
+internal open class MutableCollectionWrapper<E>(internal var _coll: MutableCollection<E>?) : MutableCollection<E> {
+
+    // Reference will fail when block is done. This is to prevent bad things in the block call function
+    private val coll: MutableCollection<E>
+        get() = _coll!!
+
     override fun add(element: E): Boolean = coll.add(element)
     override fun addAll(elements: Collection<E>): Boolean = coll.addAll(elements)
     override fun clear() {

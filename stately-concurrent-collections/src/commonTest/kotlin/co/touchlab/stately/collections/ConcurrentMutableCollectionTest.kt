@@ -2,6 +2,7 @@ package co.touchlab.stately.collections
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
 class ConcurrentMutableCollectionTest {
@@ -37,6 +38,38 @@ class ConcurrentMutableCollectionTest {
             checkList.add(someData)
         }) { coll ->
             coll.containsAll(checkList)
+        }
+    }
+
+    @Test
+    @NoJsTest
+    fun blockCollection() {
+        runBoth<SomeData>(runs = 100, block = { coll, count ->
+            coll.blockCollection { mcoll ->
+                repeat(20) { innerCount ->
+                    val someData = SomeData("outer $count, inner $innerCount")
+                    mcoll.add(someData)
+                }
+            }
+        }) { coll ->
+            assertEquals(4000, coll.blockCollection { it.size })
+        }
+    }
+
+    @Test
+    @NoJsTest
+    fun blockCollectionLeak() {
+        runBoth<SomeData>(runs = 100, block = { coll, count ->
+            coll.blockCollection { mcoll ->
+                repeat(20) { innerCount ->
+                    val someData = SomeData("outer $count, inner $innerCount")
+                    mcoll.add(someData)
+                }
+            }
+        }) { coll ->
+            var holdLeak: MutableCollection<SomeData>? = null
+            coll.blockCollection { holdLeak = it }
+            assertFails { holdLeak!!.size }
         }
     }
 
