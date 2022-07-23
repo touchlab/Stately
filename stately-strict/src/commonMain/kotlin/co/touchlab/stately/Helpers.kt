@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Touchlab, Inc.
+ * Copyright (C) 2021 Touchlab, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include ':stately-common'
-include ':stately-concurrency'
-include ':stately-collections'
-include ':stately-isolate'
-include ':stately-iso-collections'
-//include ':Sample:app'
+
+package co.touchlab.stately
+
+
+expect fun <T> T.maybeFreeze(): T

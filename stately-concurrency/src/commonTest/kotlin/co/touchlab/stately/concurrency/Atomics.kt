@@ -16,7 +16,7 @@
 
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.freeze
+import co.touchlab.stately.maybeFreeze
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -38,7 +38,7 @@ class Atomics {
 
     @Test
     fun atomicReference() {
-        val ref = AtomicReference(ATData("asdf")).freeze()
+        val ref = AtomicReference(ATData("asdf")).maybeFreeze()
         assertEquals(ref.value, ATData("asdf"))
         val actualData = ATData("qwert")
         ref.value = actualData
@@ -121,11 +121,11 @@ class Atomics {
             val c3 = CycleData3(c2)
             c.b = c3
 
-            val at = AtomicReference(c.freeze())
+            val at = AtomicReference(c.maybeFreeze())
             atList.add(at)
         }
 
-        atList.freeze()
+        atList.maybeFreeze()
     }
 }
 

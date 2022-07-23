@@ -1,0 +1,6 @@
+include(":stately-common")
+include(":stately-strict")
+include(":stately-concurrency")
+include(":stately-collections")
+include(":stately-isolate")
+include(":stately-iso-collections")

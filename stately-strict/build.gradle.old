@@ -18,10 +18,6 @@ apply plugin: 'org.jetbrains.kotlin.multiplatform'
 group = GROUP
 version = VERSION_NAME
 
-configurations {
-    compileClasspath
-}
-
 kotlin {
     jvm()
     js {
@@ -59,7 +55,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-                implementation project(":stately-strict")
             }
         }
 
@@ -104,96 +99,110 @@ kotlin {
         nativeCommonTest {
             dependsOn commonTest
         }
-        darwinMain {
-            dependsOn nativeCommonMain
-        }
-
-        pthreadMain {
-            dependsOn nativeCommonMain
-        }
-
-        pthreadAndroidMain {
-            dependsOn nativeCommonMain
-        }
 
         macosX64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         iosArm32Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         iosArm64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         iosX64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         watchosArm32Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         watchosArm64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         watchosX86Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         watchosX64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         tvosArm64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         tvosX64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
 
         macosArm64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         iosSimulatorArm64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         watchosSimulatorArm64Main {
-            dependsOn darwinMain
+            dependsOn nativeCommonMain
         }
         tvosSimulatorArm64Main {
-            dependsOn darwinMain
-        }
-
-        mingwMain {
             dependsOn nativeCommonMain
         }
 
         mingwX64Main {
-            dependsOn mingwMain
+            dependsOn nativeCommonMain
         }
         mingwX86Main {
-            dependsOn mingwMain
+            dependsOn nativeCommonMain
         }
 
         linuxX64Main {
-            dependsOn pthreadMain
+            dependsOn nativeCommonMain
         }
         linuxArm32HfpMain {
-            dependsOn pthreadMain
+            dependsOn nativeCommonMain
         }
         linuxMips32Main {
-            dependsOn pthreadMain
+            dependsOn nativeCommonMain
         }
 
         androidNativeArm32Main {
-            dependsOn pthreadAndroidMain
+            dependsOn nativeCommonMain
         }
+
         androidNativeArm64Main {
-            dependsOn pthreadAndroidMain
+            dependsOn nativeCommonMain
         }
+
         androidNativeX86Main {
-            dependsOn pthreadAndroidMain
+            dependsOn nativeCommonMain
         }
+
         androidNativeX64Main {
-            dependsOn pthreadAndroidMain
+            dependsOn nativeCommonMain
         }
+
+
     }
+
+    targets.each {target ->
+        target is
+    }
+    targets.<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
+        val mainSourceSet = compilations.getByName("main").defaultSourceSet
+        val testSourceSet = compilations.getByName("test").defaultSourceSet
+
+        mainSourceSet.dependsOn(
+                when {
+                    konanTarget.family.isAppleFamily -> darwinMain
+                    konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX -> linuxMain
+                    konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW -> mingwMain
+                    konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID -> androidNativeMain
+                    else -> nativeMain
+                }
+        )
+
+        testSourceSet.dependsOn(commonTest)
+    }
+}
+
+configurations {
+    compileClasspath
 }
 
 apply from: '../gradle/gradle-mvn-mpp-push.gradle'

@@ -1,5 +1,7 @@
-package co.touchlab.stately.concurrency
+package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.AtomicBoolean
+import co.touchlab.stately.concurrency.ThreadRef
 import kotlinx.cinterop.StableRef
 
 class GuardedStableRef<T : Any>(t: T) {
