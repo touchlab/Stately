@@ -68,19 +68,45 @@ kotlin {
     val nativeCommonTest by sourceSets.creating
     nativeCommonTest.dependsOn(commonTest)
 
+    val darwinMain by sourceSets.creating
+    darwinMain.dependsOn(nativeCommonMain)
+
+    val pthreadMain by sourceSets.creating
+    pthreadMain.dependsOn(nativeCommonMain)
+
+    val mingwMain by sourceSets.creating
+    mingwMain.dependsOn(nativeCommonMain)
+
+    val pthreadAndroidMain by sourceSets.creating
+    pthreadAndroidMain.dependsOn(nativeCommonMain)
+
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
         val mainSourceSet = compilations.getByName("main").defaultSourceSet
         val testSourceSet = compilations.getByName("test").defaultSourceSet
 
-        mainSourceSet.dependsOn(nativeCommonMain)
+        mainSourceSet.dependsOn(when {
+            konanTarget.family.isAppleFamily -> darwinMain
+            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX -> pthreadMain
+            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW -> mingwMain
+            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID -> pthreadAndroidMain
+            else -> nativeCommonMain
+        })
 
         testSourceSet.dependsOn(nativeCommonTest)
+    }
+
+    commonMain.dependencies {
+        implementation(project(":stately-strict"))
     }
 
     commonTest.dependencies {
         implementation("org.jetbrains.kotlin:kotlin-test-common")
         implementation("org.jetbrains.kotlin:kotlin-test-annotations-common")
         implementation("co.touchlab:testhelp:$TESTHELP_VERSION")
+    }
+
+    jvmMain.dependencies {
+        implementation(kotlin("stdlib-jdk8"))
     }
 
     jvmTest.dependencies {

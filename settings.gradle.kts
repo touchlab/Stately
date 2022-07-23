@@ -1,6 +1,10 @@
-include(":stately-common")
+
 include(":stately-strict")
 include(":stately-concurrency")
+include(":stately-concurrent-collections")
+
+// Deprecated modules
+include(":stately-common")
 include(":stately-collections")
 include(":stately-isolate")
 include(":stately-iso-collections")
