@@ -14,7 +14,7 @@ repositories {
 
 ## Getting Help
 
-Statetly support can be found in the Kotlin Community Slack, [request access here](http://slack.kotlinlang.org/). Post in the "[#touchlab-tools](https://kotlinlang.slack.com/archives/CTJB58X7X)" channel.
+Statety support can be found in the Kotlin Community Slack, [request access here](http://slack.kotlinlang.org/). Post in the "[#touchlab-tools](https://kotlinlang.slack.com/archives/CTJB58X7X)" channel.
 
 For direct assistance, please [contact Touchlab](https://go.touchlab.co/contactus-gh) to discuss support options.
 
