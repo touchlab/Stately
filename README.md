@@ -19,7 +19,7 @@ Statetly support can be found in the Kotlin Community Slack, [request access her
 For direct assistance, please [contact Touchlab](https://go.touchlab.co/contactus-gh) to discuss support options.
 
 
-Stately provides various modules to facilitate writing shared code within these different worlds.
+#### Stately provides various modules to facilitate writing shared code within these different worlds.
 
 ## stately-common
 
