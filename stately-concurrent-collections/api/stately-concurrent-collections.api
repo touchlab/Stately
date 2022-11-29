@@ -1,0 +1,60 @@
+public class co/touchlab/stately/collections/ConcurrentMutableCollection : java/util/Collection, kotlin/jvm/internal/markers/KMutableCollection {
+	public fun add (Ljava/lang/Object;)Z
+	public fun addAll (Ljava/util/Collection;)Z
+	public final fun blockCollection (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun clear ()V
+	public fun contains (Ljava/lang/Object;)Z
+	public fun containsAll (Ljava/util/Collection;)Z
+	public fun getSize ()I
+	public fun isEmpty ()Z
+	public fun iterator ()Ljava/util/Iterator;
+	public fun remove (Ljava/lang/Object;)Z
+	public fun removeAll (Ljava/util/Collection;)Z
+	public fun retainAll (Ljava/util/Collection;)Z
+	public final fun size ()I
+	public fun toArray ()[Ljava/lang/Object;
+	public fun toArray ([Ljava/lang/Object;)[Ljava/lang/Object;
+}
+
+public final class co/touchlab/stately/collections/ConcurrentMutableList : co/touchlab/stately/collections/ConcurrentMutableCollection, java/util/List, kotlin/jvm/internal/markers/KMutableList {
+	public fun <init> ()V
+	public fun add (ILjava/lang/Object;)V
+	public fun addAll (ILjava/util/Collection;)Z
+	public final fun block (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun get (I)Ljava/lang/Object;
+	public fun indexOf (Ljava/lang/Object;)I
+	public fun lastIndexOf (Ljava/lang/Object;)I
+	public fun listIterator ()Ljava/util/ListIterator;
+	public fun listIterator (I)Ljava/util/ListIterator;
+	public final fun remove (I)Ljava/lang/Object;
+	public fun removeAt (I)Ljava/lang/Object;
+	public fun set (ILjava/lang/Object;)Ljava/lang/Object;
+	public fun subList (II)Ljava/util/List;
+}
+
+public final class co/touchlab/stately/collections/ConcurrentMutableMap : java/util/Map, kotlin/jvm/internal/markers/KMutableMap {
+	public fun <init> ()V
+	public final fun block (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public fun clear ()V
+	public fun containsKey (Ljava/lang/Object;)Z
+	public fun containsValue (Ljava/lang/Object;)Z
+	public final fun entrySet ()Ljava/util/Set;
+	public fun get (Ljava/lang/Object;)Ljava/lang/Object;
+	public fun getEntries ()Ljava/util/Set;
+	public fun getKeys ()Ljava/util/Set;
+	public fun getSize ()I
+	public fun getValues ()Ljava/util/Collection;
+	public fun isEmpty ()Z
+	public final fun keySet ()Ljava/util/Set;
+	public fun put (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+	public fun putAll (Ljava/util/Map;)V
+	public fun remove (Ljava/lang/Object;)Ljava/lang/Object;
+	public final fun size ()I
+	public final fun values ()Ljava/util/Collection;
+}
+
+public final class co/touchlab/stately/collections/ConcurrentMutableSet : co/touchlab/stately/collections/ConcurrentMutableCollection, java/util/Set, kotlin/jvm/internal/markers/KMutableSet {
+	public fun <init> ()V
+	public final fun block (Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+}
+

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-def runKtLint = false
 
 buildscript {
     repositories {
@@ -28,6 +27,14 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.1'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:9.2.1"
     }
+}
+
+plugins {
+    id 'org.jetbrains.kotlinx.binary-compatibility-validator' version '0.12.1'
+}
+
+apiValidation {
+    ignoredProjects += ["stately-collections", "stately-common", "stately-iso-collections", "stately-isolate"]
 }
 
 allprojects {
@@ -52,6 +59,8 @@ allprojects {
         }
     }
 }
+
+def runKtLint = false
 
 subprojects {
     if(runKtLint) {
