@@ -52,10 +52,6 @@ abstract class AbstractStableReadListTest<T> {
     abstract fun <T> createList(collection: Collection<T>? = null): MutableList<T>
     abstract val supportsSublist: Boolean
 
-    @Test
-    fun testInitFrozen() {
-        assertTrue(createList<ListData>().isNativeFrozen)
-    }
 
     @Test
     fun testStableReads() {

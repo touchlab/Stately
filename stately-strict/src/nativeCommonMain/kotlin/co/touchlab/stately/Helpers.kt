@@ -23,3 +23,6 @@ actual fun <T> T.maybeFreeze(): T = if (Platform.memoryModel == MemoryModel.STRI
 } else {
     this
 }
+
+actual val strictMemoryModel: Boolean
+    get() = Platform.memoryModel == MemoryModel.STRICT

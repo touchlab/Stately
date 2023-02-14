@@ -17,3 +17,4 @@
 package co.touchlab.stately
 
 actual fun <T> T.maybeFreeze(): T = this
+actual val strictMemoryModel: Boolean = false

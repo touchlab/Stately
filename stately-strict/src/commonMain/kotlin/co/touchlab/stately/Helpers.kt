@@ -16,5 +16,6 @@
 
 package co.touchlab.stately
 
-
 expect fun <T> T.maybeFreeze(): T
+
+expect val strictMemoryModel: Boolean

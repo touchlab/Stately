@@ -34,47 +34,7 @@ class IsoStateTest {
         assertEquals(100_000, lsize)
     }
 
-    @Test
-    fun nativeStateHolderInitChecks() {
-        if (isNative) {
-            assertFails {
-                StateHolder(SomeData("arst").freeze(), defaultStateRunner)
-            }
 
-            assertFails {
-                val someData = SomeData("arst")
-                StateHolder(someData, defaultStateRunner)
-                someData.freeze()
-            }
-
-            assertFails {
-                val iso = IsolateState { SomeData("aaa") }
-                val sd = iso.access { it }
-                println("Shouldn't get here $sd")
-            }
-        }
-    }
-
-    @Test
-    fun isolatedProducer() {
-        if (isNative) {
-            assertFails {
-                val map = mutableMapOf<String, String>()
-                createState(defaultStateRunner) { map }
-            }
-        }
-    }
-
-    @Test
-    fun noLeakingState() {
-        if (isNative) {
-            val ls = LeakyState()
-            assertFails {
-                ls.leak()
-            }
-            Unit
-        }
-    }
 
     @Test
     fun throwExceptions() {

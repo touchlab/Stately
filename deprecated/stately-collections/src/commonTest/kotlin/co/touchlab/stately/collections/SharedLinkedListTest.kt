@@ -39,11 +39,6 @@ class LinkedListTest {
     }
 
     @Test
-    fun testInitFrozen() {
-        assertTrue(SharedLinkedList<ListData>().isNativeFrozen)
-    }
-
-    @Test
     fun add() {
         val ll = makeTen()
 

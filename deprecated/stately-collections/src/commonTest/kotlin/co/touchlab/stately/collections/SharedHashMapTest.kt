@@ -143,11 +143,6 @@ class SharedHashMapTest {
     }
 
     @Test
-    fun testInitFrozen() {
-        assertTrue(SharedHashMap<String, MapData>().isNativeFrozen)
-    }
-
-    @Test
     fun mtAddRemove() {
         val LOOPS = 1_000
         val ops = ThreadOperations { SharedHashMap<String, MapData>() }

@@ -30,11 +30,6 @@ import kotlin.test.assertTrue
 class SharedLruCacheTest {
 
     @Test
-    fun testInitFrozen() {
-        assertTrue(SharedLruCache<String, MapData>(4).isNativeFrozen)
-    }
-
-    @Test
     fun sanityCheck() {
         val collect = SharedLinkedList<MapData>()
         val sc = SharedLruCache<String, MapData>(4) {
@@ -215,28 +210,6 @@ class SharedLruCacheTest {
         sc.put("b", MapData("2"))
 
         checkResults(collect, MapData("Value: 0"), MapData("Value: 2"))
-    }
-
-    /**
-     * onRemove can be called from any thread, so the callback must be frozen
-     */
-    @Test
-    fun onRemoveCanFreeze() {
-        // Native only issue
-        if (!isNative) {
-            return
-        }
-
-        val collect = ArrayList<MapData>()
-        val sc = SharedLruCache<String, MapData>(2) {
-            collect.add(it.value)
-        }
-
-        sc.put("a", MapData("1"))
-        sc.put("b", MapData("1"))
-        assertFails {
-            sc.put("c", MapData("1"))
-        }
     }
 
     @Test

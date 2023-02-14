@@ -45,13 +45,6 @@ kotlin {
     val commonMain by sourceSets.getting
     val commonTest by sourceSets.getting
 
-    val commonJvmMain by sourceSets.creating {
-        dependsOn(commonMain)
-    }
-    val commonJvmTest by sourceSets.creating {
-        dependsOn(commonTest)
-        dependsOn(commonJvmMain)
-    }
 
     val jvmMain by sourceSets.getting {
         dependsOn(commonMain)
@@ -60,8 +53,12 @@ kotlin {
         dependsOn(commonTest)
     }
 
-    val jsMain by sourceSets.getting
-    val jsTest by sourceSets.getting
+    val jsMain by sourceSets.getting {
+        dependsOn(commonMain)
+    }
+    val jsTest by sourceSets.getting {
+        dependsOn(commonTest)
+    }
 
     val nativeCommonMain by sourceSets.creating
     nativeCommonMain.dependsOn(commonMain)
