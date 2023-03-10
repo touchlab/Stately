@@ -36,6 +36,7 @@ kotlin {
     watchosArm64()
     watchosX86()
     watchosX64()
+    watchosDeviceArm64()
     tvosArm64()
     tvosX64()
     mingwX64()
@@ -127,6 +128,9 @@ kotlin {
             dependsOn nativeCommonMain
         }
         watchosX64Main {
+            dependsOn nativeCommonMain
+        }
+        watchosDeviceArm64Main {
             dependsOn nativeCommonMain
         }
         tvosArm64Main {
