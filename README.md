@@ -42,7 +42,7 @@ Your type should extend `Synchronizable`, which on the JVM is typealiased to `An
 ```groovy
 commonMain {
     dependencies {
-        implementation("co.touchlab:stately-concurrency:2.0.0")
+        implementation("co.touchlab:stately-concurrency:2.0.0-rc1")
     }
 }
 ```
@@ -61,7 +61,7 @@ val list.add(42)
 ```groovy
 commonMain {
     dependencies {
-        implementation("co.touchlab:stately-concurrent-collections:2.0.0")
+        implementation("co.touchlab:stately-concurrent-collections:2.0.0-rc1")
     }
 }
 ```
