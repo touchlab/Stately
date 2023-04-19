@@ -47,6 +47,7 @@ kotlin {
     val commonMain by sourceSets.getting {
         dependencies {
             implementation(kotlin("stdlib-common"))
+            implementation(project(":stately-common"))
             implementation(project(":stately-concurrency"))
         }
     }
