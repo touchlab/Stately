@@ -1,0 +1,5 @@
+public final class co/touchlab/stately/HelpersJVMKt {
+	public static final fun getStrictMemoryModel ()Z
+	public static final fun maybeFreeze (Ljava/lang/Object;)Ljava/lang/Object;
+}
+
