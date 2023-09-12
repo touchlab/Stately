@@ -36,6 +36,7 @@ kotlin {
     mingwX64()
     mingwX86()
     linuxX64()
+    linuxArm64()
     linuxArm32Hfp()
     linuxMips32()
 
@@ -47,7 +48,7 @@ kotlin {
     val commonMain by sourceSets.getting {
         dependencies {
             implementation(kotlin("stdlib-common"))
-            implementation(project(":stately-concurrency"))
+            api(project(":stately-concurrency"))
         }
     }
     val commonTest by sourceSets.getting {

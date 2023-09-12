@@ -20,6 +20,7 @@ import platform.posix.pthread_mutexattr_tVar
  * A simple lock.
  * Implementations of this class should be re-entrant.
  */
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual class Lock actual constructor() {
     private val arena = Arena()
     private val attr = arena.alloc<pthread_mutexattr_tVar>()

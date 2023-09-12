@@ -52,6 +52,7 @@ kotlin {
     mingwX64()
     mingwX86()
     linuxX64()
+    linuxArm64()
     linuxArm32Hfp()
     linuxMips32()
 
@@ -107,10 +108,6 @@ kotlin {
 
 configurations {
     compileClasspath
-}
-
-jsIrBrowserTest {
-    enabled=false
 }
 
 apply from: '../../gradle/gradle-mvn-mpp-push.gradle'

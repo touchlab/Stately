@@ -4,6 +4,7 @@ import co.touchlab.stately.concurrency.AtomicBoolean
 import co.touchlab.stately.concurrency.ThreadRef
 import kotlinx.cinterop.StableRef
 
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 class GuardedStableRef<T : Any>(t: T) {
     private val stableRef: StableRef<T> = StableRef.create(t)
     private val threadRef = ThreadRef()
