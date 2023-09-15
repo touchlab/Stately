@@ -26,7 +26,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
         classpath 'com.android.tools.build:gradle:3.5.1'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:9.2.1"
-        classpath "com.vanniktech:gradle-maven-publish-plugin:0.23.1"
+        classpath "com.vanniktech:gradle-maven-publish-plugin:0.25.3"
     }
 }
 
