@@ -1,24 +1,21 @@
 name: deploy
 on: workflow_dispatch
-#on:
-#  pull_request:
-#    branches:
-#      - main
-#  push:
-#    branches:
-#      - main
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [macOS-latest, ubuntu-latest]
-    runs-on: ${{matrix.os}}
+  deploy:
+    runs-on: macos-latest
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+
       - name: Cache gradle
         uses: actions/cache@v2
         with:
@@ -26,6 +23,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Cache konan
         uses: actions/cache@v2
         with:
@@ -33,20 +31,32 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Publish Mac/Windows Artifacts
-        if: matrix.os == 'macOS-latest'
-        run: ./gradlew publish -x check --no-daemon --stacktrace
+
+      - name: Publish Artifacts
+        run: ./gradlew publish --no-daemon --stacktrace --no-build-cache
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
           ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-      - name: Publish Linux Artifacts
-        if: matrix.os == 'ubuntu-latest'
-        run: ./gradlew publishLinux -x check --no-daemon --stacktrace
-        env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
-          ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+
+      - uses: touchlab/read-property@main
+        id: version_name
+        with:
+          file: ./gradle.properties
+          property: VERSION_NAME
+
+      - name: Print versionBasePropertyValue
+        id: output
+        run: echo "${{ steps.version_name.outputs.propVal }}"
+
+      - name: Create Release
+        if: ${{ contains(steps.version_name.outputs.propVal, 'SNAPSHOT') == false }}
+        uses: touchlab/release-action@v1.10.0
+        with:
+          tag: ${{ steps.version_name.outputs.propVal }}
 
 env:
   GRADLE_OPTS: -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=512m"

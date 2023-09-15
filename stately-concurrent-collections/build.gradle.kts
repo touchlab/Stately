@@ -16,12 +16,10 @@ kotlin {
         browser()
     }
     macosX64()
-    iosArm32()
     iosArm64()
     iosX64()
     watchosArm32()
     watchosArm64()
-    watchosX86()
     watchosX64()
     watchosDeviceArm64()
     tvosArm64()
@@ -34,11 +32,8 @@ kotlin {
     watchosDeviceArm64()
 
     mingwX64()
-    mingwX86()
     linuxX64()
     linuxArm64()
-    linuxArm32Hfp()
-    linuxMips32()
 
     androidNativeArm32()
     androidNativeArm64()
@@ -56,7 +51,7 @@ kotlin {
             implementation(kotlin("test-common"))
             implementation(kotlin("test-annotations-common"))
             implementation("co.touchlab:testhelp:$TESTHELP_VERSION")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
         }
     }
 
@@ -100,4 +95,4 @@ kotlin {
     }
 }
 
-apply(from = "../gradle/gradle-mvn-mpp-push.gradle")
+apply(plugin = "com.vanniktech.maven.publish")

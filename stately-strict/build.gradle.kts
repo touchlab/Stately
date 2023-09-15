@@ -16,12 +16,10 @@ kotlin {
         browser()
     }
     macosX64()
-    iosArm32()
     iosArm64()
     iosX64()
     watchosArm32()
     watchosArm64()
-    watchosX86()
     watchosX64()
     watchosDeviceArm64()
     tvosArm64()
@@ -34,11 +32,8 @@ kotlin {
     watchosDeviceArm64()
 
     mingwX64()
-    mingwX86()
     linuxX64()
     linuxArm64()
-    linuxArm32Hfp()
-    linuxMips32()
 
     androidNativeArm32()
     androidNativeArm64()
@@ -97,4 +92,4 @@ kotlin {
     }
 }
 
-apply(from = "../gradle/gradle-mvn-mpp-push.gradle")
+apply(plugin = "com.vanniktech.maven.publish")
