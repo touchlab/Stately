@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("com.vanniktech.maven.publish")
 }
 
 val GROUP: String by project
@@ -94,5 +95,3 @@ kotlin {
         testSourceSet.dependsOn(nativeTest)
     }
 }
-
-apply(plugin = "com.vanniktech.maven.publish")

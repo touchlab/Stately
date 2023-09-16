@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("com.vanniktech.maven.publish")
 }
 
 val GROUP: String by project
@@ -120,5 +121,3 @@ kotlin {
         implementation("org.jetbrains.kotlin:kotlin-test-js")
     }
 }
-
-apply(plugin = "com.vanniktech.maven.publish")
