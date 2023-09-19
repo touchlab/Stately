@@ -1,6 +1,6 @@
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.maybeFreeze
+import co.touchlab.stately.strict.maybeFreeze
 import kotlinx.cinterop.Arena
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.ptr

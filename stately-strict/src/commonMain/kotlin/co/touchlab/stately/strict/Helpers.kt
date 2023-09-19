@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Touchlab, Inc.
+ * Copyright (C) 2021 Touchlab, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.strict
 
-import co.touchlab.testhelp.isFrozen
-import kotlin.test.Test
-import kotlin.test.assertEquals
+expect fun <T> T.maybeFreeze(): T
 
-class HelpersTest {
-    @Test
-    fun maybeFreezeTest(){
-        val h = Heyo("hello").maybeFreeze()
-        assertEquals(h.isFrozen, Platform.memoryModel == MemoryModel.STRICT && Platform.isFreezingEnabled)
-    }
-
-    data class Heyo(val s:String)
-}
+expect val strictMemoryModel: Boolean

@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.strict
 
-actual fun <T> T.maybeFreeze(): T = this
-actual val strictMemoryModel: Boolean = false
+import co.touchlab.stately.strict.maybeFreeze
+import co.touchlab.testhelp.isFrozen
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class HelpersTest {
+    @Test
+    fun maybeFreezeTest(){
+        val h = Heyo("hello").maybeFreeze()
+        assertEquals(h.isFrozen, Platform.memoryModel == MemoryModel.STRICT && Platform.isFreezingEnabled)
+    }
+
+    data class Heyo(val s:String)
+}

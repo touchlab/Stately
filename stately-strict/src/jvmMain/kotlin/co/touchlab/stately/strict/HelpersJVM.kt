@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.strict
 
 actual fun <T> T.maybeFreeze(): T = this
 actual val strictMemoryModel: Boolean = false

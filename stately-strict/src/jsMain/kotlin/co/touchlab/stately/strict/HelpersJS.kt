@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Touchlab, Inc.
+ * Copyright (C) 2018 Touchlab, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.strict
 
-expect fun <T> T.maybeFreeze(): T
-
-expect val strictMemoryModel: Boolean
+actual fun <T> T.maybeFreeze(): T = this
+actual val strictMemoryModel: Boolean = false

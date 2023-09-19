@@ -16,7 +16,7 @@
 
 package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.maybeFreeze
+import co.touchlab.stately.strict.maybeFreeze
 import kotlin.native.concurrent.AtomicReference
 
 // actual typealias AtomicReference<T> = AtomicReference<T>

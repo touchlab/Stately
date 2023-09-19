@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package co.touchlab.stately
+package co.touchlab.stately.strict
 
 import kotlin.native.concurrent.freeze
 
