@@ -5,16 +5,22 @@ plugins {
 
 val GROUP: String by project
 val VERSION_NAME: String by project
-val TESTHELP_VERSION: String by project
 
 group = GROUP
 version = VERSION_NAME
 
 kotlin {
+    @Suppress("OPT_IN_USAGE")
+    targetHierarchy.default()
     jvm()
     js {
         nodejs()
         browser()
+    }
+    @Suppress("OPT_IN_USAGE")
+    wasm {
+        browser()
+        binaries.executable()
     }
     macosX64()
     iosArm64()
@@ -40,84 +46,68 @@ kotlin {
     androidNativeArm64()
     androidNativeX86()
     androidNativeX64()
+    
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":stately-strict"))
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.testHelp)
+            }
+        }
 
-    val commonMain by sourceSets.getting
-    val commonTest by sourceSets.getting
+        val jsWasmMain by creating {
+            dependsOn(commonMain)
+            getByName("jsMain").dependsOn(this)
+            getByName("wasmMain").dependsOn(this)
+        }
 
-    val commonJvmMain by sourceSets.creating {
-        dependsOn(commonMain)
-    }
-    val commonJvmTest by sourceSets.creating {
-        dependsOn(commonTest)
-        dependsOn(commonJvmMain)
-    }
+        val jsWasmTest by creating {
+            dependsOn(commonTest)
+            getByName("jsTest").dependsOn(this)
+            getByName("wasmTest").dependsOn(this)
+        }
 
-    val jvmMain by sourceSets.getting {
-        dependsOn(commonMain)
-    }
-    val jvmTest by sourceSets.getting {
-        dependsOn(commonTest)
-    }
+        val nativeCommonMain by creating {
+            dependsOn(commonMain)
+        }
+        val nativeCommonTest by creating {
+            dependsOn(commonTest)
+        }
 
-    val jsMain by sourceSets.getting
-    val jsTest by sourceSets.getting
+        val darwinMain by creating {
+            dependsOn(nativeCommonMain)
+        }
 
-    val nativeCommonMain by sourceSets.creating
-    nativeCommonMain.dependsOn(commonMain)
-    val nativeCommonTest by sourceSets.creating
-    nativeCommonTest.dependsOn(commonTest)
+        val pthreadMain by creating {
+            dependsOn(nativeCommonMain)
+        }
 
-    val darwinMain by sourceSets.creating
-    darwinMain.dependsOn(nativeCommonMain)
+        val mingwMain by getting {
+            dependsOn(nativeCommonMain)
+        }
 
-    val pthreadMain by sourceSets.creating
-    pthreadMain.dependsOn(nativeCommonMain)
+        val pthreadAndroidMain by creating {
+            dependsOn(nativeCommonMain)
+        }
 
-    val mingwMain by sourceSets.creating
-    mingwMain.dependsOn(nativeCommonMain)
+        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
+            val mainSourceSet = compilations.getByName("main").defaultSourceSet
+            val testSourceSet = compilations.getByName("test").defaultSourceSet
 
-    val pthreadAndroidMain by sourceSets.creating
-    pthreadAndroidMain.dependsOn(nativeCommonMain)
+            mainSourceSet.dependsOn(when {
+                konanTarget.family.isAppleFamily -> darwinMain
+                konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX -> pthreadMain
+                konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW -> mingwMain
+                konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID -> pthreadAndroidMain
+                else -> nativeCommonMain
+            })
 
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
-        val mainSourceSet = compilations.getByName("main").defaultSourceSet
-        val testSourceSet = compilations.getByName("test").defaultSourceSet
-
-        mainSourceSet.dependsOn(when {
-            konanTarget.family.isAppleFamily -> darwinMain
-            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX -> pthreadMain
-            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW -> mingwMain
-            konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID -> pthreadAndroidMain
-            else -> nativeCommonMain
-        })
-
-        testSourceSet.dependsOn(nativeCommonTest)
-    }
-
-    commonMain.dependencies {
-        implementation(project(":stately-strict"))
-    }
-
-    commonTest.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-test-common")
-        implementation("org.jetbrains.kotlin:kotlin-test-annotations-common")
-        implementation("co.touchlab:testhelp:$TESTHELP_VERSION")
-    }
-
-    jvmMain.dependencies {
-        implementation(kotlin("stdlib-jdk8"))
-    }
-
-    jvmTest.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-test")
-        implementation("org.jetbrains.kotlin:kotlin-test-junit")
-    }
-
-    jsMain.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
-    }
-
-    jsTest.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-test-js")
+            testSourceSet.dependsOn(nativeCommonTest)
+        }
     }
 }

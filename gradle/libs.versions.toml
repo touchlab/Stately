@@ -1,0 +1,28 @@
+[versions]
+
+agp = "8.1.0"
+buildConfig = "4.1.2"
+binaryCompatibilityValidator = "0.13.2"
+dokka = "1.9.0"
+touchlab-docusaurusosstemplate = "0.1.10"
+mavenPublish = "0.25.3"
+testHelp = "0.6.11"
+coroutines-test = "1.7.2-wasm0"
+kotlin = "1.9.10"
+
+[libraries]
+
+testHelp = { module = "co.touchlab:testhelp", version.ref = "testHelp" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildConfig" }
+binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompatibilityValidator" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+touchlab-docusaurusosstemplate = { id = "co.touchlab.touchlabtools.docusaurusosstemplate", version.ref = "touchlab-docusaurusosstemplate" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+
+[bundles]
+

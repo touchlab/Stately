@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
+@file:OptIn(FreezingIsDeprecated::class)
+
 package co.touchlab.stately.strict
 
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.concurrent.freeze
 
+@OptIn(ExperimentalNativeApi::class)
 actual fun <T> T.maybeFreeze(): T = if (Platform.memoryModel == MemoryModel.STRICT) {
     this.freeze()
 } else {
     this
 }
 
+@OptIn(ExperimentalNativeApi::class)
 actual val strictMemoryModel: Boolean
     get() = Platform.memoryModel == MemoryModel.STRICT

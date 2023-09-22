@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:OptIn(FreezingIsDeprecated::class)
+
 package co.touchlab.stately
 
 import kotlin.native.concurrent.ensureNeverFrozen
