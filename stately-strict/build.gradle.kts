@@ -5,16 +5,22 @@ plugins {
 
 val GROUP: String by project
 val VERSION_NAME: String by project
-val TESTHELP_VERSION: String by project
 
 group = GROUP
 version = VERSION_NAME
 
 kotlin {
+    @Suppress("OPT_IN_USAGE")
+    targetHierarchy.default()
     jvm()
     js {
         nodejs()
         browser()
+    }
+    @Suppress("OPT_IN_USAGE")
+    wasm {
+        browser()
+        binaries.executable()
     }
     macosX64()
     iosArm64()
@@ -40,54 +46,39 @@ kotlin {
     androidNativeArm64()
     androidNativeX86()
     androidNativeX64()
+    
+    sourceSets {
+        val commonMain by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.testHelp)
+            }
+        }
 
-    val commonMain by sourceSets.getting
-    val commonTest by sourceSets.getting
+        val jsWasmMain by creating {
+            dependsOn(commonMain)
+            getByName("jsMain").dependsOn(this)
+            getByName("wasmMain").dependsOn(this)
+        }
 
-    val jvmMain by sourceSets.getting {
-        dependsOn(commonMain)
-    }
-    val jvmTest by sourceSets.getting {
-        dependsOn(commonTest)
-    }
+        val jsWasmTest by creating {
+            dependsOn(commonTest)
+            getByName("jsTest").dependsOn(this)
+            getByName("wasmTest").dependsOn(this)
+        }
 
-    val jsMain by sourceSets.getting {
-        dependsOn(commonMain)
-    }
-    val jsTest by sourceSets.getting {
-        dependsOn(commonTest)
-    }
+        val nativeCommonMain by creating
+        nativeCommonMain.dependsOn(commonMain)
+        val nativeCommonTest by creating
+        nativeCommonTest.dependsOn(commonTest)
 
-    val nativeCommonMain by sourceSets.creating
-    nativeCommonMain.dependsOn(commonMain)
-    val nativeCommonTest by sourceSets.creating
-    nativeCommonTest.dependsOn(commonTest)
+        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
+            val mainSourceSet = compilations.getByName("main").defaultSourceSet
+            val testSourceSet = compilations.getByName("test").defaultSourceSet
 
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
-        val mainSourceSet = compilations.getByName("main").defaultSourceSet
-        val testSourceSet = compilations.getByName("test").defaultSourceSet
-
-        mainSourceSet.dependsOn(nativeCommonMain)
-
-        testSourceSet.dependsOn(nativeCommonTest)
-    }
-
-    commonTest.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-test-common")
-        implementation("org.jetbrains.kotlin:kotlin-test-annotations-common")
-        implementation("co.touchlab:testhelp:$TESTHELP_VERSION")
-    }
-
-    jvmTest.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-test")
-        implementation("org.jetbrains.kotlin:kotlin-test-junit")
-    }
-
-    jsMain.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
-    }
-
-    jsTest.dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-test-js")
+            mainSourceSet.dependsOn(nativeCommonMain)
+            testSourceSet.dependsOn(nativeCommonTest)
+        }   
     }
 }

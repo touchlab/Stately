@@ -21,8 +21,6 @@ import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.MPWorker
 import co.touchlab.testhelp.concurrency.ThreadOperations
-import co.touchlab.testhelp.concurrency.currentTimeMillis
-import co.touchlab.testhelp.isNativeFrozen
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,6 +28,7 @@ import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.TimeSource
 
 class SharedHashMapTest {
     @Test
@@ -205,7 +204,7 @@ class SharedHashMapTest {
 
         val count = AtomicInt(0).freeze()
 
-        val start = currentTimeMillis()
+        val start = TimeSource.Monotonic.markNow()
 
         workers.forEach {
             val mycount = count.value
@@ -224,7 +223,7 @@ class SharedHashMapTest {
         }
         workers.forEach { it.requestTermination() }
 
-        println("basic threads time: ${currentTimeMillis() - start}")
+        println("basic threads time: ${TimeSource.Monotonic.markNow().minus(start).inWholeMilliseconds}")
         val size = (LOOP_INSERT - LOOP_REMOVE) * WORKERS
         assertEquals(m.size, size)
         assertEquals(m.entries.size, size)
@@ -295,35 +294,35 @@ class SharedHashMapTest {
         assertEquals(20, m.size)
     }
 
-  /*@Test
-  fun testBasicTimes(){
-      val start = currentTimeMillis()
-      val size = 150_000
-      val l = Array(size){ i->
-              Pair("Key: $i", MapData("Value: $i")).freeze()
-      }
+    /*@Test
+    fun testBasicTimes(){
+        val start = currentTimeMillis()
+        val size = 150_000
+        val l = Array(size){ i->
+                Pair("Key: $i", MapData("Value: $i")).freeze()
+        }
 
-      val keys = Array(size){"Key: $it".freeze()}
+        val keys = Array(size){"Key: $it".freeze()}
 
-      println("TIMETRACE Time setup: ${currentTimeMillis() - start}")
+        println("TIMETRACE Time setup: ${currentTimeMillis() - start}")
 
-      println("TIMETRACE Time shared: "+ runMutableMapTimes(l, SharedHashMap(keys.size), keys))
-      println("TIMETRACE Time reg: "+ runMutableMapTimes(l, HashMap(keys.size), keys))
-  }
+        println("TIMETRACE Time shared: "+ runMutableMapTimes(l, SharedHashMap(keys.size), keys))
+        println("TIMETRACE Time reg: "+ runMutableMapTimes(l, HashMap(keys.size), keys))
+    }
 
-  fun runMutableMapTimes(l:Array<Pair<String, MapData>>, m:MutableMap<String, MapData>, keys:Array<String>):Long{
-      val start = currentTimeMillis()
+    fun runMutableMapTimes(l:Array<Pair<String, MapData>>, m:MutableMap<String, MapData>, keys:Array<String>):Long{
+        val start = currentTimeMillis()
 
-      l.forEach {
-          m.put(it.first, it.second)
-      }
+        l.forEach {
+            m.put(it.first, it.second)
+        }
 
-      keys.forEach {
-          m.get(it)
-      }
+        keys.forEach {
+            m.get(it)
+        }
 
-      return currentTimeMillis() - start
-  }*/
+        return currentTimeMillis() - start
+    }*/
 
     private fun <T> checkImmutableSet(c: MutableCollection<T>, total: Int, uniques: Int, sample: T) {
         assertEquals(c.size, total)

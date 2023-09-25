@@ -1,12 +1,13 @@
 plugins {
-    kotlin("multiplatform") apply false
-    id("com.android.library") version "7.4.2" apply false
-    id("com.github.gmazzo.buildconfig") version "2.1.0" apply false
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.2"
-    id("org.jetbrains.dokka") version "1.8.20" apply false
-    id("co.touchlab.touchlabtools.docusaurusosstemplate") version "0.1.10"
-    id("com.vanniktech.maven.publish") version "0.25.3" apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.buildconfig) apply false
+    alias(libs.plugins.binaryCompatibilityValidator)
+    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.touchlab.docusaurusosstemplate)
+    alias(libs.plugins.mavenPublish) apply false
 }
+
 apiValidation {
     nonPublicMarkers.add("co.touchlab.kermit.ExperimentalKermitApi")
     ignoredProjects.addAll(
@@ -31,5 +32,6 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
     }
 }

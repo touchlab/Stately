@@ -19,10 +19,15 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
+    targetHierarchy.default {}
     jvm()
     js {
         nodejs()
         browser()
+    }
+    wasm {
+        browser()
+        binaries.executable()
     }
     macosX64()
     iosArm64()
@@ -49,45 +54,35 @@ kotlin {
     androidNativeX64()
 
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation kotlin('stdlib-common')
-            }
-        }
+        commonMain {}
 
         commonTest {
             dependencies {
-                implementation kotlin('test-common')
-                implementation kotlin('test-annotations-common')
-                implementation "co.touchlab:testhelp:$TESTHELP_VERSION"
+                implementation(kotlin("test"))
+                implementation libs.testHelp
             }
         }
 
-        jvmMain {
+        create("jsWasmMain") {
             dependsOn commonMain
-            dependencies {
-                implementation kotlin('stdlib-jdk8')
-            }
         }
-        jvmTest {
+
+        create("jsWasmTest") {
             dependsOn commonTest
-            dependencies {
-                implementation kotlin('test')
-                implementation kotlin('test-junit')
-            }
         }
 
         jsMain {
-            dependsOn commonMain
-            dependencies {
-                implementation kotlin('stdlib-js')
-            }
+            dependsOn jsWasmMain
         }
         jsTest {
-            dependsOn commonTest
-            dependencies {
-                implementation kotlin('test-js')
-            }
+            dependsOn jsWasmTest
+        }
+
+        wasmMain {
+            dependsOn jsWasmMain
+        }
+        wasmTest {
+            dependsOn jsWasmTest
         }
 
         nativeCommonMain {
