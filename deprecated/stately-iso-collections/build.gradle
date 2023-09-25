@@ -19,6 +19,7 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
+    targetHierarchy.default {}
     jvm()
     js {
         browser()
@@ -60,42 +61,13 @@ kotlin {
         commonMain {
             dependencies {
                 api project(":stately-isolate")
-                implementation kotlin('stdlib-common')
             }
         }
 
         commonTest {
             dependencies {
-                implementation kotlin('test-common')
-                implementation kotlin('test-annotations-common')
-                implementation "co.touchlab:testhelp:$TESTHELP_VERSION"
-            }
-        }
-
-        jvmMain {
-            dependsOn commonMain
-            dependencies {
-                implementation kotlin('stdlib-jdk8')
-            }
-        }
-        jvmTest {
-            dependsOn commonTest
-            dependencies {
-                implementation kotlin('test')
-                implementation kotlin('test-junit')
-            }
-        }
-
-        jsMain {
-            dependsOn commonMain
-            dependencies {
-                implementation kotlin('stdlib-js')
-            }
-        }
-        jsTest {
-            dependsOn commonTest
-            dependencies {
-                implementation kotlin('test-js')
+                implementation(kotlin("test"))
+                implementation libs.testHelp
             }
         }
     }
