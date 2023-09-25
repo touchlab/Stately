@@ -17,6 +17,11 @@ kotlin {
         nodejs()
         browser()
     }
+    @Suppress("OPT_IN_USAGE")
+    wasm {
+        browser()
+        binaries.executable()
+    }
     macosX64()
     iosArm64()
     iosX64()
@@ -49,6 +54,18 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(libs.testHelp)
             }
+        }
+
+        val jsWasmMain by creating {
+            dependsOn(commonMain)
+            getByName("jsMain").dependsOn(this)
+            getByName("wasmMain").dependsOn(this)
+        }
+
+        val jsWasmTest by creating {
+            dependsOn(commonTest)
+            getByName("jsTest").dependsOn(this)
+            getByName("wasmTest").dependsOn(this)
         }
 
         val nativeCommonMain by creating

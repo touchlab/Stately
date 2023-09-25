@@ -25,6 +25,10 @@ kotlin {
         nodejs()
         browser()
     }
+    wasm {
+        browser()
+        binaries.executable()
+    }
     macosX64()
     iosArm64()
     iosX64()
@@ -57,6 +61,28 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation libs.testHelp
             }
+        }
+
+        create("jsWasmMain") {
+            dependsOn commonMain
+        }
+
+        create("jsWasmTest") {
+            dependsOn commonTest
+        }
+
+        jsMain {
+            dependsOn jsWasmMain
+        }
+        jsTest {
+            dependsOn jsWasmTest
+        }
+
+        wasmMain {
+            dependsOn jsWasmMain
+        }
+        wasmTest {
+            dependsOn jsWasmTest
         }
 
         nativeCommonMain {
