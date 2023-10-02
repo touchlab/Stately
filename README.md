@@ -1,6 +1,6 @@
 # Stately
 
-Stately is a state utility library to facilitate state management in Kotlin Multiplatform. It was originally written to facilitate development with the strick Kotlin/Native memory model. As of Kotlin 1.7.20, the strict model is deprecated, and the [releveant modules of Stately have also been deprecated](deprecated) but are still published and available.
+Stately is a state utility library to facilitate state management in Kotlin Multiplatform. It was originally written to facilitate development with the strict Kotlin/Native memory model. As of Kotlin 1.7.20, the strict model is deprecated, and the [releveant modules of Stately have also been deprecated](deprecated) but are still published and available.
 
 Stately currently provides concurrencly primitives and concurrent collections. 
 
