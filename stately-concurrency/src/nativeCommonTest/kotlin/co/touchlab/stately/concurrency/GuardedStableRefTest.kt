@@ -1,4 +1,4 @@
-package co.touchlab.stately.isolate
+package co.touchlab.stately.concurrency
 
 import kotlin.native.concurrent.TransferMode
 import kotlin.native.concurrent.Worker

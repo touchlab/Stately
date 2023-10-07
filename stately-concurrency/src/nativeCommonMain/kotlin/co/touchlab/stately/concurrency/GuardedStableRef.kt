@@ -1,7 +1,5 @@
-package co.touchlab.stately.isolate
+package co.touchlab.stately.concurrency
 
-import co.touchlab.stately.concurrency.AtomicBoolean
-import co.touchlab.stately.concurrency.ThreadRef
 import kotlinx.cinterop.StableRef
 
 @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)

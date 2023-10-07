@@ -1,5 +1,6 @@
 package co.touchlab.stately.isolate
 
+import co.touchlab.stately.concurrency.GuardedStableRef
 import co.touchlab.stately.concurrency.ThreadRef
 import kotlin.native.concurrent.ensureNeverFrozen
 import kotlin.native.concurrent.isFrozen
