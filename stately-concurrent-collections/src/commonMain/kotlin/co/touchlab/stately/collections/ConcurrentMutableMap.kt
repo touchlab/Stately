@@ -2,11 +2,13 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.Synchronizable
 import co.touchlab.stately.concurrency.synchronize
+import kotlin.jvm.JvmName
 
 class ConcurrentMutableMap<K, V> internal constructor(
     rootArg: Synchronizable? = null,
     private val del: MutableMap<K, V>
 ) : Synchronizable(), MutableMap<K, V> {
+
     constructor() : this(null, mutableMapOf())
 
     private val syncTarget: Synchronizable = rootArg ?: this
@@ -26,6 +28,24 @@ class ConcurrentMutableMap<K, V> internal constructor(
     override fun isEmpty(): Boolean = syncTarget.synchronize { del.isEmpty() }
     override fun clear() {
         syncTarget.synchronize { del.clear() }
+    }
+
+    /**
+     * If the specified key is not already associated with a value
+     * attempts to compute its value using the given mapping function and enters it into this map
+     */
+    @JvmName("safeComputeIfAbsent")
+    fun computeIfAbsent(key: K, defaultValue: (K) -> V): V {
+        return syncTarget.synchronize {
+            val value = del[key]
+            if (value == null) {
+                val newValue = defaultValue(key)
+                del[key] = newValue
+                newValue
+            } else {
+                value
+            }
+        }
     }
 
     override fun put(key: K, value: V): V? = syncTarget.synchronize { del.put(key, value) }

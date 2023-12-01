@@ -68,4 +68,17 @@ class ConcurrentMutableMapTest {
 
         assertEquals(map.size, DEFAULT_RUNS * 2)
     }
+
+    @Test
+    @NoJsTest
+    fun computeIfAbsent() {
+        val map = ConcurrentMutableMap<String, SomeData>()
+
+        runAlot(100) { run ->
+            map.computeIfAbsent("key") { SomeData("value $run") }
+        }
+
+        assertEquals(map.size, 1)
+        assertEquals(map["key"]?.s, "value 0")
+    }
 }
