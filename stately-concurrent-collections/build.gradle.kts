@@ -60,6 +60,7 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(libs.testHelp)
                 implementation(libs.coroutines.test)
+                implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.6")
             }
         }
 
