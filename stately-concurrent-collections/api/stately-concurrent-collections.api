@@ -49,6 +49,7 @@ public final class co/touchlab/stately/collections/ConcurrentMutableMap : java/u
 	public fun put (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 	public fun putAll (Ljava/util/Map;)V
 	public fun remove (Ljava/lang/Object;)Ljava/lang/Object;
+	public final fun safeComputeIfAbsent (Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public final fun size ()I
 	public final fun values ()Ljava/util/Collection;
 }
