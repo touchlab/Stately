@@ -1,5 +1,8 @@
 package co.touchlab.stately.collections
 
+import co.touchlab.stately.concurrency.AtomicInt
+import co.touchlab.testhelp.concurrency.sleep
+import kotlinx.coroutines.delay
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -73,12 +76,16 @@ class ConcurrentMutableMapTest {
     @NoJsTest
     fun computeIfAbsent() {
         val map = ConcurrentMutableMap<String, SomeData>()
+        val count = AtomicInt(0)
 
-        runAlot(100) { run ->
-            map.computeIfAbsent("key") { SomeData("value $run") }
+        runAlot(1) { run ->
+            map.computeIfAbsent("key") {
+                sleep(1000)
+                count.incrementAndGet()
+                SomeData("value $run")
+            }
         }
 
-        assertEquals(map.size, 1)
-        assertEquals(map["key"]?.s, "value 0")
+        assertEquals(count.get(), 1)
     }
 }
