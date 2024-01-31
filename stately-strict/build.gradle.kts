@@ -10,15 +10,13 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    @Suppress("OPT_IN_USAGE")
-    targetHierarchy.default()
     jvm()
     js {
         nodejs()
         browser()
     }
     @Suppress("OPT_IN_USAGE")
-    wasm {
+    wasmJs {
         browser()
         binaries.executable()
     }
@@ -46,39 +44,21 @@ kotlin {
     androidNativeArm64()
     androidNativeX86()
     androidNativeX64()
-    
-    sourceSets {
-        val commonMain by getting
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.testHelp)
+
+    @Suppress("OPT_IN_USAGE")
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jsAndWasmJs") {
+                withJs()
+                withWasm()
             }
         }
+    }
 
-        val jsWasmMain by creating {
-            dependsOn(commonMain)
-            getByName("jsMain").dependsOn(this)
-            getByName("wasmMain").dependsOn(this)
+    sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.testHelp)
         }
-
-        val jsWasmTest by creating {
-            dependsOn(commonTest)
-            getByName("jsTest").dependsOn(this)
-            getByName("wasmTest").dependsOn(this)
-        }
-
-        val nativeCommonMain by creating
-        nativeCommonMain.dependsOn(commonMain)
-        val nativeCommonTest by creating
-        nativeCommonTest.dependsOn(commonTest)
-
-        targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
-            val mainSourceSet = compilations.getByName("main").defaultSourceSet
-            val testSourceSet = compilations.getByName("test").defaultSourceSet
-
-            mainSourceSet.dependsOn(nativeCommonMain)
-            testSourceSet.dependsOn(nativeCommonTest)
-        }   
     }
 }

@@ -19,7 +19,6 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    targetHierarchy.default {}
     jvm()
     js {
         browser()
@@ -32,7 +31,7 @@ kotlin {
             }
         }
     }
-    wasm {
+    wasmJs {
         browser()
         binaries.executable()
     }
@@ -61,6 +60,15 @@ kotlin {
     androidNativeX86()
     androidNativeX64()
 
+    applyDefaultHierarchyTemplate {
+        it.common {
+            it.group("jsAndWasmJs") {
+                it.withJs()
+                it.withWasm()
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -73,28 +81,6 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation libs.testHelp
             }
-        }
-
-        create("jsWasmMain") {
-            dependsOn commonMain
-        }
-
-        create("jsWasmTest") {
-            dependsOn commonTest
-        }
-
-        jsMain {
-            dependsOn jsWasmMain
-        }
-        jsTest {
-            dependsOn jsWasmTest
-        }
-
-        wasmMain {
-            dependsOn jsWasmMain
-        }
-        wasmTest {
-            dependsOn jsWasmTest
         }
     }
 }

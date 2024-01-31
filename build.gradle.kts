@@ -27,11 +27,3 @@ allprojects {
     group = GROUP
     version = VERSION_NAME
 }
-
-allprojects {
-    repositories {
-        mavenCentral()
-        google()
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
-    }
-}

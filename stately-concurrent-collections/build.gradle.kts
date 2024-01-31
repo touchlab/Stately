@@ -1,5 +1,7 @@
 @file:Suppress("PropertyName")
 
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     kotlin("multiplatform")
     id("com.vanniktech.maven.publish")
@@ -12,15 +14,17 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    @Suppress("OPT_IN_USAGE")
-    targetHierarchy.default()
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
     jvm()
     js {
         nodejs()
         browser()
     }
     @Suppress("OPT_IN_USAGE")
-    wasm {
+    wasmJs {
         browser()
         binaries.executable()
     }
@@ -48,34 +52,25 @@ kotlin {
     androidNativeArm64()
     androidNativeX86()
     androidNativeX64()
-    
+
+    @Suppress("OPT_IN_USAGE")
+    applyDefaultHierarchyTemplate {
+        common {
+            group("jsAndWasmJs") {
+                withJs()
+                withWasm()
+            }
+        }
+    }
+
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(project(":stately-concurrency"))
-            }
+        commonMain.dependencies {
+            api(project(":stately-concurrency"))
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.testHelp)
-                implementation(libs.coroutines.test)
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.testHelp)
+            implementation(libs.coroutines.test)
         }
-
-        val jsWasmMain by creating {
-            dependsOn(commonMain)
-            getByName("jsMain").dependsOn(this)
-            getByName("wasmMain").dependsOn(this)
-        }
-
-        val jsWasmTest by creating {
-            dependsOn(commonTest)
-            getByName("jsTest").dependsOn(this)
-            getByName("wasmTest").dependsOn(this)
-        }
-
-        val nativeMain by getting
-        val nativeTest by getting
     }
 }

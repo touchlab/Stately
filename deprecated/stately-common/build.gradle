@@ -19,13 +19,12 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    targetHierarchy.default {}
     jvm()
     js {
         nodejs()
         browser()
     }
-    wasm {
+    wasmJs {
         browser()
         binaries.executable()
     }
@@ -53,6 +52,15 @@ kotlin {
     androidNativeX86()
     androidNativeX64()
 
+    applyDefaultHierarchyTemplate {
+        it.common {
+            it.group("jsAndWasmJs") {
+                it.withJs()
+                it.withWasm()
+            }
+        }
+    }
+
     sourceSets {
         commonMain {}
 
@@ -61,103 +69,6 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation libs.testHelp
             }
-        }
-
-        create("jsWasmMain") {
-            dependsOn commonMain
-        }
-
-        create("jsWasmTest") {
-            dependsOn commonTest
-        }
-
-        jsMain {
-            dependsOn jsWasmMain
-        }
-        jsTest {
-            dependsOn jsWasmTest
-        }
-
-        wasmMain {
-            dependsOn jsWasmMain
-        }
-        wasmTest {
-            dependsOn jsWasmTest
-        }
-
-        nativeCommonMain {
-            dependsOn commonMain
-        }
-        nativeCommonTest {
-            dependsOn commonTest
-        }
-
-        macosX64Main {
-            dependsOn nativeCommonMain
-        }
-        iosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        iosX64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosArm32Main {
-            dependsOn nativeCommonMain
-        }
-        watchosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosX64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosDeviceArm64Main {
-            dependsOn nativeCommonMain
-        }
-        tvosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        tvosX64Main {
-            dependsOn nativeCommonMain
-        }
-
-        macosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        iosSimulatorArm64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosSimulatorArm64Main {
-            dependsOn nativeCommonMain
-        }
-        tvosSimulatorArm64Main {
-            dependsOn nativeCommonMain
-        }
-
-        mingwX64Main {
-            dependsOn nativeCommonMain
-        }
-
-        linuxX64Main {
-            dependsOn nativeCommonMain
-        }
-        linuxArm64Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeArm32Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeArm64Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeX86Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeX64Main {
-            dependsOn nativeCommonMain
         }
     }
 }
