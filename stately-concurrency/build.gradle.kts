@@ -69,45 +69,5 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.testHelp)
         }
-
-        // val nativeCommonMain by creating {
-        //     dependsOn(commonMain)
-        // }
-        // val nativeCommonTest by creating {
-        //     dependsOn(commonTest)
-        // }
-        //
-        // val darwinMain by creating {
-        //     dependsOn(nativeCommonMain)
-        // }
-        //
-        // val pthreadMain by creating {
-        //     dependsOn(nativeCommonMain)
-        // }
-        //
-        // val mingwMain by getting {
-        //     dependsOn(nativeCommonMain)
-        // }
-        //
-        // val pthreadAndroidMain by creating {
-        //     dependsOn(nativeCommonMain)
-        // }
-        //
-        // targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
-        //     val mainSourceSet = compilations.getByName("main").defaultSourceSet
-        //     val testSourceSet = compilations.getByName("test").defaultSourceSet
-        //
-        //     mainSourceSet.dependsOn(
-        //         when {
-        //             konanTarget.family.isAppleFamily -> darwinMain
-        //             konanTarget.family == org.jetbrains.kotlin.konan.target.Family.LINUX -> pthreadMain
-        //             konanTarget.family == org.jetbrains.kotlin.konan.target.Family.MINGW -> mingwMain
-        //             konanTarget.family == org.jetbrains.kotlin.konan.target.Family.ANDROID -> pthreadAndroidMain
-        //             else -> nativeCommonMain
-        //         }
-        //     )
-        //
-        //     testSourceSet.dependsOn(nativeCommonTest)
-        // }
     }
 }
