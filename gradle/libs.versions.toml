@@ -1,19 +1,21 @@
 [versions]
 
-agp = "8.2.1"
+agp = "8.3.0"
 buildConfig = "4.1.2"
 binaryCompatibilityValidator = "0.14.0"
 dokka = "1.9.0"
 touchlab-docusaurusosstemplate = "0.1.10"
 mavenPublish = "0.27.0"
-testHelp = "0.6.11"
-coroutines-test = "1.8.0-RC2"
-kotlin = "1.9.22"
+testHelp = "0.6.12"
+coroutines-test = "1.8.0"
+kotlin = "1.9.23"
 
 [libraries]
 
 testHelp = { module = "co.touchlab:testhelp", version.ref = "testHelp" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+# For convention-plugins
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
