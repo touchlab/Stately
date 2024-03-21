@@ -15,11 +15,6 @@ group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    compilerOptions {
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
-
     sourceSets {
         commonMain.dependencies {
             api(project(":stately-concurrency"))

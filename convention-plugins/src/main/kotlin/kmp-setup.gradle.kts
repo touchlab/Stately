@@ -5,9 +5,20 @@ plugins {
 }
 
 kotlin {
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
     jvm()
     js {
-        nodejs()
+        nodejs {
+            testTask {
+                useMocha {
+                    // Override default timeout (needed for stress tests)
+                    timeout = "120s"
+                }
+            }
+        }
         browser()
     }
     @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
