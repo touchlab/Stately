@@ -23,8 +23,9 @@ actual class AtomicInt actual constructor(initialValue: Int) {
     private var internalValue: Int = initialValue
 
     actual fun addAndGet(delta: Int): Int {
-        internalValue += delta
-        return internalValue
+        return (internalValue + delta).also {
+            internalValue = it
+        }
     }
 
     actual fun compareAndSet(expected: Int, new: Int): Boolean {
