@@ -15,9 +15,18 @@ project(":stately-isolate").projectDir = File("deprecated/stately-isolate")
 project(":stately-iso-collections").projectDir = File("deprecated/stately-iso-collections")
 
 pluginManagement {
+    includeBuild("convention-plugins")
     repositories {
         google()
         gradlePluginPortal()
         mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    @Suppress("UnstableApiUsage")
+    repositories {
+        mavenCentral()
+        google()
     }
 }

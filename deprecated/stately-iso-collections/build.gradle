@@ -13,54 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply plugin: 'org.jetbrains.kotlin.multiplatform'
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
+    id 'kmp-setup'
+    id 'com.vanniktech.maven.publish'
+}
 
 group = GROUP
 version = VERSION_NAME
 
 kotlin {
-    targetHierarchy.default {}
-    jvm()
-    js {
-        browser()
-        nodejs {
-            testTask {
-                useMocha {
-                    // Override default timeout (needed for stress tests)
-                    timeout = "120s"
-                }
-            }
-        }
-    }
-    wasm {
-        browser()
-        binaries.executable()
-    }
-
-    macosX64()
-    iosArm64()
-    iosX64()
-    watchosArm32()
-    watchosArm64()
-    watchosX64()
-    watchosDeviceArm64()
-    tvosArm64()
-    tvosX64()
-
-    macosArm64()
-    iosSimulatorArm64()
-    watchosSimulatorArm64()
-    tvosSimulatorArm64()
-
-    mingwX64()
-    linuxX64()
-    linuxArm64()
-
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
-    androidNativeX64()
-
     sourceSets {
         commonMain {
             dependencies {
@@ -74,33 +36,9 @@ kotlin {
                 implementation libs.testHelp
             }
         }
-
-        create("jsWasmMain") {
-            dependsOn commonMain
-        }
-
-        create("jsWasmTest") {
-            dependsOn commonTest
-        }
-
-        jsMain {
-            dependsOn jsWasmMain
-        }
-        jsTest {
-            dependsOn jsWasmTest
-        }
-
-        wasmMain {
-            dependsOn jsWasmMain
-        }
-        wasmTest {
-            dependsOn jsWasmTest
-        }
     }
 }
 
 configurations {
     compileClasspath
 }
-
-apply plugin:"com.vanniktech.maven.publish"

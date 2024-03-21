@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id 'org.jetbrains.kotlin.multiplatform'
-    id 'kmp-setup'
-    id 'com.vanniktech.maven.publish'
-}
 
-group = GROUP
-version = VERSION_NAME
+package co.touchlab.stately.concurrency
 
-kotlin {
-    sourceSets {
-        commonMain {}
+import kotlin.concurrent.AtomicLong
 
-        commonTest {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation libs.testHelp
-            }
-        }
+actual class AtomicLong actual constructor(initialValue: Long) {
+    private val atom = AtomicLong(initialValue)
+
+    actual fun get(): Long = atom.value
+
+    actual fun set(newValue: Long) {
+        atom.value = newValue
     }
-}
 
-configurations {
-    compileClasspath
+    actual fun incrementAndGet(): Long = atom.addAndGet(1)
+
+    actual fun decrementAndGet(): Long = atom.addAndGet(-1)
+
+    actual fun addAndGet(delta: Long): Long = atom.addAndGet(delta)
+
+    actual fun compareAndSet(expected: Long, new: Long): Boolean = atom.compareAndSet(expected, new)
 }

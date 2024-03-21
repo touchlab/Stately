@@ -13,28 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id 'org.jetbrains.kotlin.multiplatform'
-    id 'kmp-setup'
-    id 'com.vanniktech.maven.publish'
-}
 
-group = GROUP
-version = VERSION_NAME
+package co.touchlab.stately.strict
 
-kotlin {
-    sourceSets {
-        commonMain {}
+import co.touchlab.testhelp.isFrozen
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-        commonTest {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation libs.testHelp
-            }
-        }
+class HelpersTest {
+    @OptIn(ExperimentalNativeApi::class)
+    @Test
+    fun maybeFreezeTest(){
+        val h = Heyo("hello").maybeFreeze()
+        assertEquals(h.isFrozen, Platform.memoryModel == MemoryModel.STRICT && Platform.isFreezingEnabled)
     }
-}
 
-configurations {
-    compileClasspath
+    data class Heyo(val s:String)
 }

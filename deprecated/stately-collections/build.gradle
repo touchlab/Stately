@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: 'org.jetbrains.kotlin.multiplatform'
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
+    id 'kmp-setup'
+    id 'com.vanniktech.maven.publish'
+}
 
 group = GROUP
 version = VERSION_NAME
@@ -23,39 +27,6 @@ configurations {
     compileClasspath
 }
 kotlin {
-    targetHierarchy.default {}
-    jvm()
-    js {
-        nodejs()
-        browser()
-    }
-    wasm {
-        browser()
-        binaries.executable()
-    }
-    macosX64()
-    iosArm64()
-    iosX64()
-    watchosArm32()
-    watchosArm64()
-    watchosX64()
-    watchosDeviceArm64()
-    tvosArm64()
-    tvosX64()
-    mingwX64()
-    linuxX64()
-    linuxArm64()
-
-    macosArm64()
-    iosSimulatorArm64()
-    watchosSimulatorArm64()
-    tvosSimulatorArm64()
-
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
-    androidNativeX64()
-
     sourceSets {
         commonMain {
             dependencies {
@@ -70,104 +41,5 @@ kotlin {
                 implementation libs.testHelp
             }
         }
-
-        create("jsWasmMain") {
-            dependsOn commonMain
-        }
-
-        create("jsWasmTest") {
-            dependsOn commonTest
-        }
-
-        jsMain {
-            dependsOn jsWasmMain
-        }
-        jsTest {
-            dependsOn jsWasmTest
-        }
-
-        wasmMain {
-            dependsOn jsWasmMain
-        }
-        wasmTest {
-            dependsOn jsWasmTest
-        }
-
-        nativeCommonMain {
-            dependsOn commonMain
-        }
-        nativeCommonTest {
-            dependsOn commonTest
-        }
-
-        macosX64Main {
-            dependsOn nativeCommonMain
-        }
-        iosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        iosX64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosArm32Main {
-            dependsOn nativeCommonMain
-        }
-        watchosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosX64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosDeviceArm64Main {
-            dependsOn nativeCommonMain
-        }
-        tvosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        tvosX64Main {
-            dependsOn nativeCommonMain
-        }
-
-        macosArm64Main {
-            dependsOn nativeCommonMain
-        }
-        iosSimulatorArm64Main {
-            dependsOn nativeCommonMain
-        }
-        watchosSimulatorArm64Main {
-            dependsOn nativeCommonMain
-        }
-        tvosSimulatorArm64Main {
-            dependsOn nativeCommonMain
-        }
-
-        mingwX64Main {
-            dependsOn nativeCommonMain
-        }
-
-        linuxX64Main {
-            dependsOn nativeCommonMain
-        }
-        linuxArm64Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeArm32Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeArm64Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeX86Main {
-            dependsOn nativeCommonMain
-        }
-
-        androidNativeX64Main {
-            dependsOn nativeCommonMain
-        }
     }
 }
-
-apply plugin:"com.vanniktech.maven.publish"
