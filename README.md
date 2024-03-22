@@ -16,7 +16,7 @@ Much of the functionality of this module is similar to [atomic-fu](https://githu
 fun useRef(){
   val threadRef = ThreadRef()
   threadRef.same() // <- true
-  backgrundThread {
+  backgroundThread {
     threadRef.same() // <- false
   }
 }
