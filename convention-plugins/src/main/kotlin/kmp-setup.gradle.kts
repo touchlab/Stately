@@ -62,5 +62,6 @@ kotlin {
 }
 
 rootProject.the<NodeJsRootExtension>().apply {
-    nodeVersion = "21.7.3"
+    nodeVersion = "22.0.0-nightly2024010568c8472ed9"
+    nodeDownloadBaseUrl = "https://nodejs.org/download/nightly"
 }
