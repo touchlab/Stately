@@ -143,21 +143,28 @@ class SharedHashMapTest {
 
     @Test
     fun mtAddRemove() {
-        val LOOPS = 1_000
-        val ops = ThreadOperations { SharedHashMap<String, MapData>() }
-        val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
-        val m = SharedHashMap<String, MapData>()
-        for (i in 0 until LOOPS) {
-            val key = "key $i"
-            val value = "val $i"
-            ops.exe { m.put(key, MapData(value)) }
-            ops.test { assertTrue { m.containsKey(key) } }
-            removeOps.exe { m.remove(key) }
-            removeOps.test { assertFalse { m.containsKey(key) } }
-        }
+        val m: SharedHashMap<String, MapData>try {
+            val LOOPS = 1_000
+            val ops = ThreadOperations { SharedHashMap<String, MapData>() }
+            val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
+            m = SharedHashMap<String, MapData>()
+            for (i in 0 until LOOPS) {
+                val key = "key $i"
+                val value = "val $i"
+                ops.exe { m.put(key, MapData(value)) }
+                ops.test { assertTrue { m.containsKey(key) } }
+                removeOps.exe { m.remove(key) }
+                removeOps.test { assertFalse { m.containsKey(key) } }
+            }
 
-        ops.run(threads = 8, randomize = true)
-        removeOps.run(threads = 8, randomize = true)
+            ops.run(threads = 8, randomize = true)
+            removeOps.run(threads = 8, randomize = true)
+        } catch (e: Exception) {
+            println("mtAddRemove FAILED")
+            e.printStackTrace()
+            throw e
+        }
+        println("mtAddRemove assert m.size")
         assertEquals(0, m.size)
     }
 
