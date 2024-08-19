@@ -35,7 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Publish Mac/Windows Artifacts
+      - name: Run Gradle Build
         run: ./gradlew build --no-daemon --stacktrace --no-build-cache
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
@@ -45,5 +45,15 @@ jobs:
           ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
 
+      - name: Zip Stately Collections Build Results
+        continue-on-error: true
+        run: zip stately-connections-bulid.zip deprecated/stately-collections/build/reports/tests/* -r
+
+      - name: Upload Stately Collections Build Results
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: stately-connections-bulid
+          path: stately-connections-bulid.zip
 env:
   GRADLE_OPTS: -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=512m"
