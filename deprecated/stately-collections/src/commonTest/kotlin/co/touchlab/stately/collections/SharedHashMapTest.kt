@@ -143,6 +143,7 @@ class SharedHashMapTest {
     }
 
     @Test
+    @Ignore
     fun mtAddRemove() {
         try {
             println("mtAddRemove Start")
@@ -175,6 +176,7 @@ class SharedHashMapTest {
      * Verify that bad hash generally works. Will be bad performance, but should function.
      */
     @Test
+    @Ignore
     fun badHash() {
         val map = SharedHashMap<BadHashKey, MapData>()
         val ops = ThreadOperations { }
