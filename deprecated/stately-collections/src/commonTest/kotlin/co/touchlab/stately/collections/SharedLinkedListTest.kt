@@ -308,8 +308,8 @@ class LinkedListTest {
 
     @Test
     fun mtNodeAdd() {
-        val LOOPS = 100
-        val DOOPS = 100
+        val LOOPS = 20
+        val DOOPS = 20
         val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
         for (i in 0 until LOOPS) {

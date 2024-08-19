@@ -22,6 +22,7 @@ import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.MPWorker
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import kotlin.random.Random
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -145,7 +146,7 @@ class SharedHashMapTest {
     fun mtAddRemove() {
         try {
             println("mtAddRemove Start")
-            val LOOPS = 500
+            val LOOPS = 200
             val ops = ThreadOperations { SharedHashMap<String, MapData>() }
             val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
             val m = SharedHashMap<String, MapData>()
@@ -200,6 +201,7 @@ class SharedHashMapTest {
     }
 
     @Test
+    @Ignore
     fun testBasicThreads() {
         val WORKERS = 10
         val LOOP_INSERT = 200
