@@ -46,11 +46,11 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
 
       - name: Zip Stately Collections Build Results
-        continue-on-error: true
+        if: always()
         run: zip stately-connections-bulid.zip deprecated/stately-collections/build/reports/tests/* -r
 
       - name: Upload Stately Collections Build Results
-        continue-on-error: true
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: stately-connections-bulid
