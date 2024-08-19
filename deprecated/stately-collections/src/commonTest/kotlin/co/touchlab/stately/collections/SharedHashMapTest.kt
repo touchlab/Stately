@@ -143,11 +143,12 @@ class SharedHashMapTest {
 
     @Test
     fun mtAddRemove() {
-        val m: SharedHashMap<String, MapData>try {
+        try {
+            println("mtAddRemove Start")
             val LOOPS = 1_000
             val ops = ThreadOperations { SharedHashMap<String, MapData>() }
             val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
-            m = SharedHashMap<String, MapData>()
+            val m = SharedHashMap<String, MapData>()
             for (i in 0 until LOOPS) {
                 val key = "key $i"
                 val value = "val $i"
@@ -159,13 +160,14 @@ class SharedHashMapTest {
 
             ops.run(threads = 8, randomize = true)
             removeOps.run(threads = 8, randomize = true)
+            println("mtAddRemove assert m.size")
+            assertEquals(0, m.size)
         } catch (e: Exception) {
             println("mtAddRemove FAILED")
             e.printStackTrace()
             throw e
         }
-        println("mtAddRemove assert m.size")
-        assertEquals(0, m.size)
+
     }
 
     /**
