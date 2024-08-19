@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.android.library) apply false
@@ -28,10 +26,4 @@ val VERSION_NAME: String by project
 allprojects {
     group = GROUP
     version = VERSION_NAME
-}
-
-subprojects {
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
-    }
 }
