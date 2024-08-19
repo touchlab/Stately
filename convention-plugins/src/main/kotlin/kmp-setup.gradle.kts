@@ -62,6 +62,6 @@ kotlin {
 }
 
 rootProject.the<NodeJsRootExtension>().apply {
-    nodeVersion = "22.0.0-v8-canary202404244878d5c4f7"
+    nodeVersion = "21.0.0-v8-canary202309143a48826a08"
     nodeDownloadBaseUrl = "https://nodejs.org/download/v8-canary"
 }
