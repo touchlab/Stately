@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.time.Duration
 
 plugins {
     kotlin("multiplatform")
@@ -20,7 +21,15 @@ kotlin {
                 }
             }
         }
-        browser()
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                    // Override default timeout (needed for stress tests)
+                    timeout.set(Duration.ofSeconds(120))
+                }
+            }
+        }
     }
     @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
     wasmJs {
