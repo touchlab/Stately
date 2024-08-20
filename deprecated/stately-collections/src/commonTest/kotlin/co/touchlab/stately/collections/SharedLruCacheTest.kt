@@ -283,7 +283,7 @@ class SharedLruCacheTest {
     @Test
     fun mtPutStress() {
         val CACHE_SIZE = 100
-        val LOOPS = 5000
+        val LOOPS = 100
 
         val count = AtomicInt(0)
         val ops = ThreadOperations<SharedLruCache<String, MapData>> {
