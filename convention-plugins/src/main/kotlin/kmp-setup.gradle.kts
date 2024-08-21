@@ -21,15 +21,7 @@ kotlin {
                 }
             }
         }
-        browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    // Override default timeout (needed for stress tests)
-                    timeout.set(Duration.ofSeconds(120))
-                }
-            }
-        }
+        browser()
     }
     @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl::class)
     wasmJs {
