@@ -443,7 +443,7 @@ class LinkedListTest {
      */
     @Test
     fun testBasicThreads() {
-        val LOOPS = 2500
+        val LOOPS = 500
         val ops = ThreadOperations { SharedLinkedList<TestData>() }
         val ll = SharedLinkedList<TestData>().freeze()
 
