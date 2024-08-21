@@ -49,7 +49,6 @@ jobs:
         if: always()
         run: |
           zip stately-collections-build.zip deprecated/stately-collections/build/reports/tests/* -r
-          zip stately-common-build.zip deprecated/stately-common/build/reports/tests/* -r
           zip stately-iso-collections.zip deprecated/stately-iso-collections/build/reports/tests/* -r
           zip stately-isolate.zip deprecated/stately-isolate/build/reports/tests/* -r
 
@@ -59,13 +58,6 @@ jobs:
         with:
           name: stately-collections-build
           path: stately-collections-build.zip
-
-      - name: Upload Stately Common Build Results
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: stately-common-build
-          path: stately-common-build.zip
 
       - name: Upload Stately Iso Collections Build Results
         if: always()
