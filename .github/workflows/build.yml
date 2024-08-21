@@ -45,15 +45,40 @@ jobs:
           ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
 
-      - name: Zip Stately Collections Build Results
+      - name: Zip Stately Build Results
         if: always()
-        run: zip stately-connections-bulid.zip deprecated/stately-collections/build/reports/tests/* -r
+        run: |
+          zip stately-collections-build.zip deprecated/stately-collections/build/reports/tests/* -r
+          zip stately-common-build.zip deprecated/stately-common/build/reports/tests/* -r
+          zip stately-iso-collections.zip deprecated/stately-iso-collections/build/reports/tests/* -r
+          zip stately-isolate.zip deprecated/stately-isolate/build/reports/tests/* -r
 
       - name: Upload Stately Collections Build Results
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: stately-connections-bulid
-          path: stately-connections-bulid.zip
+          name: stately-collections-build
+          path: stately-collections-build.zip
+
+      - name: Upload Stately Common Build Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: stately-common-build
+          path: stately-common-build.zip
+
+      - name: Upload Stately Iso Collections Build Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: stately-iso-collections
+          path: stately-iso-collections.zip
+
+      - name: Upload Stately Isolate Build Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: stately-isolate
+          path: stately-isolate.zip
 env:
   GRADLE_OPTS: -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxMetaspaceSize=512m"
