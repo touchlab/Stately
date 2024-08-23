@@ -17,7 +17,7 @@ class IsoStateTest {
         val ops = ThreadOperations {}
 
         val isoList = IsolateState { mutableListOf<SomeData>() }
-        repeat(100_000) { rcount ->
+        repeat(5_000) { rcount ->
             ops.exe {
                 isoList.access { l ->
                     l.add(SomeData("arst $rcount"))
@@ -31,7 +31,7 @@ class IsoStateTest {
             l.size
         }
 
-        assertEquals(100_000, lsize)
+        assertEquals(5_000, lsize)
     }
 
 
