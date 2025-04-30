@@ -2,7 +2,6 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.testhelp.concurrency.sleep
-import kotlinx.coroutines.delay
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -31,9 +30,9 @@ class ConcurrentMutableMapTest {
 
         repeat(1000) { i ->
             val key = "key $i"
-            assertTrue(map.containsKey(key), "Key not found '${key}'")
+            assertTrue(map.containsKey(key), "Key not found '$key'")
             val valueString = "value $i"
-            assertTrue(map.containsValue(SomeData(valueString)), "Value not found '${valueString}'")
+            assertTrue(map.containsValue(SomeData(valueString)), "Value not found '$valueString'")
         }
     }
 

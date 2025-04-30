@@ -73,8 +73,7 @@ class CopyOnWriteList<T>(elements: Collection<T>) : MutableList<T> {
 
     override fun isEmpty(): Boolean = listData.value.isEmpty()
 
-    override fun iterator(): MutableIterator<T> =
-        LocalIterator(listData.value)
+    override fun iterator(): MutableIterator<T> = LocalIterator(listData.value)
 
     override fun lastIndexOf(element: T): Int = listData.value.lastIndexOf(element)
 
@@ -88,11 +87,9 @@ class CopyOnWriteList<T>(elements: Collection<T>) : MutableList<T> {
 
     override fun clear() = modifyList { it.clear() }
 
-    override fun listIterator(): MutableListIterator<T> =
-        LocalListIterator(listData.value)
+    override fun listIterator(): MutableListIterator<T> = LocalListIterator(listData.value)
 
-    override fun listIterator(index: Int): MutableListIterator<T> =
-        LocalListIterator(listData.value, index)
+    override fun listIterator(index: Int): MutableListIterator<T> = LocalListIterator(listData.value, index)
 
     override fun remove(element: T): Boolean = modifyList { it.remove(element) }
 
@@ -112,13 +109,12 @@ class CopyOnWriteList<T>(elements: Collection<T>) : MutableList<T> {
 
         override fun next(): T = list.get(index.addAndGet(1) - 1)
 
-        override fun remove() {
-            throw UnsupportedOperationException("Can't mutate list from iterator")
-        }
+        override fun remove(): Unit = throw UnsupportedOperationException("Can't mutate list from iterator")
     }
 
     private class LocalListIterator<T>(private val list: List<T>, startIndex: Int = 0) :
-        LocalIterator<T>(list, startIndex), MutableListIterator<T> {
+        LocalIterator<T>(list, startIndex),
+        MutableListIterator<T> {
         override fun hasPrevious(): Boolean = index.value > 0
 
         override fun nextIndex(): Int = index.value
@@ -127,12 +123,8 @@ class CopyOnWriteList<T>(elements: Collection<T>) : MutableList<T> {
 
         override fun previousIndex(): Int = index.value - 1
 
-        override fun add(element: T) {
-            throw UnsupportedOperationException()
-        }
+        override fun add(element: T): Unit = throw UnsupportedOperationException()
 
-        override fun set(element: T) {
-            throw UnsupportedOperationException()
-        }
+        override fun set(element: T): Unit = throw UnsupportedOperationException()
     }
 }

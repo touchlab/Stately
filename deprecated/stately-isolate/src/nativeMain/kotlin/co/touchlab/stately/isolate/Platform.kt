@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package co.touchlab.stately.isolate
 
 import co.touchlab.stately.concurrency.GuardedStableRef

@@ -4,10 +4,9 @@ import co.touchlab.stately.concurrency.Synchronizable
 import co.touchlab.stately.concurrency.synchronize
 import kotlin.jvm.JvmName
 
-class ConcurrentMutableMap<K, V> internal constructor(
-    rootArg: Synchronizable? = null,
-    private val del: MutableMap<K, V>
-) : Synchronizable(), MutableMap<K, V> {
+class ConcurrentMutableMap<K, V> internal constructor(rootArg: Synchronizable? = null, private val del: MutableMap<K, V>) :
+    Synchronizable(),
+    MutableMap<K, V> {
 
     constructor() : this(null, mutableMapOf())
 
@@ -35,16 +34,14 @@ class ConcurrentMutableMap<K, V> internal constructor(
      * attempts to compute its value using the given mapping function and enters it into this map
      */
     @JvmName("safeComputeIfAbsent")
-    fun computeIfAbsent(key: K, defaultValue: (K) -> V): V {
-        return syncTarget.synchronize {
-            val value = del[key]
-            if (value == null) {
-                val newValue = defaultValue(key)
-                del[key] = newValue
-                newValue
-            } else {
-                value
-            }
+    fun computeIfAbsent(key: K, defaultValue: (K) -> V): V = syncTarget.synchronize {
+        val value = del[key]
+        if (value == null) {
+            val newValue = defaultValue(key)
+            del[key] = newValue
+            newValue
+        } else {
+            value
         }
     }
 
@@ -63,10 +60,7 @@ class ConcurrentMutableMap<K, V> internal constructor(
     }
 }
 
-internal class ConcurrentMutableListIterator<E>(
-    private val root: Synchronizable,
-    private val del: MutableListIterator<E>
-) :
+internal class ConcurrentMutableListIterator<E>(private val root: Synchronizable, private val del: MutableListIterator<E>) :
     ConcurrentMutableIterator<E>(root, del),
     MutableListIterator<E> {
     override fun hasPrevious(): Boolean = root.synchronize { del.hasPrevious() }

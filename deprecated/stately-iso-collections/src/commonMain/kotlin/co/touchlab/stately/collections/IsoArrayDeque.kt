@@ -5,9 +5,11 @@ import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 open class IsoArrayDeque<E>
-internal constructor(stateHolder: StateHolder<ArrayDeque<E>>) :
-    IsoMutableList<E>(stateHolder) {
-    constructor(stateRunner: StateRunner? = null, producer: () -> ArrayDeque<E> = { ArrayDeque() }) : this(createState(stateRunner, producer))
+internal constructor(stateHolder: StateHolder<ArrayDeque<E>>) : IsoMutableList<E>(stateHolder) {
+    constructor(
+        stateRunner: StateRunner? = null,
+        producer: () -> ArrayDeque<E> = { ArrayDeque() },
+    ) : this(createState(stateRunner, producer))
 
     /**
      * Returns the first element, or throws [NoSuchElementException] if this deque is empty.
@@ -59,6 +61,5 @@ internal constructor(stateHolder: StateHolder<ArrayDeque<E>>) :
      */
     public fun removeLastOrNull(): E? = asAccess { it.removeLastOrNull() }
 
-    private inline fun <R> asAccess(crossinline block: (ArrayDeque<E>) -> R): R =
-        access { block(it as ArrayDeque<E>) }
+    private inline fun <R> asAccess(crossinline block: (ArrayDeque<E>) -> R): R = access { block(it as ArrayDeque<E>) }
 }

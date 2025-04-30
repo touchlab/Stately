@@ -24,10 +24,10 @@ import kotlin.test.assertEquals
 class HelpersTest {
     @OptIn(ExperimentalNativeApi::class)
     @Test
-    fun maybeFreezeTest(){
+    fun maybeFreezeTest() {
         val h = Heyo("hello").maybeFreeze()
         assertEquals(h.isFrozen, Platform.memoryModel == MemoryModel.STRICT && Platform.isFreezingEnabled)
     }
 
-    data class Heyo(val s:String)
+    data class Heyo(val s: String)
 }

@@ -1,11 +1,11 @@
 package co.touchlab.stately.collections
 
 import co.touchlab.stately.concurrency.ThreadRef
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ConcurrentMutableListTest {
     @Test
@@ -16,8 +16,9 @@ class ConcurrentMutableListTest {
 
         runAlot {
             list.add(SomeData("arst $it"))
-            if (it % (DEFAULT_RUNS / 10) == 0)
+            if (it % (DEFAULT_RUNS / 10) == 0) {
                 println("count $it thread: ${threadRef.same()}")
+            }
         }
 
         assertEquals(list.size, DEFAULT_RUNS * 2)
@@ -31,7 +32,7 @@ class ConcurrentMutableListTest {
         runAlot(100) { outerCount ->
             list.block {
                 repeat(1000) { innerCount ->
-                    list.add(SomeData("arst ${innerCount}"))
+                    list.add(SomeData("arst $innerCount"))
                 }
             }
         }

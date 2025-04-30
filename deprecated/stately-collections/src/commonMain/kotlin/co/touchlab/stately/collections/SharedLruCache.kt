@@ -39,10 +39,8 @@ import co.touchlab.stately.freeze
  * case the onRemove logic intends to call back into the cache. This may have unintended consequences if you're expecting
  * the mutation to be fully atomic in nature.
  */
-class SharedLruCache<K, V>(
-    private val maxCacheSize: Int,
-    private val onRemove: (MutableMap.MutableEntry<K, V>) -> Unit = {}
-) : LruCache<K, V> {
+class SharedLruCache<K, V>(private val maxCacheSize: Int, private val onRemove: (MutableMap.MutableEntry<K, V>) -> Unit = {}) :
+    LruCache<K, V> {
 
     private var lock: Lock = Lock()
     private val cacheMap = SharedHashMap<K, CacheEntry<K, V>>(initialCapacity = maxCacheSize)
@@ -188,13 +186,9 @@ class SharedLruCache<K, V>(
 
     class LruEntry<K, V>(override val key: K, override val value: V) : MutableMap.MutableEntry<K, V> {
 
-        override fun setValue(newValue: V): V {
-            throw UnsupportedOperationException()
-        }
+        override fun setValue(newValue: V): V = throw UnsupportedOperationException()
 
-        override fun toString(): String {
-            return "LruEntry(key=$key, value=$value)"
-        }
+        override fun toString(): String = "LruEntry(key=$key, value=$value)"
     }
 
     private fun internalAll(): HashSet<MutableMap.MutableEntry<K, V>> {

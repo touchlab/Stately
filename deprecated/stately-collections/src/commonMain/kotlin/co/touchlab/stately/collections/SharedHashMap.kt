@@ -35,9 +35,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
         override val value: V
             get() = v
 
-        override fun setValue(newValue: V): V {
-            throw UnsupportedOperationException()
-        }
+        override fun setValue(newValue: V): V = throw UnsupportedOperationException()
     }
 
     private var lock: Lock = Lock()
@@ -56,8 +54,9 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
 
     init {
         var capacity = 1
-        while (capacity < initialCapacity)
+        while (capacity < initialCapacity) {
             capacity = capacity shl 1
+        }
 
         threshold = AtomicInt((capacity.toFloat() * loadFactor).toInt())
         buckets = AtomicReference(makeBuckets(capacity))
@@ -65,13 +64,11 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
         freeze()
     }
 
-    private fun makeBuckets(capacity: Int): Array<AtomicReference<SharedLinkedList<Entry<K, V>>>> {
-        return (
-            Array(capacity) {
-                AtomicReference(SharedLinkedList<Entry<K, V>>(1).freeze())
-            }
-            ).freeze()
-    }
+    private fun makeBuckets(capacity: Int): Array<AtomicReference<SharedLinkedList<Entry<K, V>>>> = (
+        Array(capacity) {
+            AtomicReference(SharedLinkedList<Entry<K, V>>(1).freeze())
+        }
+        ).freeze()
 
     private inline fun iterInternal(proc: (Entry<K, V>) -> Unit) {
         buckets.value.forEach {
@@ -115,31 +112,19 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
         }
 
     private class NotReallyMutableSet<T>(private val delegate: MutableCollection<T>) : MutableSet<T> {
-        override fun add(element: T): Boolean {
-            throw UnsupportedOperationException()
-        }
+        override fun add(element: T): Boolean = throw UnsupportedOperationException()
 
-        override fun addAll(elements: Collection<T>): Boolean {
-            throw UnsupportedOperationException()
-        }
+        override fun addAll(elements: Collection<T>): Boolean = throw UnsupportedOperationException()
 
-        override fun clear() {
-            throw UnsupportedOperationException()
-        }
+        override fun clear(): Unit = throw UnsupportedOperationException()
 
         override fun iterator(): MutableIterator<T> = delegate.iterator()
 
-        override fun remove(element: T): Boolean {
-            throw UnsupportedOperationException()
-        }
+        override fun remove(element: T): Boolean = throw UnsupportedOperationException()
 
-        override fun removeAll(elements: Collection<T>): Boolean {
-            throw UnsupportedOperationException()
-        }
+        override fun removeAll(elements: Collection<T>): Boolean = throw UnsupportedOperationException()
 
-        override fun retainAll(elements: Collection<T>): Boolean {
-            throw UnsupportedOperationException()
-        }
+        override fun retainAll(elements: Collection<T>): Boolean = throw UnsupportedOperationException()
 
         override val size: Int
             get() = delegate.size
@@ -201,10 +186,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
         return result
     }
 
-    private fun internalRemoveByKey(
-        entryList: SharedLinkedList<Entry<K, V>>,
-        key: K
-    ): V? {
+    private fun internalRemoveByKey(entryList: SharedLinkedList<Entry<K, V>>, key: K): V? {
         var result: AbstractSharedLinkedList.Node<Entry<K, V>>? = null
         val iter = entryList.nodeIterator()
         while (iter.hasNext()) {
@@ -250,7 +232,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
 
     private fun transfer(
         newTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>,
-        oldTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>
+        oldTable: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>,
     ) {
         oldTable.forEach {
             it.value.iterator().forEach {
@@ -262,9 +244,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
 
     internal fun currentBucketSize(): Int = buckets.value.size
 
-    private fun indexFor(h: Int, length: Int): Int {
-        return h and length - 1
-    }
+    private fun indexFor(h: Int, length: Int): Int = h and length - 1
 
     internal fun rehash(initHash: Int): Int {
         var h = initHash
@@ -275,10 +255,7 @@ class SharedHashMap<K, V>(initialCapacity: Int = 16, val loadFactor: Float = 0.7
         return h xor h.ushr(7) xor h.ushr(4)
     }
 
-    private fun findEntryList(
-        bucketArray: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>,
-        key: K
-    ): SharedLinkedList<Entry<K, V>> {
+    private fun findEntryList(bucketArray: Array<AtomicReference<SharedLinkedList<Entry<K, V>>>>, key: K): SharedLinkedList<Entry<K, V>> {
         val hash = rehash(key.hashCode())
         val entryList = bucketArray.get(indexFor(hash, bucketArray.size)).value
         return entryList

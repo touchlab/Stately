@@ -14,7 +14,7 @@ actual class BackgroundStateRunner actual constructor() : StateRunner {
                 } catch (e: Throwable) {
                     Thrown(e)
                 }
-            }
+            },
         ).get()
 
         return when (result) {

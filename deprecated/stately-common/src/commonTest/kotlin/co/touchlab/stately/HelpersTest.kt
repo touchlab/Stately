@@ -16,7 +16,6 @@
 
 package co.touchlab.stately
 
-
 class HelpersTest {
     // @Test
     // fun ensureNeverFrozenNoFreezeChild() {

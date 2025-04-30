@@ -7,11 +7,7 @@ import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.concurrency.withLock
 import co.touchlab.stately.freeze
 
-class ObjectPool<T>(
-    private val maxSize: Int,
-    private val createBlock: () -> T,
-    private val cleanupBlock: ((t: T) -> Unit)? = null
-) {
+class ObjectPool<T>(private val maxSize: Int, private val createBlock: () -> T, private val cleanupBlock: ((t: T) -> Unit)? = null) {
     init {
         if (maxSize < 0) {
             throw IllegalArgumentException("maxSize cannot be negative")

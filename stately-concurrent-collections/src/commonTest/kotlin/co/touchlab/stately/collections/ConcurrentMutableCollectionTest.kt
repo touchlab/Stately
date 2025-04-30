@@ -128,7 +128,7 @@ class ConcurrentMutableCollectionTest {
 fun <E> runBoth(
     runs: Int = DEFAULT_RUNS,
     block: (ConcurrentMutableCollection<E>, Int) -> Unit,
-    verify: (ConcurrentMutableCollection<E>) -> Unit
+    verify: (ConcurrentMutableCollection<E>) -> Unit,
 ) {
     val set = ConcurrentMutableSet<E>()
     runAlot(runs) {

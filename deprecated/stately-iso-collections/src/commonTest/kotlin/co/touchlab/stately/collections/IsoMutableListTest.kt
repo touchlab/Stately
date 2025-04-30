@@ -49,8 +49,8 @@ open class IsoMutableListTest : IsoMutableCollectionTest() {
             listOf(
                 SomeData("key 234"),
                 SomeData("key 235"),
-                SomeData("key 236")
-            )
+                SomeData("key 236"),
+            ),
         )
     }
 

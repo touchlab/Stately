@@ -126,8 +126,8 @@ class SharedHashMapTest {
                 m.entries,
                 SharedHashMap.Entry("Key: 0", MapData("Value: 0")),
                 SharedHashMap.Entry("Key: 1", MapData("Value: 1")),
-                SharedHashMap.Entry("Key: 2", MapData("Value: 2"))
-            )
+                SharedHashMap.Entry("Key: 2", MapData("Value: 2")),
+            ),
         )
     }
 
@@ -147,11 +147,11 @@ class SharedHashMapTest {
     fun mtAddRemove() {
         try {
             println("mtAddRemove Start")
-            val LOOPS = 200
+            val loops = 200
             val ops = ThreadOperations { SharedHashMap<String, MapData>() }
             val removeOps = ThreadOperations { SharedHashMap<String, MapData>() }
             val m = SharedHashMap<String, MapData>()
-            for (i in 0 until LOOPS) {
+            for (i in 0 until loops) {
                 val key = "key $i"
                 val value = "val $i"
                 ops.exe { m.put(key, MapData(value)) }
@@ -169,7 +169,6 @@ class SharedHashMapTest {
             e.printStackTrace()
             throw e
         }
-
     }
 
     /**
@@ -182,8 +181,8 @@ class SharedHashMapTest {
         val ops = ThreadOperations { }
         val removeOps = ThreadOperations { }
 
-        val LOOPS = 500
-        for (i in 0 until LOOPS) {
+        val loops = 500
+        for (i in 0 until loops) {
             val key = "key $i"
             ops.exe { map.put(BadHashKey(key), MapData("val $i")) }
             ops.test { assertTrue { map.containsKey(BadHashKey(key)) } }
@@ -192,7 +191,7 @@ class SharedHashMapTest {
         }
 
         ops.run(threads = 8, randomize = true)
-        assertEquals(LOOPS, map.size)
+        assertEquals(loops, map.size)
         removeOps.run(threads = 8, randomize = true)
         assertEquals(0, map.size)
     }
@@ -205,11 +204,11 @@ class SharedHashMapTest {
     @Test
     @Ignore
     fun testBasicThreads() {
-        val WORKERS = 10
-        val LOOP_INSERT = 200
-        val LOOP_REMOVE = 15
+        val workerNum = 10
+        val loopInsert = 200
+        val loopRemove = 15
 
-        val workers = Array(WORKERS) {
+        val workers = Array(workerNum) {
             MPWorker()
         }
 
@@ -223,11 +222,11 @@ class SharedHashMapTest {
             val mycount = count.value
 
             it.runBackground {
-                for (i in 0 until LOOP_INSERT) {
+                for (i in 0 until loopInsert) {
                     val key = "W:$mycount I:$i"
                     m.put(key, MapData("W2:$mycount I2:$i"))
                 }
-                for (i in 0 until LOOP_REMOVE) {
+                for (i in 0 until loopRemove) {
                     m.remove("W:$mycount I:${i * 10}")
                 }
             }
@@ -237,7 +236,7 @@ class SharedHashMapTest {
         workers.forEach { it.requestTermination() }
 
         println("basic threads time: ${TimeSource.Monotonic.markNow().minus(start).inWholeMilliseconds}")
-        val size = (LOOP_INSERT - LOOP_REMOVE) * WORKERS
+        val size = (loopInsert - loopRemove) * workerNum
         assertEquals(m.size, size)
         assertEquals(m.entries.size, size)
         assertEquals(m.keys.size, size)

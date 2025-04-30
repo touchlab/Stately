@@ -5,7 +5,8 @@ import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 open class IsoMutableMap<K, V>(stateRunner: StateRunner? = null, producer: () -> MutableMap<K, V> = { mutableMapOf() }) :
-    IsolateState<MutableMap<K, V>>(createState(stateRunner, producer)), MutableMap<K, V> {
+    IsolateState<MutableMap<K, V>>(createState(stateRunner, producer)),
+    MutableMap<K, V> {
     override val size: Int
         get() = access { it.size }
 
@@ -28,11 +29,7 @@ open class IsoMutableMap<K, V>(stateRunner: StateRunner? = null, producer: () ->
     override fun putAll(from: Map<out K, V>) = access { it.putAll(from) }
     override fun remove(key: K): V? = access { it.remove(key) }
 
-    override fun equals(other: Any?): Boolean {
-        return access { it.equals(other) }
-    }
+    override fun equals(other: Any?): Boolean = access { it.equals(other) }
 
-    override fun hashCode(): Int {
-        return access { it.hashCode() }
-    }
+    override fun hashCode(): Int = access { it.hashCode() }
 }

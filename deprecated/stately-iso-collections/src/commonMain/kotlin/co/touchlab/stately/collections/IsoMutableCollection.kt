@@ -6,16 +6,13 @@ import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 open class IsoMutableCollection<T> internal constructor(stateHolder: StateHolder<MutableCollection<T>>) :
-    IsolateState<MutableCollection<T>>(stateHolder), MutableCollection<T> {
+    IsolateState<MutableCollection<T>>(stateHolder),
+    MutableCollection<T> {
     constructor(stateRunner: StateRunner? = null, producer: () -> MutableCollection<T>) : this(createState(stateRunner, producer))
 
-    override fun equals(other: Any?): Boolean {
-        return access { it == other }
-    }
+    override fun equals(other: Any?): Boolean = access { it == other }
 
-    override fun hashCode(): Int {
-        return access { it.hashCode() }
-    }
+    override fun hashCode(): Int = access { it.hashCode() }
 
     override val size: Int
         get() = access { it.size }

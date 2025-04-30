@@ -19,11 +19,8 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.AtomicInt
 import co.touchlab.stately.concurrency.value
 import co.touchlab.testhelp.concurrency.ThreadOperations
-import co.touchlab.testhelp.isNative
-import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -100,7 +97,7 @@ class SharedLruCacheTest {
             MapData("Value: 2"),
             MapData("Value: 0"),
             MapData("Value: 1"),
-            MapData("Value: 3")
+            MapData("Value: 3"),
         )
 
         assertEquals(sc.size, 0)
@@ -136,7 +133,7 @@ class SharedLruCacheTest {
             MapData("Value: 0"),
             MapData("Value: 1"),
             MapData("Value: 2"),
-            MapData("Value: 3")
+            MapData("Value: 3"),
         )
 
         sc.remove("Key: 1")
@@ -151,7 +148,7 @@ class SharedLruCacheTest {
             MapData("Value: 3"),
             MapData("Value: 2"),
             MapData("Value: 0"),
-            MapData("1")
+            MapData("1"),
         )
 
         sc.put("b", MapData("2"))
@@ -161,7 +158,7 @@ class SharedLruCacheTest {
             MapData("Value: 2"),
             MapData("Value: 0"),
             MapData("1"),
-            MapData("2")
+            MapData("2"),
         )
     }
 
@@ -282,23 +279,23 @@ class SharedLruCacheTest {
 
     @Test
     fun mtPutStress() {
-        val CACHE_SIZE = 100
-        val LOOPS = 100
+        val cacheSize = 100
+        val loops = 100
 
         val count = AtomicInt(0)
         val ops = ThreadOperations<SharedLruCache<String, MapData>> {
-            SharedLruCache(CACHE_SIZE) { count.incrementAndGet() }
+            SharedLruCache(cacheSize) { count.incrementAndGet() }
         }
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             ops.exe {
                 it.put("key $i", MapData("data $i"))
             }
         }
 
         val lru = ops.run(threads = 8, randomize = true)
-        assertEquals(CACHE_SIZE, lru.size)
-        assertEquals(LOOPS - CACHE_SIZE, count.value)
+        assertEquals(cacheSize, lru.size)
+        assertEquals(loops - cacheSize, count.value)
     }
 
     private fun checkExists(lru: LruCache<String, MapData>, vararg keys: String) {

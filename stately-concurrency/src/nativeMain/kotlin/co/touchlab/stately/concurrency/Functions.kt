@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package co.touchlab.stately.concurrency
 
 actual open class Synchronizable(private val _lock: Lock) {

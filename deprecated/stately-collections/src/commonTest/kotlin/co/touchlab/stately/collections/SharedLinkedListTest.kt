@@ -19,7 +19,6 @@ package co.touchlab.stately.collections
 import co.touchlab.stately.concurrency.value
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
-import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -308,21 +307,21 @@ class LinkedListTest {
 
     @Test
     fun mtNodeAdd() {
-        val LOOPS = 20
-        val DOOPS = 20
+        val loops = 20
+        val doops = 20
         val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
         nodeList.freeze()
 
         val ops = ThreadOperations { }
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             ops.exe {
                 val node = nodeList.get(i)
-                for (j in 0 until DOOPS) {
+                for (j in 0 until doops) {
                     node.add(ListData("a $i sub $j"))
                 }
                 node.remove()
@@ -331,7 +330,7 @@ class LinkedListTest {
 
         ops.run(8)
 
-        assertEquals(DOOPS * LOOPS, ll.size)
+        assertEquals(doops * loops, ll.size)
 
         var loopCount = 0
         var doopCount = 0
@@ -353,7 +352,7 @@ class LinkedListTest {
             assertEquals(ListData("a $loopCount sub $doopCount"), it)
 
             doopCount++
-            if (doopCount == DOOPS) {
+            if (doopCount == doops) {
                 doopCount = 0
                 loopCount++
             }
@@ -365,17 +364,17 @@ class LinkedListTest {
      */
     @Test
     fun mtNodeRemove() {
-        val LOOPS = 2_000
+        val loops = 2_000
         val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
         nodeList.freeze()
 
         val ops = ThreadOperations { }
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             ops.exe {
                 val node = nodeList.get(i)
                 if (i % 100 == 0) {
@@ -387,7 +386,7 @@ class LinkedListTest {
 
         ops.run(8)
 
-        assertEquals(LOOPS / 100, ll.size)
+        assertEquals(loops / 100, ll.size)
     }
 
     /**
@@ -396,24 +395,24 @@ class LinkedListTest {
      */
     @Test
     fun mtNodeSet() {
-        val LOOPS = 80
+        val loops = 80
         val ll = SharedLinkedList<ListData>().freeze()
         val nodeList = mutableListOf<AbstractSharedLinkedList.Node<ListData>>()
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             nodeList.add(ll.addNode(ListData("a $i")))
         }
 
         nodeList.freeze()
 
         val ops = ThreadOperations { }
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             ops.exe { nodeList.get(i).set(ListData("b $i")) }
             ops.test { assertEquals(ll.get(i), ListData("b $i")) }
         }
 
         ops.run(8, true)
 
-        assertEquals(LOOPS, ll.size)
+        assertEquals(loops, ll.size)
     }
 
     /**
@@ -423,9 +422,9 @@ class LinkedListTest {
     fun mtAdd() {
         val ops = ThreadOperations { SharedLinkedList<ListData>() }
 
-        val LOOPS = 50
+        val loops = 50
 
-        for (wcount in 0 until LOOPS) {
+        for (wcount in 0 until loops) {
             ops.exe { ll ->
                 ll.add(ListData("$wcount 1"))
                 ll.add(ListData("$wcount 2"))
@@ -435,7 +434,7 @@ class LinkedListTest {
 
         val ll = ops.run(threads = 5, randomize = true)
 
-        assertEquals(LOOPS * 3, ll.size)
+        assertEquals(loops * 3, ll.size)
     }
 
     /**
@@ -443,11 +442,11 @@ class LinkedListTest {
      */
     @Test
     fun testBasicThreads() {
-        val LOOPS = 500
+        val loops = 500
         val ops = ThreadOperations { SharedLinkedList<TestData>() }
         val ll = SharedLinkedList<TestData>().freeze()
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             ops.exe { ll.add(TestData("Value: $i")) }
             ops.test { ll.contains(TestData("Value: $i")) }
         }
@@ -468,7 +467,8 @@ class LinkedListTest {
                 //TODO: Figure out some threaded stress tests. The following
                 //was acting as intended but failing when trying to remove the same node
 
-                *//*val countDownEnd = 100 * valCount
+ */
+/*val countDownEnd = 100 * valCount
                 var countDownStart = countDownEnd +
 
                 ll.nodeIterator().forEach {
@@ -482,13 +482,14 @@ class LinkedListTest {
                             collisionCount.increment()
                         }
                     }
-                }*//*
+                }*/
+/*
             }
         }
 
         workers.forEach { it.requestTermination() }*/
 
-        assertEquals(LOOPS, ll.size)
+        assertEquals(loops, ll.size)
     }
 
     @Test

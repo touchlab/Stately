@@ -4,7 +4,10 @@ plugins {
     id("kmp-setup")
 }
 
+@Suppress("ktlint:standard:property-naming")
 val GROUP: String by project
+
+@Suppress("ktlint:standard:property-naming")
 val VERSION_NAME: String by project
 
 group = GROUP

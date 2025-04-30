@@ -9,14 +9,15 @@ actual class BackgroundStateRunner actual constructor() : StateRunner {
 
     actual override fun <R> stateRun(block: () -> R): R {
         val result = stateWorker.execute(
-            TransferMode.SAFE, { block.freeze() },
+            TransferMode.SAFE,
+            { block.freeze() },
             {
                 try {
                     Ok(it()).freeze()
                 } catch (e: Throwable) {
                     Thrown(e).freeze()
                 }
-            }
+            },
         ).result
         return when (result) {
             is Ok<*> -> result.result as R
