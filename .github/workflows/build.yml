@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload Stately Collections Build Results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deprecated-test-results
           path: deprecated/**/build/reports/tests/
