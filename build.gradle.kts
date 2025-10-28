@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.touchlab.docusaurusosstemplate)
     alias(libs.plugins.mavenPublish) apply false
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0" apply false
+    alias(libs.plugins.ktlint) apply false
 }
 
 apiValidation {

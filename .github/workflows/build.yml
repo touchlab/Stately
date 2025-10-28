@@ -36,7 +36,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run Gradle Build
-        run: ./gradlew ktlintCheck build --no-daemon --stacktrace --no-build-cache
+        run: ./gradlew build --no-daemon --stacktrace --no-build-cache
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
