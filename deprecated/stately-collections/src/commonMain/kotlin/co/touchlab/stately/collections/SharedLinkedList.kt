@@ -57,9 +57,7 @@ class SharedLinkedList<T>(objectPoolSize: Int = 0) : AbstractSharedLinkedList<T>
     fun nodeIterator(): MutableIterator<Node<T>> = NodeIterator(this, version.value)
 
     class NodeIterator<T>(private val ll: SharedLinkedList<T>, private val version: Int) : MutableIterator<Node<T>> {
-        override fun remove() {
-            throw UnsupportedOperationException()
-        }
+        override fun remove(): Unit = throw UnsupportedOperationException()
 
         var currentNode = ll.head.value
 
@@ -83,9 +81,7 @@ class SharedLinkedList<T>(objectPoolSize: Int = 0) : AbstractSharedLinkedList<T>
     }
 
     class LLIterator<T>(private val ll: SharedLinkedList<T>, private val version: Int) : MutableIterator<T> {
-        override fun remove() {
-            throw UnsupportedOperationException()
-        }
+        override fun remove(): Unit = throw UnsupportedOperationException()
 
         var currentNode = ll.head.value
 
@@ -133,11 +129,9 @@ class CopyOnIterateLinkedList<T>(objectPoolSize: Int = 0) : AbstractSharedLinked
 
     override fun iterator(): MutableIterator<T> = LocalIterator(withLock(false) { checkUpdate() }.iterator())
 
-    override fun listIterator(): MutableListIterator<T> =
-        LocalListIterator(withLock(false) { checkUpdate() }.listIterator())
+    override fun listIterator(): MutableListIterator<T> = LocalListIterator(withLock(false) { checkUpdate() }.listIterator())
 
-    override fun listIterator(index: Int): MutableListIterator<T> =
-        LocalListIterator(withLock(false) { checkUpdate() }.listIterator(index))
+    override fun listIterator(index: Int): MutableListIterator<T> = LocalListIterator(withLock(false) { checkUpdate() }.listIterator(index))
 
     private fun checkUpdate(): MutableList<T> {
         if (updated.value != 0) {
@@ -162,9 +156,7 @@ private open class LocalIterator<T>(private val delegate: MutableIterator<T>) : 
 
     override fun next(): T = delegate.next()
 
-    override fun remove() {
-        throw UnsupportedOperationException("Can't mutate list from iterator")
-    }
+    override fun remove(): Unit = throw UnsupportedOperationException("Can't mutate list from iterator")
 }
 
 private class LocalListIterator<T>(private val delegate: MutableListIterator<T>) : MutableListIterator<T> {
@@ -172,9 +164,7 @@ private class LocalListIterator<T>(private val delegate: MutableListIterator<T>)
 
     override fun next(): T = delegate.next()
 
-    override fun remove() {
-        throw UnsupportedOperationException("Can't mutate list from iterator")
-    }
+    override fun remove(): Unit = throw UnsupportedOperationException("Can't mutate list from iterator")
 
     override fun hasPrevious(): Boolean = delegate.hasPrevious()
 
@@ -184,13 +174,9 @@ private class LocalListIterator<T>(private val delegate: MutableListIterator<T>)
 
     override fun previousIndex(): Int = delegate.previousIndex()
 
-    override fun add(element: T) {
-        throw UnsupportedOperationException()
-    }
+    override fun add(element: T): Unit = throw UnsupportedOperationException()
 
-    override fun set(element: T) {
-        throw UnsupportedOperationException()
-    }
+    override fun set(element: T): Unit = throw UnsupportedOperationException()
 }
 
 abstract class AbstractSharedLinkedList<T>(objectPoolSize: Int) : MutableList<T> {
@@ -234,9 +220,7 @@ abstract class AbstractSharedLinkedList<T>(objectPoolSize: Int) : MutableList<T>
         true
     }
 
-    override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> {
-        throw UnsupportedOperationException()
-    }
+    override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> = throw UnsupportedOperationException()
 
     override val size: Int
         get() = withLock(false) { sizeCount.value }
@@ -293,8 +277,7 @@ abstract class AbstractSharedLinkedList<T>(objectPoolSize: Int) : MutableList<T>
 
     override fun contains(element: T): Boolean = withLock(false) { internalFindFirst(element) != null }
 
-    override fun containsAll(elements: Collection<T>): Boolean =
-        withLock(false) { elements.all { internalFindFirst(it) != null } }
+    override fun containsAll(elements: Collection<T>): Boolean = withLock(false) { elements.all { internalFindFirst(it) != null } }
 
     override fun get(index: Int) = withLock(false) { internalNodeAt(index).nodeValue }
 

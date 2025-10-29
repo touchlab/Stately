@@ -1,4 +1,4 @@
-// ktlint-disable filename
+
 /*
  * Copyright (C) 2018 Touchlab, Inc.
  *
@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("ktlint:standard:filename")
+
 package co.touchlab.stately.concurrency
 
 actual open class ThreadLocalRef<T> actual constructor() {
@@ -24,12 +26,10 @@ actual open class ThreadLocalRef<T> actual constructor() {
         ThreadLocalState.threadLocalMap.remove(threadLocalId)
     }
 
-    actual fun get(): T? {
-        return if (ThreadLocalState.threadLocalMap.containsKey(threadLocalId)) {
-            ThreadLocalState.threadLocalMap.get(threadLocalId) as T
-        } else {
-            null
-        }
+    actual fun get(): T? = if (ThreadLocalState.threadLocalMap.containsKey(threadLocalId)) {
+        ThreadLocalState.threadLocalMap.get(threadLocalId) as T
+    } else {
+        null
     }
 
     actual fun set(value: T?) {

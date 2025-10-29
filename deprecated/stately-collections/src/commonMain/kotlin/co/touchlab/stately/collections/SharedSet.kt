@@ -31,12 +31,11 @@ class SharedSet<T> : MutableSet<T> {
         return !result
     }
 
-    override fun addAll(elements: Collection<T>): Boolean =
-        elements.fold(false) { b, t ->
-            val result = backingMap.containsKey(t)
-            backingMap.put(t, Unit)
-            b || result
-        }
+    override fun addAll(elements: Collection<T>): Boolean = elements.fold(false) { b, t ->
+        val result = backingMap.containsKey(t)
+        backingMap.put(t, Unit)
+        b || result
+    }
 
     override fun clear() {
         backingMap.clear()
@@ -48,12 +47,11 @@ class SharedSet<T> : MutableSet<T> {
         return result
     }
 
-    override fun removeAll(elements: Collection<T>): Boolean =
-        elements.fold(false) { b, t ->
-            val result = backingMap.containsKey(t)
-            backingMap.remove(t)
-            b || result
-        }
+    override fun removeAll(elements: Collection<T>): Boolean = elements.fold(false) { b, t ->
+        val result = backingMap.containsKey(t)
+        backingMap.remove(t)
+        b || result
+    }
 
     override fun retainAll(elements: Collection<T>): Boolean {
         TODO("not implemented") // To change body of created functions use File | Settings | File Templates.

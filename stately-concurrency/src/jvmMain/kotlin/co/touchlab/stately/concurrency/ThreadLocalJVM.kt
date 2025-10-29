@@ -1,4 +1,4 @@
-// ktlint-disable filename
+
 /*
  * Copyright (C) 2018 Touchlab, Inc.
  *
@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@file:Suppress("ktlint:standard:filename")
 
 package co.touchlab.stately.concurrency
 

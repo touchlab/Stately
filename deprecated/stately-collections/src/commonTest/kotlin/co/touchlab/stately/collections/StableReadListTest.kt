@@ -18,7 +18,6 @@ package co.touchlab.stately.collections
 
 import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
-import co.touchlab.testhelp.isNativeFrozen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -35,13 +34,13 @@ These implementations should function identically except for 'subList'. See test
 
 // Ignored on JS because frozenCopyOnWriteList() is not implemented
 @JsIgnore
-class CopyOnWriteListTest<T>() : AbstractStableReadListTest<T>() {
+class CopyOnWriteListTest<T> : AbstractStableReadListTest<T>() {
     override val supportsSublist: Boolean = true
 
     override fun <T> createList(collection: Collection<T>?): MutableList<T> = frozenCopyOnWriteList()
 }
 
-class CopyOnWriteLinkedListTest<T>() : AbstractStableReadListTest<T>() {
+class CopyOnWriteLinkedListTest<T> : AbstractStableReadListTest<T>() {
     override val supportsSublist: Boolean = false
 
     override fun <T> createList(collection: Collection<T>?): MutableList<T> = frozenLinkedList(stableIterator = true)
@@ -51,7 +50,6 @@ abstract class AbstractStableReadListTest<T> {
 
     abstract fun <T> createList(collection: Collection<T>? = null): MutableList<T>
     abstract val supportsSublist: Boolean
-
 
     @Test
     fun testStableReads() {
@@ -110,16 +108,20 @@ abstract class AbstractStableReadListTest<T> {
         assertTrue(
             list.containsAll(
                 mutableListOf(
-                    ListData("a 5"), ListData("a 15"), ListData("a 50")
-                )
-            )
+                    ListData("a 5"),
+                    ListData("a 15"),
+                    ListData("a 50"),
+                ),
+            ),
         )
         assertFalse(
             list.containsAll(
                 mutableListOf(
-                    ListData("a 5"), ListData("a 15"), ListData("a 500")
-                )
-            )
+                    ListData("a 5"),
+                    ListData("a 15"),
+                    ListData("a 500"),
+                ),
+            ),
         )
     }
 
@@ -179,29 +181,29 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun mtAdd() {
-        val LOOPS = 500
+        val loops = 500
 
         val tops = ThreadOperations { createList<ListData>() }
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             val key = "Add: $i"
             tops.exe { it.add(ListData(key)) }
             tops.test { list -> assertTrue(list.contains(ListData(key))) }
         }
 
         val list = tops.run(8)
-        assertEquals(list.size, LOOPS)
+        assertEquals(list.size, loops)
 
         println("mtAdd: ${tops.lastRunTime}")
     }
 
     @Test
     fun mtAddAt() {
-        val LOOPS = 100
+        val loops = 100
 
         val tops = ThreadOperations { createList<ListData>() }
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             val key = "Add: $i"
             tops.exe {
                 val index = if (it.size == 0) {
@@ -220,16 +222,16 @@ abstract class AbstractStableReadListTest<T> {
             list.add(list.size + 1, ListData("Never"))
         }
 
-        assertEquals(list.size, LOOPS)
+        assertEquals(list.size, loops)
     }
 
     @Test
     fun mtAddAll() {
-        val LOOPS = 100
+        val loops = 100
 
         val tops = ThreadOperations { createList<ListData>() }
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             val key = "Add: $i"
             tops.exe { it.addAll(listOf(ListData("$key 0"), ListData("$key 1"), ListData("$key 2"))) }
             tops.test { list ->
@@ -240,16 +242,16 @@ abstract class AbstractStableReadListTest<T> {
         }
 
         val list = tops.run(8)
-        assertEquals(list.size, LOOPS * 3)
+        assertEquals(list.size, loops * 3)
     }
 
     @Test
     fun mtAddAllAt() {
-        val LOOPS = 100
+        val loops = 100
 
         val tops = ThreadOperations { createList<ListData>() }
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             val key = "Add: $i"
             tops.exe {
                 val index = if (it.size == 0) {
@@ -272,7 +274,7 @@ abstract class AbstractStableReadListTest<T> {
             list.add(list.size + 1, ListData("Never"))
         }
 
-        assertEquals(list.size, LOOPS * 3)
+        assertEquals(list.size, loops * 3)
     }
 
     @Test
@@ -290,11 +292,11 @@ abstract class AbstractStableReadListTest<T> {
 
     @Test
     fun mtRemove() {
-        val LOOPS = 500
+        val loops = 500
 
         val list = createList<ListData>().freeze()
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             val key = "Add: $i"
             list.add(ListData(key))
         }
@@ -303,14 +305,14 @@ abstract class AbstractStableReadListTest<T> {
 
         val tops = ThreadOperations { }
 
-        for (i in 0 until LOOPS) {
+        for (i in 0 until loops) {
             val key = "Add: $i"
             tops.exe { list.remove(ListData(key)) }
         }
 
         tops.run(8)
         assertEquals(list.size, 0)
-        assertEquals(iter.toList().size, LOOPS)
+        assertEquals(iter.toList().size, loops)
     }
 
     @Test

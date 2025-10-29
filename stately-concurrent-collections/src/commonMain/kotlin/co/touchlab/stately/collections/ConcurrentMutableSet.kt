@@ -16,4 +16,6 @@ class ConcurrentMutableSet<E> internal constructor(rootArg: Synchronizable?, pri
     }
 }
 
-internal class MutableSetWrapper<E>(internal var set: MutableSet<E>) : MutableCollectionWrapper<E>(set), MutableSet<E>
+internal class MutableSetWrapper<E>(internal var set: MutableSet<E>) :
+    MutableCollectionWrapper<E>(set),
+    MutableSet<E>

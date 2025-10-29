@@ -12,6 +12,7 @@ import kotlin.test.assertNotNull
 
 class GuardedStableRefTest {
 
+    @Suppress("ktlint:standard:backing-property-naming")
     var _w: Worker? = null
     val w: Worker
         get() = _w!!

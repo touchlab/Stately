@@ -135,8 +135,8 @@ class IsoMutableMapTest {
                 Pair("a", SomeData("a")),
                 Pair("b", SomeData("b")),
                 Pair("c", SomeData("c")),
-                Pair("a", SomeData("a"))
-            )
+                Pair("a", SomeData("a")),
+            ),
         )
 
         assertEquals(503, map.size)

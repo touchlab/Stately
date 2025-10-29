@@ -9,6 +9,7 @@ mavenPublish = "0.27.0"
 testHelp = "0.6.12"
 coroutines-test = "1.8.0"
 kotlin = "1.9.23"
+ktlint = "12.2.0"
 
 [libraries]
 
@@ -25,6 +26,6 @@ binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibilit
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 touchlab-docusaurusosstemplate = { id = "co.touchlab.touchlabtools.docusaurusosstemplate", version.ref = "touchlab-docusaurusosstemplate" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 [bundles]
 

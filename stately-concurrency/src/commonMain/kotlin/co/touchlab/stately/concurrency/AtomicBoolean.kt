@@ -27,8 +27,7 @@ class AtomicBoolean(value_: Boolean) {
             atom.value = boolToInt(value)
         }
 
-    fun compareAndSet(expected: Boolean, new: Boolean): Boolean =
-        atom.compareAndSet(boolToInt(expected), boolToInt(new))
+    fun compareAndSet(expected: Boolean, new: Boolean): Boolean = atom.compareAndSet(boolToInt(expected), boolToInt(new))
 
     private fun boolToInt(b: Boolean): Int = if (b) {
         1

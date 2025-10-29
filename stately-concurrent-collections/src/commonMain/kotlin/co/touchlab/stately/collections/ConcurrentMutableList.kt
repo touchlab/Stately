@@ -4,7 +4,8 @@ import co.touchlab.stately.concurrency.Synchronizable
 import co.touchlab.stately.concurrency.synchronize
 
 class ConcurrentMutableList<E> internal constructor(rootArg: Synchronizable?, private val del: MutableList<E>) :
-    ConcurrentMutableCollection<E>(rootArg, del), MutableList<E> {
+    ConcurrentMutableCollection<E>(rootArg, del),
+    MutableList<E> {
     constructor() : this(null, mutableListOf())
 
     override fun get(index: Int): E = syncTarget.synchronize { del.get(index) }
@@ -17,11 +18,9 @@ class ConcurrentMutableList<E> internal constructor(rootArg: Synchronizable?, pr
         syncTarget.synchronize { del.add(index, element) }
     }
 
-    override fun addAll(index: Int, elements: Collection<E>): Boolean =
-        syncTarget.synchronize { del.addAll(index, elements) }
+    override fun addAll(index: Int, elements: Collection<E>): Boolean = syncTarget.synchronize { del.addAll(index, elements) }
 
-    override fun listIterator(): MutableListIterator<E> =
-        syncTarget.synchronize { ConcurrentMutableListIterator(this, del.listIterator()) }
+    override fun listIterator(): MutableListIterator<E> = syncTarget.synchronize { ConcurrentMutableListIterator(this, del.listIterator()) }
 
     override fun listIterator(index: Int): MutableListIterator<E> =
         syncTarget.synchronize { ConcurrentMutableListIterator(this, del.listIterator(index)) }
@@ -41,7 +40,8 @@ class ConcurrentMutableList<E> internal constructor(rootArg: Synchronizable?, pr
     }
 }
 
-internal class MutableListWrapper<E>(internal var list: MutableList<E>) : MutableCollectionWrapper<E>(list),
+internal class MutableListWrapper<E>(internal var list: MutableList<E>) :
+    MutableCollectionWrapper<E>(list),
     MutableList<E> {
     override fun get(index: Int): E = list.get(index)
 

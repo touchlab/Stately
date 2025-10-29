@@ -26,8 +26,7 @@ open class ConcurrentMutableCollection<E> internal constructor(rootArg: Synchron
         syncTarget.synchronize { del.clear() }
     }
 
-    override fun iterator(): MutableIterator<E> =
-        syncTarget.synchronize { ConcurrentMutableIterator(syncTarget, del.iterator()) }
+    override fun iterator(): MutableIterator<E> = syncTarget.synchronize { ConcurrentMutableIterator(syncTarget, del.iterator()) }
 
     override fun remove(element: E): Boolean = syncTarget.synchronize { del.remove(element) }
 
@@ -43,10 +42,7 @@ open class ConcurrentMutableCollection<E> internal constructor(rootArg: Synchron
     }
 }
 
-internal open class ConcurrentMutableIterator<E>(
-    private val root: Synchronizable,
-    private val del: MutableIterator<E>
-) :
+internal open class ConcurrentMutableIterator<E>(private val root: Synchronizable, private val del: MutableIterator<E>) :
     Synchronizable(),
     MutableIterator<E> {
     override fun hasNext(): Boolean = root.synchronize { del.hasNext() }

@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
@@ -20,7 +20,7 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Cache gradle
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Cache konan
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.konan
           key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload Stately Collections Build Results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deprecated-test-results
           path: deprecated/**/build/reports/tests/

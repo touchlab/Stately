@@ -120,9 +120,9 @@ abstract class IsoMutableCollectionTest {
                 listOf(
                     SomeData("key 55"),
                     SomeData("key 155"),
-                    SomeData("key2 65")
-                )
-            )
+                    SomeData("key2 65"),
+                ),
+            ),
         )
 
         assertEquals(498, set.size)
@@ -131,9 +131,9 @@ abstract class IsoMutableCollectionTest {
             set.removeAll(
                 listOf(
                     SomeData("key 65"),
-                    SomeData("key 165")
-                )
-            )
+                    SomeData("key 165"),
+                ),
+            ),
         )
 
         assertEquals(496, set.size)
@@ -142,9 +142,9 @@ abstract class IsoMutableCollectionTest {
             set.removeAll(
                 listOf(
                     SomeData("key 65"),
-                    SomeData("key 165")
-                )
-            )
+                    SomeData("key 165"),
+                ),
+            ),
         )
 
         assertEquals(496, set.size)
@@ -159,9 +159,9 @@ abstract class IsoMutableCollectionTest {
                 listOf(
                     SomeData("key 55"),
                     SomeData("key 155"),
-                    SomeData("key2 65")
-                )
-            )
+                    SomeData("key2 65"),
+                ),
+            ),
         )
 
         assertEquals(2, set.size)
@@ -171,9 +171,9 @@ abstract class IsoMutableCollectionTest {
                 listOf(
                     SomeData("key 55"),
                     SomeData("key 155"),
-                    SomeData("key2 65")
-                )
-            )
+                    SomeData("key2 65"),
+                ),
+            ),
         )
 
         assertEquals(2, set.size)

@@ -6,19 +6,20 @@ import co.touchlab.stately.isolate.StateRunner
 import co.touchlab.stately.isolate.createState
 
 open class IsoMutableList<T> internal constructor(stateHolder: StateHolder<MutableList<T>>) :
-    IsoMutableCollection<T>(stateHolder), MutableList<T> {
-    constructor(stateRunner: StateRunner? = null, producer: () -> MutableList<T> = { mutableListOf() }) : this(createState(stateRunner, producer))
+    IsoMutableCollection<T>(stateHolder),
+    MutableList<T> {
+    constructor(
+        stateRunner: StateRunner? = null,
+        producer: () -> MutableList<T> = { mutableListOf() },
+    ) : this(createState(stateRunner, producer))
 
     override fun get(index: Int): T = asAccess { it.get(index) }
     override fun indexOf(element: T): Int = asAccess { it.indexOf(element) }
     override fun lastIndexOf(element: T): Int = asAccess { it.lastIndexOf(element) }
     override fun add(index: Int, element: T) = asAccess { it.add(index, element) }
-    override fun addAll(index: Int, elements: Collection<T>): Boolean =
-        asAccess { it.addAll(index, elements) }
-    override fun listIterator(): MutableListIterator<T> =
-        asAccess { IsoMutableListIterator(fork(it.listIterator())) }
-    override fun listIterator(index: Int): MutableListIterator<T> =
-        asAccess { IsoMutableListIterator(fork(it.listIterator(index))) }
+    override fun addAll(index: Int, elements: Collection<T>): Boolean = asAccess { it.addAll(index, elements) }
+    override fun listIterator(): MutableListIterator<T> = asAccess { IsoMutableListIterator(fork(it.listIterator())) }
+    override fun listIterator(index: Int): MutableListIterator<T> = asAccess { IsoMutableListIterator(fork(it.listIterator(index))) }
     override fun removeAt(index: Int): T = asAccess { it.removeAt(index) }
     override fun set(index: Int, element: T): T = asAccess { it.set(index, element) }
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> = asAccess {
@@ -29,7 +30,8 @@ open class IsoMutableList<T> internal constructor(stateHolder: StateHolder<Mutab
 }
 
 class IsoMutableListIterator<T> internal constructor(stateHolder: StateHolder<MutableListIterator<T>>) :
-    IsolateState<MutableListIterator<T>>(stateHolder), MutableListIterator<T> {
+    IsolateState<MutableListIterator<T>>(stateHolder),
+    MutableListIterator<T> {
     override fun hasPrevious(): Boolean = access { it.hasPrevious() }
     override fun nextIndex(): Int = access { it.nextIndex() }
     override fun previous(): T = access { it.previous() }

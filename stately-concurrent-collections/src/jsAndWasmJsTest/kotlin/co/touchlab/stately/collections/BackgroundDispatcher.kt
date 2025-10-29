@@ -1,10 +1,10 @@
 package co.touchlab.stately.collections
 
+import kotlin.test.Ignore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 actual val backgroundDispatcher: CoroutineDispatcher
-    get() = Dispatchers.Default
+    get() = Dispatchers.Main
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-actual annotation class NoJsTest
+actual typealias NoJsTest = Ignore

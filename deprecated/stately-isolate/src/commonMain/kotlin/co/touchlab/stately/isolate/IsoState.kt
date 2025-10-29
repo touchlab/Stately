@@ -22,13 +22,11 @@ open class IsolateState<T : Any> constructor(private val stateHolder: StateHolde
         throw IllegalStateException("Must fork state from the state thread")
     }
 
-    fun <R> access(block: (T) -> R): R {
-        return if (stateHolder.myThread) {
+    fun <R> access(block: (T) -> R): R = if (stateHolder.myThread) {
+        block(stateHolder.myState)
+    } else {
+        stateHolder.stateRunner.stateRun {
             block(stateHolder.myState)
-        } else {
-            stateHolder.stateRunner.stateRun {
-                block(stateHolder.myState)
-            }
         }
     }
 

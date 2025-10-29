@@ -1,13 +1,10 @@
 package co.touchlab.stately.isolate
 
 import co.touchlab.stately.concurrency.ThreadRef
-import co.touchlab.stately.freeze
 import co.touchlab.testhelp.concurrency.ThreadOperations
 import co.touchlab.testhelp.concurrency.background
-import co.touchlab.testhelp.isNative
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -33,8 +30,6 @@ class IsoStateTest {
 
         assertEquals(5_000, lsize)
     }
-
-
 
     @Test
     fun throwExceptions() {

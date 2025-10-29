@@ -27,8 +27,8 @@ expect fun <T> frozenCopyOnWriteList(collection: Collection<T>? = null): Mutable
     message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
     replaceWith = ReplaceWith(
         "sharedMutableListOf()",
-        "co.touchlab.stately.collections.sharedMutableListOf"
-    )
+        "co.touchlab.stately.collections.sharedMutableListOf",
+    ),
 )
 fun <T> frozenLinkedList(stableIterator: Boolean = false): MutableList<T> = if (stableIterator) {
     CopyOnIterateLinkedList()
@@ -40,8 +40,8 @@ fun <T> frozenLinkedList(stableIterator: Boolean = false): MutableList<T> = if (
     message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
     replaceWith = ReplaceWith(
         "sharedMutableMapOf()",
-        "co.touchlab.stately.collections.sharedMutableMapOf"
-    )
+        "co.touchlab.stately.collections.sharedMutableMapOf",
+    ),
 )
 fun <K, V> frozenHashMap(initialCapacity: Int = 16, loadFactor: Float = 0.75.toFloat()): MutableMap<K, V> =
     SharedHashMap(initialCapacity, loadFactor)
@@ -50,8 +50,8 @@ fun <K, V> frozenHashMap(initialCapacity: Int = 16, loadFactor: Float = 0.75.toF
     message = "Replacing Atomic collections with isolated state collections (modele `stately-iso-collections`)",
     replaceWith = ReplaceWith(
         "sharedMutableSetOf()",
-        "co.touchlab.stately.collections.sharedMutableSetOf"
-    )
+        "co.touchlab.stately.collections.sharedMutableSetOf",
+    ),
 )
 fun <T> frozenHashSet(): MutableSet<T> = SharedSet()
 
