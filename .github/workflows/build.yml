@@ -8,11 +8,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
-      - name: Install Rosetta
-        run: softwareupdate --install-rosetta --agree-to-license
-
       - name: Checkout the repo
         uses: actions/checkout@v3
 
